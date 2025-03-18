@@ -1,16 +1,15 @@
 import type {
+  appendResponseMessages,
   CoreAssistantMessage,
   CoreToolMessage,
   Message,
-  TextStreamPart,
-  ToolInvocation,
-  ToolSet,
   UIMessage,
 } from 'ai';
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
 import type { DBMessage, Document } from '@/lib/db/schema';
+import { saveMessages } from './db/queries';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -88,6 +87,48 @@ function addToolMessageToChat({
 
 type ResponseMessageWithoutId = CoreToolMessage | CoreAssistantMessage;
 type ResponseMessage = ResponseMessageWithoutId & { id: string };
+
+export function generateMockedResponse(props: {
+  id: string,
+  userMessage: UIMessage,
+  appendResponseMessages: typeof appendResponseMessages,
+  saveMessages: typeof saveMessages,
+}) : void {
+  const {
+    id,
+    userMessage,
+    appendResponseMessages,
+    saveMessages,
+  } = props
+  
+  const mockResponse = {
+    messages: [
+      {
+        id: generateUUID(),
+        role: 'assistant',
+        content: 'This is a mock response for development purposes.',
+      },
+    ],
+  };
+
+  const [, assistantMessage] = appendResponseMessages({
+    messages: [userMessage],
+    responseMessages: mockResponse.messages as ResponseMessage[],
+  });
+
+  saveMessages({
+    messages: [
+      {
+        id: assistantMessage.id,
+        chatId: id,
+        role: assistantMessage.role,
+        parts: assistantMessage.parts,
+        attachments: assistantMessage.experimental_attachments ?? [],
+        createdAt: new Date(),
+      },
+    ],
+  });
+}
 
 export function sanitizeResponseMessages({
   messages,

@@ -14,6 +14,7 @@ import {
   saveMessages,
 } from '@/lib/db/queries';
 import {
+  generateMockedResponse,
   generateUUID,
   getMostRecentUserMessage,
   getTrailingMessageId,
@@ -81,6 +82,17 @@ export async function POST(request: Request) {
 
     return createDataStreamResponse({
       execute: (dataStream) => {
+        if (!isProductionEnvironment) {
+          generateMockedResponse({
+            id: id,
+            userMessage: userMessage,
+            appendResponseMessages: appendResponseMessages,
+            saveMessages: saveMessages,
+          })
+    
+          return;
+        }
+
         const result = streamText({
           model: myProvider.languageModel(selectedChatModel),
           system: systemPrompt({ selectedChatModel }),
@@ -154,8 +166,8 @@ export async function POST(request: Request) {
           sendReasoning: true,
         });
       },
-      onError: () => {
-        return 'Oops, an error occured!';
+      onError: (e) => {
+        return 'Oops, an error occured!' + (e ?? ' none');
       },
     });
   } catch (error) {
