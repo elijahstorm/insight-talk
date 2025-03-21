@@ -1,2 +1,2 @@
-ALTER TABLE "Chat" ADD COLUMN "summary" text NOT NULL DEFAULT 'no summary' AFTER "title";
-ALTER TABLE "Chat" ADD COLUMN "type" text NOT NULL DEFAULT 'personal' AFTER "userId";
+ALTER TABLE "Chat" ADD COLUMN "summary" text DEFAULT 'no summary' NOT NULL;
+ALTER TABLE "Chat" ADD COLUMN "type" text DEFAULT 'personal' NOT NULL;
