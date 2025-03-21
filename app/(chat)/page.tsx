@@ -1,9 +1,7 @@
 import { cookies } from 'next/headers';
 
-import { Chat } from '@/components/chat';
-import { DEFAULT_CHAT_MODEL } from '@/lib/ai/models';
 import { generateUUID } from '@/lib/utils';
-import { DataStreamHandler } from '@/components/data-stream-handler';
+import Link from 'next/link';
 
 export default async function Page() {
   const id = generateUUID();
@@ -11,33 +9,22 @@ export default async function Page() {
   const cookieStore = await cookies();
   const modelIdFromCookie = cookieStore.get('chat-model');
 
-  if (!modelIdFromCookie) {
-    return (
-      <>
-        <Chat
-          key={id}
-          id={id}
-          initialMessages={[]}
-          selectedChatModel={DEFAULT_CHAT_MODEL}
-          selectedVisibilityType="private"
-          isReadonly={false}
-        />
-        <DataStreamHandler id={id} />
-      </>
-    );
-  }
-
   return (
-    <>
-      <Chat
-        key={id}
-        id={id}
-        initialMessages={[]}
-        selectedChatModel={modelIdFromCookie.value}
-        selectedVisibilityType="private"
-        isReadonly={false}
-      />
-      <DataStreamHandler id={id} />
-    </>
+    <div className="rounded-xl p-6 flex flex-col gap-8 leading-relaxed text-center max-w-xl">
+    <h2 className="text-xl font-bold">
+      Talk Insight
+    </h2>
+    <p>
+      You can learn more about how to use the Talk Insight AI by visiting the{' '}
+      <Link
+        className="font-medium underline underline-offset-4"
+        href="https://insight-talk.vercel.app/about"
+        target="_blank"
+      >
+        about
+      </Link>
+      {' '}page.
+    </p>
+  </div>
   );
 }
