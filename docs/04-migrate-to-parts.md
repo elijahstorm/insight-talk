@@ -9,6 +9,7 @@ You can read the API reference for the `parts` property [here](https://sdk.verce
 Your existing project must already have messages stored in the database. To migrate your messages to use `parts`, you will have to create new tables for `Message` and `Vote`, backfill the new tables with transformed messages, and delete (optional) the old tables.
 
 These are the following steps:
+
 1. Create tables `Message_v2` and `Vote_v2` with updated schemas at `/lib/db/schema.ts`
 2. Update the `Message` component at `/components/message.tsx` to use parts and render content.
 3. Run migration script at `src/lib/db/helpers/01-migrate-to-parts.ts`
@@ -20,74 +21,74 @@ You will mark the earlier tables as deprecated and create two new tables, `Messa
 Before creating the new tables, you will need to update the variables of existing tables to indicate that they are deprecated.
 
 ```tsx title="/lib/db/schema.ts"
-export const messageDeprecated = pgTable("Message", {
-  id: uuid("id").primaryKey().notNull().defaultRandom(),
-  chatId: uuid("chatId")
-    .notNull()
-    .references(() => chat.id),
-  role: varchar("role").notNull(),
-  content: json("content").notNull(),
-  createdAt: timestamp("createdAt").notNull(),
-});
+export const messageDeprecated = pgTable('Message', {
+	id: uuid('id').primaryKey().notNull().defaultRandom(),
+	chatId: uuid('chatId')
+		.notNull()
+		.references(() => chat.id),
+	role: varchar('role').notNull(),
+	content: json('content').notNull(),
+	createdAt: timestamp('createdAt').notNull(),
+})
 
-export type MessageDeprecated = InferSelectModel<typeof messageDeprecated>;
+export type MessageDeprecated = InferSelectModel<typeof messageDeprecated>
 
 export const voteDeprecated = pgTable(
-  "Vote",
-  {
-    chatId: uuid("chatId")
-      .notNull()
-      .references(() => chat.id),
-    messageId: uuid("messageId")
-      .notNull()
-      .references(() => messageDeprecated.id),
-    isUpvoted: boolean("isUpvoted").notNull(),
-  },
-  (table) => {
-    return {
-      pk: primaryKey({ columns: [table.chatId, table.messageId] }),
-    };
-  },
-);
+	'Vote',
+	{
+		chatId: uuid('chatId')
+			.notNull()
+			.references(() => chat.id),
+		messageId: uuid('messageId')
+			.notNull()
+			.references(() => messageDeprecated.id),
+		isUpvoted: boolean('isUpvoted').notNull(),
+	},
+	(table) => {
+		return {
+			pk: primaryKey({ columns: [table.chatId, table.messageId] }),
+		}
+	}
+)
 
-export type VoteDeprecated = InferSelectModel<typeof voteDeprecated>;
+export type VoteDeprecated = InferSelectModel<typeof voteDeprecated>
 ```
 
 After deprecating the current table schemas, you can now proceed to create schemas for the new tables.
 
 ```ts title="/lib/db/schema.ts"
-export const message = pgTable("Message_v2", {
-  id: uuid("id").primaryKey().notNull().defaultRandom(),
-  chatId: uuid("chatId")
-    .notNull()
-    .references(() => chat.id),
-  role: varchar("role").notNull(),
-  parts: json("parts").notNull(),
-  attachments: json("attachments").notNull(),
-  createdAt: timestamp("createdAt").notNull(),
-});
+export const message = pgTable('Message_v2', {
+	id: uuid('id').primaryKey().notNull().defaultRandom(),
+	chatId: uuid('chatId')
+		.notNull()
+		.references(() => chat.id),
+	role: varchar('role').notNull(),
+	parts: json('parts').notNull(),
+	attachments: json('attachments').notNull(),
+	createdAt: timestamp('createdAt').notNull(),
+})
 
-export type Message = InferSelectModel<typeof message>;
+export type Message = InferSelectModel<typeof message>
 
 export const vote = pgTable(
-  "Vote_v2",
-  {
-    chatId: uuid("chatId")
-      .notNull()
-      .references(() => chat.id),
-    messageId: uuid("messageId")
-      .notNull()
-      .references(() => message.id),
-    isUpvoted: boolean("isUpvoted").notNull(),
-  },
-  (table) => {
-    return {
-      pk: primaryKey({ columns: [table.chatId, table.messageId] }),
-    };
-  },
-);
+	'Vote_v2',
+	{
+		chatId: uuid('chatId')
+			.notNull()
+			.references(() => chat.id),
+		messageId: uuid('messageId')
+			.notNull()
+			.references(() => message.id),
+		isUpvoted: boolean('isUpvoted').notNull(),
+	},
+	(table) => {
+		return {
+			pk: primaryKey({ columns: [table.chatId, table.messageId] }),
+		}
+	}
+)
 
-export type Vote = InferSelectModel<typeof vote>;
+export type Vote = InferSelectModel<typeof vote>
 ```
 
 ### 2. Updating the Message Component
@@ -95,139 +96,119 @@ export type Vote = InferSelectModel<typeof vote>;
 Previously you were using content types to render messages and tool invocations. Now you will use the `parts` property to render messages and tool invocations.
 
 ```tsx title="components/message.tsx"
-{message.parts?.map((part, index) => {
-  const { type } = part;
-  const key = `message-${message.id}-part-${index}`;
+{
+	message.parts?.map((part, index) => {
+		const { type } = part
+		const key = `message-${message.id}-part-${index}`
 
-  if (type === "reasoning") {
-    return (
-      <MessageReasoning
-        key={key}
-        isLoading={isLoading}
-        reasoning={part.reasoning}
-      />
-    );
-  }
+		if (type === 'reasoning') {
+			return <MessageReasoning key={key} isLoading={isLoading} reasoning={part.reasoning} />
+		}
 
-  if (type === "text") {
-    if (mode === "view") {
-      return (
-        <div key={key} className="flex flex-row gap-2 items-start">
-          {message.role === "user" && !isReadonly && (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  data-testid="message-edit-button"
-                  variant="ghost"
-                  className="px-2 h-fit rounded-full text-muted-foreground opacity-0 group-hover/message:opacity-100"
-                  onClick={() => {
-                    setMode("edit");
-                  }}
-                >
-                  <PencilEditIcon />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Edit message</TooltipContent>
-            </Tooltip>
-          )}
+		if (type === 'text') {
+			if (mode === 'view') {
+				return (
+					<div key={key} className="flex flex-row gap-2 items-start">
+						{message.role === 'user' && !isReadonly && (
+							<Tooltip>
+								<TooltipTrigger asChild>
+									<Button
+										data-testid="message-edit-button"
+										variant="ghost"
+										className="px-2 h-fit rounded-full text-muted-foreground opacity-0 group-hover/message:opacity-100"
+										onClick={() => {
+											setMode('edit')
+										}}
+									>
+										<PencilEditIcon />
+									</Button>
+								</TooltipTrigger>
+								<TooltipContent>Edit message</TooltipContent>
+							</Tooltip>
+						)}
 
-          <div
-            data-testid="message-content"
-            className={cn("flex flex-col gap-4", {
-              "bg-primary text-primary-foreground px-3 py-2 rounded-xl":
-                message.role === "user",
-            })}
-          >
-            <Markdown>{part.text}</Markdown>
-          </div>
-        </div>
-      );
-    }
+						<div
+							data-testid="message-content"
+							className={cn('flex flex-col gap-4', {
+								'bg-primary text-primary-foreground px-3 py-2 rounded-xl': message.role === 'user',
+							})}
+						>
+							<Markdown>{part.text}</Markdown>
+						</div>
+					</div>
+				)
+			}
 
-    if (mode === "edit") {
-      return (
-        <div key={key} className="flex flex-row gap-2 items-start">
-          <div className="size-8" />
+			if (mode === 'edit') {
+				return (
+					<div key={key} className="flex flex-row gap-2 items-start">
+						<div className="size-8" />
 
-          <MessageEditor
-            key={message.id}
-            message={message}
-            setMode={setMode}
-            setMessages={setMessages}
-            reload={reload}
-          />
-        </div>
-      );
-    }
-  }
+						<MessageEditor
+							key={message.id}
+							message={message}
+							setMode={setMode}
+							setMessages={setMessages}
+							reload={reload}
+						/>
+					</div>
+				)
+			}
+		}
 
-  if (type === "tool-invocation") {
-    const { toolInvocation } = part;
-    const { toolName, toolCallId, state } = toolInvocation;
+		if (type === 'tool-invocation') {
+			const { toolInvocation } = part
+			const { toolName, toolCallId, state } = toolInvocation
 
-    if (state === "call") {
-      const { args } = toolInvocation;
+			if (state === 'call') {
+				const { args } = toolInvocation
 
-      return (
-        <div
-          key={toolCallId}
-          className={cx({
-            skeleton: ["getWeather"].includes(toolName),
-          })}
-        >
-          {toolName === "getWeather" ? (
-            <Weather />
-          ) : toolName === "createDocument" ? (
-            <DocumentPreview isReadonly={isReadonly} args={args} />
-          ) : toolName === "updateDocument" ? (
-            <DocumentToolCall
-              type="update"
-              args={args}
-              isReadonly={isReadonly}
-            />
-          ) : toolName === "requestSuggestions" ? (
-            <DocumentToolCall
-              type="request-suggestions"
-              args={args}
-              isReadonly={isReadonly}
-            />
-          ) : null}
-        </div>
-      );
-    }
+				return (
+					<div
+						key={toolCallId}
+						className={cx({
+							skeleton: ['getWeather'].includes(toolName),
+						})}
+					>
+						{toolName === 'getWeather' ? (
+							<Weather />
+						) : toolName === 'createDocument' ? (
+							<DocumentPreview isReadonly={isReadonly} args={args} />
+						) : toolName === 'updateDocument' ? (
+							<DocumentToolCall type="update" args={args} isReadonly={isReadonly} />
+						) : toolName === 'requestSuggestions' ? (
+							<DocumentToolCall type="request-suggestions" args={args} isReadonly={isReadonly} />
+						) : null}
+					</div>
+				)
+			}
 
-    if (state === "result") {
-      const { result } = toolInvocation;
+			if (state === 'result') {
+				const { result } = toolInvocation
 
-      return (
-        <div key={toolCallId}>
-          {toolName === "getWeather" ? (
-            <Weather weatherAtLocation={result} />
-          ) : toolName === "createDocument" ? (
-            <DocumentPreview
-              isReadonly={isReadonly}
-              result={result}
-            />
-          ) : toolName === "updateDocument" ? (
-            <DocumentToolResult
-              type="update"
-              result={result}
-              isReadonly={isReadonly}
-            />
-          ) : toolName === "requestSuggestions" ? (
-            <DocumentToolResult
-              type="request-suggestions"
-              result={result}
-              isReadonly={isReadonly}
-            />
-          ) : (
-            <pre>{JSON.stringify(result, null, 2)}</pre>
-          )}
-        </div>
-      );
-    }
-  }
-})}
+				return (
+					<div key={toolCallId}>
+						{toolName === 'getWeather' ? (
+							<Weather weatherAtLocation={result} />
+						) : toolName === 'createDocument' ? (
+							<DocumentPreview isReadonly={isReadonly} result={result} />
+						) : toolName === 'updateDocument' ? (
+							<DocumentToolResult type="update" result={result} isReadonly={isReadonly} />
+						) : toolName === 'requestSuggestions' ? (
+							<DocumentToolResult
+								type="request-suggestions"
+								result={result}
+								isReadonly={isReadonly}
+							/>
+						) : (
+							<pre>{JSON.stringify(result, null, 2)}</pre>
+						)}
+					</div>
+				)
+			}
+		}
+	})
+}
 ```
 
 ### 3. Running the Migration Script
