@@ -4,6 +4,10 @@ import { Chat } from '@/lib/db/schema'
 import { isToday, isYesterday, subMonths, subWeeks } from 'date-fns'
 import Link from 'next/link'
 import { useState } from 'react'
+import { Overview } from './overview'
+import { fetcher } from '@/lib/utils'
+import useSWR from 'swr'
+import { User } from 'next-auth'
 
 type GroupedChats = {
 	today: Chat[]
@@ -13,14 +17,84 @@ type GroupedChats = {
 	older: Chat[]
 }
 
-export default function History({ history }: { history: Chat[] }) {
+export default function History({ user }: { user: User | undefined }) {
 	const [filter, setFilter] = useState('')
 	const [typeFilter, setTypeFilter] = useState<'none' | keyof typeof typeEmojis>('none')
 
+	const { data: history, isLoading } = useSWR<Array<Chat>>(user ? '/api/history' : null, fetcher, {
+		fallbackData: [],
+	})
+
+	if (isLoading) {
+		return (
+			<div className="flex flex-col gap-8 text-left">
+				<div className="flex gap-4 ">
+					<input
+						type="text"
+						value={filter}
+						onChange={(e) => setFilter(e.target.value)}
+						className="rounded-md bg-slate-50 text-slate-800 overflow-hidden border border-slate-200 py-2 px-3 w-full"
+						placeholder="Search Conversations"
+					/>
+
+					<select
+						value={typeFilter}
+						onChange={(e) => setTypeFilter(e.target.value as 'none' | keyof typeof typeEmojis)}
+						className="rounded-md bg-slate-100 text-slate-600 border border-slate-200 py-2 px-3  text-xs"
+					>
+						<option value="none">All Types</option>
+					</select>
+				</div>
+
+				<div className="space-y-2">
+					<h1 className="text-slate-600 text-lg font-bold">Today</h1>
+
+					<div className="grid grid-cols-2 gap-4">
+						{[
+							[44, 68],
+							[32, 87],
+							[28, 43],
+							[64, 33],
+							[52, 23],
+							[56, 45],
+						].map((item) => (
+							<div key={item[0]} className="border text-slate-800 p-4 rounded-md bg">
+								<div className="w-full flex items-center gap-2">
+									<div
+										className="h-4 rounded-md flex-1 max-w-[--skeleton-width] bg-sidebar-accent-foreground/10 animate-pulse"
+										style={
+											{
+												'--skeleton-width': `${item[0]}%`,
+											} as React.CSSProperties
+										}
+									/>
+									<div className="pl-1 pt-0.5 text-sm rounded-full h-6 w-6 bg-slate-100 border border-slate-500 ml-auto animate-pulse"></div>
+								</div>
+								<div
+									className="h-4 rounded-md flex-1 max-w-[--skeleton-width] bg-sidebar-accent-foreground/10 animate-pulse"
+									style={
+										{
+											'--skeleton-width': `${item[1]}%`,
+										} as React.CSSProperties
+									}
+								/>
+							</div>
+						))}
+					</div>
+				</div>
+			</div>
+		)
+	}
+
+	if (!history || history.length === 0) {
+		return <Overview />
+	}
+
 	const typeEmojis = {
-		personal: '👫',
+		romance: '💞',
+		friend: '👫',
 		workplace: '💼',
-		legal: '⚖️',
+		family: '👪',
 	} as const
 
 	const filteredByType =
