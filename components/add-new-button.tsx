@@ -21,7 +21,7 @@ function HeadsUpButton({
 			<p className="text-sm text-slate-600 pointer-events-none">{description}</p>
 
 			<button
-				className="w-14 h-14 bg-blue-500 text-white p-4 rounded-full shadow-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-colors"
+				className="w-14 h-14 bg-primary-500 text-white p-4 rounded-full shadow-lg hover:bg-primary focus:outline-none focus:ring-2 focus:ring-primary-300 hover:outline-none ring-offset-1 hover:ring-2 hover:ring-primary-400 transition-all"
 				onClick={action}
 			>
 				{icon}
