@@ -4,7 +4,7 @@ import { auth } from '@/app/(auth)/auth'
 
 export default async function Page() {
 	return (
-		<div className="rounded-xl p-6 flex flex-col gap-8 leading-relaxed text-center max-w-xl">
+		<div className="flex max-w-xl flex-col gap-8 rounded-xl p-6 text-center leading-relaxed">
 			<History user={(await auth())?.user} />
 			<AddNewButton />
 		</div>

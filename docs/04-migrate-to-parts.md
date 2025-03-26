@@ -108,14 +108,14 @@ Previously you were using content types to render messages and tool invocations.
 		if (type === 'text') {
 			if (mode === 'view') {
 				return (
-					<div key={key} className="flex flex-row gap-2 items-start">
+					<div key={key} className="flex flex-row items-start gap-2">
 						{message.role === 'user' && !isReadonly && (
 							<Tooltip>
 								<TooltipTrigger asChild>
 									<Button
 										data-testid="message-edit-button"
 										variant="ghost"
-										className="px-2 h-fit rounded-full text-muted-foreground opacity-0 group-hover/message:opacity-100"
+										className="h-fit rounded-full px-2 text-muted-foreground opacity-0 group-hover/message:opacity-100"
 										onClick={() => {
 											setMode('edit')
 										}}
@@ -130,7 +130,7 @@ Previously you were using content types to render messages and tool invocations.
 						<div
 							data-testid="message-content"
 							className={cn('flex flex-col gap-4', {
-								'bg-primary text-primary-foreground px-3 py-2 rounded-xl': message.role === 'user',
+								'rounded-xl bg-primary px-3 py-2 text-primary-foreground': message.role === 'user',
 							})}
 						>
 							<Markdown>{part.text}</Markdown>
@@ -141,7 +141,7 @@ Previously you were using content types to render messages and tool invocations.
 
 			if (mode === 'edit') {
 				return (
-					<div key={key} className="flex flex-row gap-2 items-start">
+					<div key={key} className="flex flex-row items-start gap-2">
 						<div className="size-8" />
 
 						<MessageEditor

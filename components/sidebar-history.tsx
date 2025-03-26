@@ -84,7 +84,7 @@ const PureChatItem = ({
 			<DropdownMenu modal={true}>
 				<DropdownMenuTrigger asChild>
 					<SidebarMenuAction
-						className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground mr-0.5"
+						className="mr-0.5 data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
 						showOnHover={!isActive}
 					>
 						<MoreHorizontalIcon />
@@ -106,7 +106,7 @@ const PureChatItem = ({
 										setVisibilityType('private')
 									}}
 								>
-									<div className="flex flex-row gap-2 items-center">
+									<div className="flex flex-row items-center gap-2">
 										<LockIcon size={12} />
 										<span>Private</span>
 									</div>
@@ -118,7 +118,7 @@ const PureChatItem = ({
 										setVisibilityType('public')
 									}}
 								>
-									<div className="flex flex-row gap-2 items-center">
+									<div className="flex flex-row items-center gap-2">
 										<GlobeIcon />
 										<span>Public</span>
 									</div>
@@ -194,7 +194,7 @@ export function SidebarHistory({ user }: { user: User | undefined }) {
 		return (
 			<SidebarGroup>
 				<SidebarGroupContent>
-					<div className="px-2 text-zinc-500 w-full flex flex-row justify-center items-center text-sm gap-2">
+					<div className="flex w-full flex-row items-center justify-center gap-2 px-2 text-sm text-zinc-500">
 						Login to save and revisit previous chats!
 					</div>
 				</SidebarGroupContent>
@@ -209,9 +209,9 @@ export function SidebarHistory({ user }: { user: User | undefined }) {
 				<SidebarGroupContent>
 					<div className="flex flex-col">
 						{[44, 32, 28, 64, 52].map((item) => (
-							<div key={item} className="rounded-md h-8 flex gap-2 px-2 items-center">
+							<div key={item} className="flex h-8 items-center gap-2 rounded-md px-2">
 								<div
-									className="h-4 rounded-md flex-1 max-w-[--skeleton-width] bg-sidebar-accent-foreground/10"
+									className="h-4 max-w-[--skeleton-width] flex-1 rounded-md bg-sidebar-accent-foreground/10"
 									style={
 										{
 											'--skeleton-width': `${item}%`,
@@ -230,7 +230,7 @@ export function SidebarHistory({ user }: { user: User | undefined }) {
 		return (
 			<SidebarGroup>
 				<SidebarGroupContent>
-					<div className="px-2 text-zinc-500 w-full flex flex-row justify-center items-center text-sm gap-2">
+					<div className="flex w-full flex-row items-center justify-center gap-2 px-2 text-sm text-zinc-500">
 						Your conversations will appear here once you start chatting!
 					</div>
 				</SidebarGroupContent>
@@ -302,7 +302,7 @@ export function SidebarHistory({ user }: { user: User | undefined }) {
 
 										{groupedChats.yesterday.length > 0 && (
 											<>
-												<div className="px-2 py-1 text-xs text-sidebar-foreground/50 mt-6">
+												<div className="mt-6 px-2 py-1 text-xs text-sidebar-foreground/50">
 													Yesterday
 												</div>
 												{groupedChats.yesterday.map((chat) => (
@@ -322,7 +322,7 @@ export function SidebarHistory({ user }: { user: User | undefined }) {
 
 										{groupedChats.lastWeek.length > 0 && (
 											<>
-												<div className="px-2 py-1 text-xs text-sidebar-foreground/50 mt-6">
+												<div className="mt-6 px-2 py-1 text-xs text-sidebar-foreground/50">
 													Last 7 days
 												</div>
 												{groupedChats.lastWeek.map((chat) => (
@@ -342,7 +342,7 @@ export function SidebarHistory({ user }: { user: User | undefined }) {
 
 										{groupedChats.lastMonth.length > 0 && (
 											<>
-												<div className="px-2 py-1 text-xs text-sidebar-foreground/50 mt-6">
+												<div className="mt-6 px-2 py-1 text-xs text-sidebar-foreground/50">
 													Last 30 days
 												</div>
 												{groupedChats.lastMonth.map((chat) => (
@@ -362,7 +362,7 @@ export function SidebarHistory({ user }: { user: User | undefined }) {
 
 										{groupedChats.older.length > 0 && (
 											<>
-												<div className="px-2 py-1 text-xs text-sidebar-foreground/50 mt-6">
+												<div className="mt-6 px-2 py-1 text-xs text-sidebar-foreground/50">
 													Older
 												</div>
 												{groupedChats.older.map((chat) => (

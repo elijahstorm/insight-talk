@@ -88,7 +88,7 @@ function PureCodeEditor({ content, onSaveContent, status }: EditorProps) {
 		}
 	}, [content, status])
 
-	return <div className="relative not-prose w-full pb-[calc(80dvh)] text-sm" ref={containerRef} />
+	return <div className="not-prose relative w-full pb-[calc(80dvh)] text-sm" ref={containerRef} />
 }
 
 function areEqual(prevProps: EditorProps, nextProps: EditorProps) {

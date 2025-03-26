@@ -27,9 +27,9 @@ export const Suggestion = ({
 		<AnimatePresence>
 			{!isExpanded ? (
 				<motion.div
-					className={cn('cursor-pointer text-muted-foreground p-1', {
+					className={cn('cursor-pointer p-1 text-muted-foreground', {
 						'absolute -right-8': artifactKind === 'text',
-						'sticky top-0 right-4': artifactKind === 'code',
+						'sticky right-4 top-0': artifactKind === 'code',
 					})}
 					onClick={() => {
 						setIsExpanded(true)
@@ -41,7 +41,7 @@ export const Suggestion = ({
 			) : (
 				<motion.div
 					key={suggestion.id}
-					className="absolute bg-background p-3 flex flex-col gap-3 rounded-2xl border text-sm w-56 shadow-xl z-50 -right-12 md:-right-16 font-sans"
+					className="absolute -right-12 z-50 flex w-56 flex-col gap-3 rounded-2xl border bg-background p-3 font-sans text-sm shadow-xl md:-right-16"
 					transition={{ type: 'spring', stiffness: 500, damping: 30 }}
 					initial={{ opacity: 0, y: -10 }}
 					animate={{ opacity: 1, y: -20 }}
@@ -50,12 +50,12 @@ export const Suggestion = ({
 				>
 					<div className="flex flex-row items-center justify-between">
 						<div className="flex flex-row items-center gap-2">
-							<div className="size-4 bg-muted-foreground/25 rounded-full" />
+							<div className="size-4 rounded-full bg-muted-foreground/25" />
 							<div className="font-medium">Assistant</div>
 						</div>
 						<button
 							type="button"
-							className="text-xs text-gray-500 cursor-pointer"
+							className="cursor-pointer text-xs text-gray-500"
 							onClick={() => {
 								setIsExpanded(false)
 							}}
@@ -64,7 +64,7 @@ export const Suggestion = ({
 						</button>
 					</div>
 					<div>{suggestion.description}</div>
-					<Button variant="outline" className="w-fit py-1.5 px-3 rounded-full" onClick={onApply}>
+					<Button variant="outline" className="w-fit rounded-full px-3 py-1.5" onClick={onApply}>
 						Apply
 					</Button>
 				</motion.div>

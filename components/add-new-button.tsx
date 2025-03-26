@@ -16,12 +16,12 @@ function HeadsUpButton({
 }) {
 	return (
 		<div
-			className={`flex gap-6 items-center justify-end transition-opacity ${hidden ? 'opacity-0' : 'pointer-events-auto'}`}
+			className={`flex items-center justify-end gap-6 transition-opacity ${hidden ? 'opacity-0' : 'pointer-events-auto'}`}
 		>
-			<p className="text-sm text-slate-600 pointer-events-none">{description}</p>
+			<p className="pointer-events-none text-sm text-slate-600">{description}</p>
 
 			<button
-				className="w-14 h-14 bg-primary-500 text-white p-4 rounded-full shadow-lg hover:bg-primary focus:outline-none focus:ring-2 focus:ring-primary-300 hover:outline-none ring-offset-1 hover:ring-2 hover:ring-primary-400 transition-all"
+				className="h-14 w-14 rounded-full bg-primary-500 p-4 text-white shadow-lg ring-offset-1 transition-all hover:bg-primary hover:outline-none hover:ring-2 hover:ring-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-300"
 				onClick={action}
 			>
 				{icon}
@@ -53,15 +53,15 @@ export default function AddNewButton() {
 	return (
 		<div className="select-none">
 			<button
-				className={`fixed cursor-default inset-0 transition-opacity bg-white/30 backdrop-blur-sm ${menuClosed ? 'opacity-0 pointer-events-none' : ''}`}
+				className={`fixed inset-0 cursor-default bg-white/30 backdrop-blur-sm transition-opacity ${menuClosed ? 'pointer-events-none opacity-0' : ''}`}
 				onClick={closeMenu}
 			></button>
 
-			<div className="bottom-6 right-6 fixed">
+			<div className="fixed bottom-6 right-6">
 				<HeadsUpButton action={openMenu} description="" icon="+" />
 			</div>
 
-			<div className="bottom-6 right-6 fixed flex gap-8 flex-col-reverse pointer-events-none">
+			<div className="pointer-events-none fixed bottom-6 right-6 flex flex-col-reverse gap-8">
 				<HeadsUpButton
 					action={startConvo}
 					description="New Converstation"

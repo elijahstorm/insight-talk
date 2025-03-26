@@ -12,7 +12,7 @@ export function SidebarToggle({ className }: ComponentProps<typeof SidebarTrigge
 	return (
 		<Tooltip>
 			<TooltipTrigger asChild>
-				<Button onClick={toggleSidebar} variant="outline" className="md:px-2 md:h-fit">
+				<Button onClick={toggleSidebar} variant="outline" className="md:h-fit md:px-2">
 					<SidebarLeftIcon size={16} />
 				</Button>
 			</TooltipTrigger>

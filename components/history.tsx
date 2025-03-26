@@ -69,7 +69,7 @@ const groupChatsByDate = (chats: Chat[]): GroupedChats => {
 const Skeleton = () => {
 	return (
 		<div className="space-y-4">
-			<div className="text-slate-500 text-sm font-thin flex w-full">
+			<div className="flex w-full text-sm font-thin text-slate-500">
 				<h1>Today</h1>
 			</div>
 
@@ -82,10 +82,10 @@ const Skeleton = () => {
 					[52, 23],
 					[56, 45],
 				].map((item) => (
-					<div key={item[0]} className="border text-slate-800 p-4 rounded-md space-y-4">
-						<div className="w-full flex items-center gap-2">
+					<div key={item[0]} className="space-y-4 rounded-md border p-4 text-slate-800">
+						<div className="flex w-full items-center gap-2">
 							<div
-								className="h-4 rounded-md flex-1 max-w-[--skeleton-width] bg-sidebar-accent-foreground/10 animate-pulse"
+								className="h-4 max-w-[--skeleton-width] flex-1 animate-pulse rounded-md bg-sidebar-accent-foreground/10"
 								style={
 									{
 										'--skeleton-width': `${item[0]}%`,
@@ -93,11 +93,11 @@ const Skeleton = () => {
 								}
 							/>
 							{config.search.dropdownFilter && (
-								<div className="pl-1 pt-0.5 text-sm rounded-full h-6 w-6 bg-slate-100 border border-slate-500 ml-auto animate-pulse"></div>
+								<div className="ml-auto h-6 w-6 animate-pulse rounded-full border border-slate-500 bg-slate-100 pl-1 pt-0.5 text-sm"></div>
 							)}
 						</div>
 						<div
-							className="h-4 rounded-md flex-1 max-w-[--skeleton-width] bg-sidebar-accent-foreground/10 animate-pulse"
+							className="h-4 max-w-[--skeleton-width] flex-1 animate-pulse rounded-md bg-sidebar-accent-foreground/10"
 							style={
 								{
 									'--skeleton-width': `${item[1]}%`,
@@ -133,7 +133,7 @@ const ShowHistory = ({
 	return (Object.keys(groupedChats) as Array<keyof GroupedChats>).map((timeGroup) =>
 		groupedChats[timeGroup].length ? (
 			<div key={timeGroup} className="space-y-4">
-				<div className="text-slate-500 text-sm font-thin flex w-full">
+				<div className="flex w-full text-sm font-thin text-slate-500">
 					<h1>{timeGroupedText[timeGroup]}</h1>
 					<p className="ml-auto">{groupedChats[timeGroup].length}</p>
 				</div>
@@ -142,18 +142,18 @@ const ShowHistory = ({
 					{groupedChats[timeGroup].map((chat) => (
 						<Link
 							key={chat.id}
-							className="border text-slate-800 p-4 rounded-md space-y-2"
+							className="space-y-2 rounded-md border p-4 text-slate-800"
 							href={`/chat/${chat.id}`}
 						>
-							<div className="w-full flex items-center gap-2">
-								<h2 className="font-normal flex-1 text-sm line-clamp-1">{chat.title}</h2>
+							<div className="flex w-full items-center gap-2">
+								<h2 className="line-clamp-1 flex-1 text-sm font-normal">{chat.title}</h2>
 								{config.search.dropdownFilter && (
-									<div className="pl-1 pt-0.5 text-sm rounded-full h-6 w-6 bg-slate-100 border border-slate-500">
+									<div className="h-6 w-6 rounded-full border border-slate-500 bg-slate-100 pl-1 pt-0.5 text-sm">
 										{typeEmojis[chat.type as keyof typeof typeEmojis]}
 									</div>
 								)}
 							</div>
-							<p className="text-xs font-light text-slate-400 line-clamp-2">{chat.summary}</p>
+							<p className="line-clamp-2 text-xs font-light text-slate-400">{chat.summary}</p>
 						</Link>
 					))}
 				</div>
@@ -176,12 +176,12 @@ export default function History({ user }: { user: User | undefined }) {
 
 	return (
 		<div className="flex flex-col gap-8 text-left">
-			<div className="flex gap-4 ">
+			<div className="flex gap-4">
 				<input
 					type="text"
 					value={filter}
 					onChange={(e) => setFilter(e.target.value)}
-					className="rounded-md bg-slate-50 text-slate-800 overflow-hidden border border-slate-200 py-2 px-3 w-full"
+					className="w-full overflow-hidden rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-slate-800"
 					placeholder="Search Conversations"
 				/>
 
@@ -189,7 +189,7 @@ export default function History({ user }: { user: User | undefined }) {
 					<select
 						value={typeFilter}
 						onChange={(e) => setTypeFilter(e.target.value as 'none' | keyof typeof typeEmojis)}
-						className="rounded-md bg-slate-100 text-slate-600 border border-slate-200 py-2 px-3  text-xs"
+						className="rounded-md border border-slate-200 bg-slate-100 px-3 py-2 text-xs text-slate-600"
 					>
 						<option value="none">All Types</option>
 						{Object.keys(typeEmojis).map((type) => (

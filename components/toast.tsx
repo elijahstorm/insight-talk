@@ -19,11 +19,11 @@ function Toast(props: ToastProps) {
 	const { id, type, description } = props
 
 	return (
-		<div className="flex w-full toast-mobile:w-[356px] justify-center">
+		<div className="flex w-full justify-center toast-mobile:w-[356px]">
 			<div
 				data-testid="toast"
 				key={id}
-				className="bg-zinc-100 p-3 rounded-lg w-full toast-mobile:w-fit flex flex-row gap-2 items-center"
+				className="flex w-full flex-row items-center gap-2 rounded-lg bg-zinc-100 p-3 toast-mobile:w-fit"
 			>
 				<div
 					data-type={type}
@@ -31,7 +31,7 @@ function Toast(props: ToastProps) {
 				>
 					{iconsByType[type]}
 				</div>
-				<div className="text-zinc-950 text-sm">{description}</div>
+				<div className="text-sm text-zinc-950">{description}</div>
 			</div>
 		</div>
 	)

@@ -125,7 +125,7 @@
 
 	*[class^='text-'] {
 		color: transparent;
-		@apply rounded-md bg-foreground/20 select-none animate-pulse;
+		@apply animate-pulse select-none rounded-md bg-foreground/20;
 	}
 
 	.skeleton-bg {
@@ -133,7 +133,7 @@
 	}
 
 	.skeleton-div {
-		@apply bg-foreground/20 animate-pulse;
+		@apply animate-pulse bg-foreground/20;
 	}
 }
 
@@ -143,7 +143,7 @@
 
 .cm-editor,
 .cm-gutters {
-	@apply bg-background dark:bg-zinc-800 outline-none selection:bg-zinc-900 !important;
+	@apply bg-background outline-none selection:bg-zinc-900 dark:bg-zinc-800 !important;
 }
 
 .ͼo.cm-focused > .cm-scroller > .cm-selectionLayer .cm-selectionBackground,
@@ -174,5 +174,5 @@
 }
 
 .suggestion-highlight {
-	@apply bg-blue-200 hover:bg-blue-300 dark:hover:bg-blue-400/50 dark:text-blue-50 dark:bg-blue-500/40;
+	@apply bg-blue-200 hover:bg-blue-300 dark:bg-blue-500/40 dark:text-blue-50 dark:hover:bg-blue-400/50;
 }
