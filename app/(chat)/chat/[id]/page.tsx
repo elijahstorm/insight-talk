@@ -2,7 +2,7 @@ import { cookies } from 'next/headers'
 import { notFound } from 'next/navigation'
 
 import { auth } from '@/app/(auth)/auth'
-import { Chat } from '@/components/chat'
+import { InsightChat } from '@/components/insight-chat'
 import { getChatById, getMessagesByChatId } from '@/lib/db/queries'
 import { DataStreamHandler } from '@/components/data-stream-handler'
 import { DEFAULT_CHAT_MODEL } from '@/lib/ai/models'
@@ -51,7 +51,7 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
 
 	return (
 		<>
-			<Chat
+			<InsightChat
 				id={chat.id}
 				initialMessages={convertToUIMessages(messagesFromDb)}
 				selectedChatModel={chatModelFromCookie?.value ?? DEFAULT_CHAT_MODEL}
