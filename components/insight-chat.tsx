@@ -14,13 +14,15 @@ import { VisibilityType } from './visibility-selector'
 import { useArtifactSelector } from '@/hooks/use-artifact'
 import { toast } from 'sonner'
 import Image from 'next/image'
+import CreateNewChat from './create-new-chat'
+import { PreviewMessage } from './message'
+import { InsightMessageType } from './insight-message'
 
 const FullPageLoader = () => {
 	const [progress, setProgress] = useState(0)
 	const [isActive, setIsActive] = useState(false)
 
 	useEffect(() => {
-		// Start the fade-in effect after the component mounts
 		const timer = setTimeout(() => {
 			setProgress(100)
 			setIsActive(true)
@@ -95,6 +97,43 @@ export function InsightChat({
 	const [attachments, setAttachments] = useState<Array<Attachment>>([])
 	const isArtifactVisible = useArtifactSelector((state) => state.isVisible)
 
+	// set `messages` to fake data here... type of UIMessage[]
+	// ideas
+	// initial context message
+	// attachment style message
+	// percentage message
+	// describe (with boldable text) message
+
+	let backupMessages: Array<UIMessage | InsightMessageType> = [
+		{
+			id: 'test',
+			content: 'contentn',
+			role: 'assistant',
+			parts: [
+				{
+					type: 'text',
+					text: 'one two three',
+				},
+			],
+		},
+		{
+			id: 'test2',
+			insight: true,
+			role: 'assistant',
+			content: '',
+			parts: [
+				{
+					type: 'text',
+					text: 'one two three',
+				},
+			],
+		},
+	]
+
+	if (id !== '04e62fe9-e40e-4b80-8555-996a5e724362') {
+		backupMessages = messages
+	}
+
 	return (
 		<>
 			{showLoader ? (
@@ -118,17 +157,20 @@ export function InsightChat({
 						</div>
 					)}
 
-					<Messages
-						chatId={id}
-						status={status}
-						votes={votes}
-						messages={messages}
-						setMessages={setMessages}
-						reload={reload}
-						isReadonly={isReadonly}
-						isArtifactVisible={isArtifactVisible}
-						setShowLoader={setShowLoader}
-					/>
+					{backupMessages.length === 0 ? (
+						<CreateNewChat setShowLoader={setShowLoader} />
+					) : (
+						<Messages
+							chatId={id}
+							status={status}
+							votes={votes}
+							messages={backupMessages}
+							setMessages={setMessages}
+							reload={reload}
+							isReadonly={isReadonly}
+							isArtifactVisible={isArtifactVisible}
+						/>
+					)}
 				</div>
 			)}
 

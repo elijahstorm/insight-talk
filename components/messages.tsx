@@ -1,97 +1,22 @@
 import { UIMessage } from 'ai'
 import { PreviewMessage, ThinkingMessage } from './message'
 import { useScrollToBottom } from './use-scroll-to-bottom'
-import { MultiTypeSelector } from './multi-type-selector'
 import { memo } from 'react'
 import { Vote } from '@/lib/db/schema'
-import { Button } from '@/components/ui/button'
 import equal from 'fast-deep-equal'
 import { UseChatHelpers } from '@ai-sdk/react'
-import { useRouter } from 'next/navigation'
+import { InsightMessageType } from './insight-message'
 
 interface MessagesProps {
 	chatId: string
 	status: UseChatHelpers['status']
 	votes: Array<Vote> | undefined
-	messages: Array<UIMessage>
+	messages: Array<UIMessage | InsightMessageType>
 	setMessages: UseChatHelpers['setMessages']
 	reload: UseChatHelpers['reload']
 	isReadonly: boolean
 	isArtifactVisible: boolean
-	setShowLoader?: React.Dispatch<React.SetStateAction<boolean>>
 }
-
-const typesList = [
-	{
-		title: 'Romantic & Dating',
-		types: [
-			{
-				icon: '💕',
-				type: 'Romantic Partner',
-			},
-			{
-				icon: '💞',
-				type: 'Potential Partner',
-			},
-			{
-				icon: '💔',
-				type: 'Ex-Partner',
-			},
-		],
-	},
-	{
-		title: 'Friendship & Social',
-		types: [
-			{
-				icon: '👫',
-				type: 'Close Friend',
-			},
-			{
-				icon: '🎉',
-				type: 'Acquaintance',
-			},
-		],
-	},
-	{
-		title: 'Family',
-		types: [
-			{
-				icon: '👪',
-				type: 'Immediate Family',
-			},
-			{
-				icon: '🏡',
-				type: 'Distant Relative',
-			},
-		],
-	},
-	{
-		title: 'Work & Professional',
-		types: [
-			{
-				icon: '🏡',
-				type: 'Coworker',
-			},
-			{
-				icon: '👩‍💼',
-				type: 'Manager',
-			},
-			{
-				icon: '🤝',
-				type: 'Business Contact',
-			},
-		],
-	},
-	{
-		title: 'Other',
-		types: [
-			{
-				icon: '❓',
-				type: 'No Listed / Prefer Not to Say',
-			},
-		],
-	},
-]
 
 function PureMessages({
 	chatId,
@@ -101,35 +26,14 @@ function PureMessages({
 	setMessages,
 	reload,
 	isReadonly,
-	setShowLoader,
 }: MessagesProps) {
 	const [messagesContainerRef, messagesEndRef] = useScrollToBottom<HTMLDivElement>()
-	const router = useRouter()
 
 	return (
 		<div
 			ref={messagesContainerRef}
 			className="flex min-w-0 flex-1 flex-col gap-6 overflow-y-scroll"
 		>
-			{messages.length === 0 && (
-				<div className="flex h-full flex-col gap-4 overflow-hidden px-4">
-					<div className="flex-1 overflow-auto">
-						<MultiTypeSelector types={typesList} />
-					</div>
-					<Button
-						className="w-full py-6 hover:bg-accent focus:bg-accent"
-						onClick={() => {
-							setShowLoader && setShowLoader(true)
-							// create chat then go to that chat
-							// router.push('/')
-							// router.refresh()
-						}}
-					>
-						Check Talk Insight
-					</Button>
-				</div>
-			)}
-
 			{messages.map((message, index) => (
 				<PreviewMessage
 					key={message.id}

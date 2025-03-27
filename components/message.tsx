@@ -19,6 +19,24 @@ import { MessageEditor } from './message-editor'
 import { DocumentPreview } from './document-preview'
 import { MessageReasoning } from './message-reasoning'
 import { UseChatHelpers } from '@ai-sdk/react'
+import InsightMessage, { InsightMessageType, isInsightMessageType } from './insight-message'
+
+type MessageParams = {
+	chatId: string
+	vote: Vote | undefined
+	isLoading: boolean
+}
+
+type InsightMessageParams = MessageParams & {
+	message: InsightMessageType
+}
+
+type LegacyMessageParams = MessageParams & {
+	message: UIMessage
+	setMessages: UseChatHelpers['setMessages']
+	reload: UseChatHelpers['reload']
+	isReadonly: boolean
+}
 
 const PurePreviewMessage = ({
 	chatId,
@@ -28,17 +46,12 @@ const PurePreviewMessage = ({
 	setMessages,
 	reload,
 	isReadonly,
-}: {
-	chatId: string
-	message: UIMessage
-	vote: Vote | undefined
-	isLoading: boolean
+}: MessageParams & {
+	message: UIMessage | InsightMessageType
 	setMessages: UseChatHelpers['setMessages']
 	reload: UseChatHelpers['reload']
 	isReadonly: boolean
 }) => {
-	const [mode, setMode] = useState<'view' | 'edit'>('view')
-
 	return (
 		<AnimatePresence>
 			<motion.div
@@ -48,164 +61,218 @@ const PurePreviewMessage = ({
 				animate={{ y: 0, opacity: 1 }}
 				data-role={message.role}
 			>
-				<div
-					className={cn(
-						'flex w-full gap-4 group-data-[role=user]/message:ml-auto group-data-[role=user]/message:max-w-2xl',
-						{
-							'w-full': mode === 'edit',
-							'group-data-[role=user]/message:w-fit': mode !== 'edit',
-						}
-					)}
-				>
-					{message.role === 'assistant' && (
-						<div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-background ring-1 ring-border">
-							<div className="translate-y-px">
-								<SparklesIcon size={14} />
-							</div>
-						</div>
-					)}
-
-					<div className="flex w-full flex-col gap-4">
-						{message.experimental_attachments && (
-							<div data-testid={`message-attachments`} className="flex flex-row justify-end gap-2">
-								{message.experimental_attachments.map((attachment) => (
-									<PreviewAttachment key={attachment.url} attachment={attachment} />
-								))}
-							</div>
-						)}
-
-						{message.parts?.map((part, index) => {
-							const { type } = part
-							const key = `message-${message.id}-part-${index}`
-
-							if (type === 'reasoning') {
-								return (
-									<MessageReasoning key={key} isLoading={isLoading} reasoning={part.reasoning} />
-								)
-							}
-
-							if (type === 'text') {
-								if (mode === 'view') {
-									return (
-										<div key={key} className="flex flex-row items-start gap-2">
-											{message.role === 'user' && !isReadonly && (
-												<Tooltip>
-													<TooltipTrigger asChild>
-														<Button
-															data-testid="message-edit-button"
-															variant="ghost"
-															className="h-fit rounded-full px-2 text-muted-foreground opacity-0 group-hover/message:opacity-100"
-															onClick={() => {
-																setMode('edit')
-															}}
-														>
-															<PencilEditIcon />
-														</Button>
-													</TooltipTrigger>
-													<TooltipContent>Edit message</TooltipContent>
-												</Tooltip>
-											)}
-
-											<div
-												data-testid="message-content"
-												className={cn('flex flex-col gap-4', {
-													'rounded-xl bg-primary px-3 py-2 text-primary-foreground':
-														message.role === 'user',
-												})}
-											>
-												<Markdown>{part.text}</Markdown>
-											</div>
-										</div>
-									)
-								}
-
-								if (mode === 'edit') {
-									return (
-										<div key={key} className="flex flex-row items-start gap-2">
-											<div className="size-8" />
-
-											<MessageEditor
-												key={message.id}
-												message={message}
-												setMode={setMode}
-												setMessages={setMessages}
-												reload={reload}
-											/>
-										</div>
-									)
-								}
-							}
-
-							if (type === 'tool-invocation') {
-								const { toolInvocation } = part
-								const { toolName, toolCallId, state } = toolInvocation
-
-								if (state === 'call') {
-									const { args } = toolInvocation
-
-									return (
-										<div
-											key={toolCallId}
-											className={cx({
-												skeleton: ['getWeather'].includes(toolName),
-											})}
-										>
-											{toolName === 'getWeather' ? (
-												<Weather />
-											) : toolName === 'createDocument' ? (
-												<DocumentPreview isReadonly={isReadonly} args={args} />
-											) : toolName === 'updateDocument' ? (
-												<DocumentToolCall type="update" args={args} isReadonly={isReadonly} />
-											) : toolName === 'requestSuggestions' ? (
-												<DocumentToolCall
-													type="request-suggestions"
-													args={args}
-													isReadonly={isReadonly}
-												/>
-											) : null}
-										</div>
-									)
-								}
-
-								if (state === 'result') {
-									const { result } = toolInvocation
-
-									return (
-										<div key={toolCallId}>
-											{toolName === 'getWeather' ? (
-												<Weather weatherAtLocation={result} />
-											) : toolName === 'createDocument' ? (
-												<DocumentPreview isReadonly={isReadonly} result={result} />
-											) : toolName === 'updateDocument' ? (
-												<DocumentToolResult type="update" result={result} isReadonly={isReadonly} />
-											) : toolName === 'requestSuggestions' ? (
-												<DocumentToolResult
-													type="request-suggestions"
-													result={result}
-													isReadonly={isReadonly}
-												/>
-											) : (
-												<pre>{JSON.stringify(result, null, 2)}</pre>
-											)}
-										</div>
-									)
-								}
-							}
-						})}
-
-						{!isReadonly && (
-							<MessageActions
-								key={`action-${message.id}`}
-								chatId={chatId}
-								message={message}
-								vote={vote}
-								isLoading={isLoading}
-							/>
-						)}
-					</div>
-				</div>
+				{isInsightMessageType(message) ? (
+					<InsightChat chatId={chatId} message={message} vote={vote} isLoading={isLoading} />
+				) : (
+					<LegacyChat
+						chatId={chatId}
+						message={message}
+						vote={vote}
+						isLoading={isLoading}
+						setMessages={setMessages}
+						reload={reload}
+						isReadonly={isReadonly}
+					/>
+				)}
 			</motion.div>
 		</AnimatePresence>
+	)
+}
+
+const InsightChat = ({ chatId, message, vote, isLoading }: InsightMessageParams) => {
+	return (
+		<div className="flex w-full gap-4 group-data-[role=user]/message:ml-auto group-data-[role=user]/message:max-w-2xl">
+			<div className="flex w-full flex-col gap-4">
+				{message.experimental_attachments && (
+					<div data-testid={`message-attachments`} className="flex flex-row justify-end gap-2">
+						{message.experimental_attachments.map((attachment) => (
+							<PreviewAttachment key={attachment.url} attachment={attachment} />
+						))}
+					</div>
+				)}
+
+				{message.parts?.map((part, index) => (
+					<InsightMessage part={part} index={index} messageId={message.id} isLoading={isLoading} />
+				))}
+
+				<MessageActions
+					key={`action-${message.id}`}
+					chatId={chatId}
+					message={message}
+					vote={vote}
+					isLoading={isLoading}
+				/>
+			</div>
+		</div>
+	)
+}
+
+const LegacyChat = ({
+	chatId,
+	message,
+	vote,
+	isLoading,
+	setMessages,
+	reload,
+	isReadonly,
+}: LegacyMessageParams) => {
+	const [mode, setMode] = useState<'view' | 'edit'>('view')
+
+	return (
+		<div
+			className={cn(
+				'flex w-full gap-4 group-data-[role=user]/message:ml-auto group-data-[role=user]/message:max-w-2xl',
+				{
+					'w-full': mode === 'edit',
+					'group-data-[role=user]/message:w-fit': mode !== 'edit',
+				}
+			)}
+		>
+			{message.role === 'assistant' && (
+				<div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-background ring-1 ring-border">
+					<div className="translate-y-px">
+						<SparklesIcon size={14} />
+					</div>
+				</div>
+			)}
+
+			<div className="flex w-full flex-col gap-4">
+				{message.experimental_attachments && (
+					<div data-testid={`message-attachments`} className="flex flex-row justify-end gap-2">
+						{message.experimental_attachments.map((attachment) => (
+							<PreviewAttachment key={attachment.url} attachment={attachment} />
+						))}
+					</div>
+				)}
+
+				{message.parts?.map((part, index) => {
+					const { type } = part
+					const key = `message-${message.id}-part-${index}`
+
+					if (type === 'reasoning') {
+						return <MessageReasoning key={key} isLoading={isLoading} reasoning={part.reasoning} />
+					}
+
+					if (type === 'text') {
+						if (mode === 'view') {
+							return (
+								<div key={key} className="flex flex-row items-start gap-2">
+									{message.role === 'user' && !isReadonly && (
+										<Tooltip>
+											<TooltipTrigger asChild>
+												<Button
+													data-testid="message-edit-button"
+													variant="ghost"
+													className="h-fit rounded-full px-2 text-muted-foreground opacity-0 group-hover/message:opacity-100"
+													onClick={() => {
+														setMode('edit')
+													}}
+												>
+													<PencilEditIcon />
+												</Button>
+											</TooltipTrigger>
+											<TooltipContent>Edit message</TooltipContent>
+										</Tooltip>
+									)}
+
+									<div
+										data-testid="message-content"
+										className={cn('flex flex-col gap-4', {
+											'rounded-xl bg-primary px-3 py-2 text-primary-foreground':
+												message.role === 'user',
+										})}
+									>
+										<Markdown>{part.text}</Markdown>
+									</div>
+								</div>
+							)
+						}
+
+						if (mode === 'edit') {
+							return (
+								<div key={key} className="flex flex-row items-start gap-2">
+									<div className="size-8" />
+
+									<MessageEditor
+										key={message.id}
+										message={message}
+										setMode={setMode}
+										setMessages={setMessages}
+										reload={reload}
+									/>
+								</div>
+							)
+						}
+					}
+
+					if (type === 'tool-invocation') {
+						const { toolInvocation } = part
+						const { toolName, toolCallId, state } = toolInvocation
+
+						if (state === 'call') {
+							const { args } = toolInvocation
+
+							return (
+								<div
+									key={toolCallId}
+									className={cx({
+										skeleton: ['getWeather'].includes(toolName),
+									})}
+								>
+									{toolName === 'getWeather' ? (
+										<Weather />
+									) : toolName === 'createDocument' ? (
+										<DocumentPreview isReadonly={isReadonly} args={args} />
+									) : toolName === 'updateDocument' ? (
+										<DocumentToolCall type="update" args={args} isReadonly={isReadonly} />
+									) : toolName === 'requestSuggestions' ? (
+										<DocumentToolCall
+											type="request-suggestions"
+											args={args}
+											isReadonly={isReadonly}
+										/>
+									) : null}
+								</div>
+							)
+						}
+
+						if (state === 'result') {
+							const { result } = toolInvocation
+
+							return (
+								<div key={toolCallId}>
+									{toolName === 'getWeather' ? (
+										<Weather weatherAtLocation={result} />
+									) : toolName === 'createDocument' ? (
+										<DocumentPreview isReadonly={isReadonly} result={result} />
+									) : toolName === 'updateDocument' ? (
+										<DocumentToolResult type="update" result={result} isReadonly={isReadonly} />
+									) : toolName === 'requestSuggestions' ? (
+										<DocumentToolResult
+											type="request-suggestions"
+											result={result}
+											isReadonly={isReadonly}
+										/>
+									) : (
+										<pre>{JSON.stringify(result, null, 2)}</pre>
+									)}
+								</div>
+							)
+						}
+					}
+				})}
+
+				{!isReadonly && (
+					<MessageActions
+						key={`action-${message.id}`}
+						chatId={chatId}
+						message={message}
+						vote={vote}
+						isLoading={isLoading}
+					/>
+				)}
+			</div>
+		</div>
 	)
 }
 

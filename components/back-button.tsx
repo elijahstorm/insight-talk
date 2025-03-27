@@ -14,11 +14,11 @@ export function BackButton({ className }: ComponentProps<typeof SidebarTrigger>)
 		<Tooltip>
 			<TooltipTrigger asChild>
 				<Button variant="outline" className="px-2" onClick={() => router.back()}>
-					<span className="sr-only">Back</span>
+					<span className="sr-only">Home</span>
 					<HomeIcon size={16} />
 				</Button>
 			</TooltipTrigger>
-			<TooltipContent align="start">Toggle Sidebar</TooltipContent>
+			<TooltipContent align="start">Home</TooltipContent>
 		</Tooltip>
 	)
 }

@@ -1,21 +1,28 @@
 'use client'
 
-import { useState } from 'react'
 import { motion } from 'framer-motion'
 
 export const MultiTypeSelector = ({
 	types,
+	selectedValues,
+	onSelectionChange,
+	selectOne = false,
 }: {
 	types: { title: string; types: { icon: string; type: string }[] }[]
+	selectedValues: string[]
+	onSelectionChange: (values: string[]) => void
+	selectOne?: boolean
 }) => {
-	// State to track selected values
-	const [selectedValues, setSelectedValues] = useState<string[]>([])
-
-	// Toggle selection of a chip
 	const toggleSelection = (type: string) => {
-		setSelectedValues((prev) =>
-			prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
-		)
+		if (selectOne) {
+			onSelectionChange(selectedValues.includes(type) ? [] : [type])
+		} else {
+			onSelectionChange(
+				selectedValues.includes(type)
+					? selectedValues.filter((item) => item !== type)
+					: [...selectedValues, type]
+			)
+		}
 	}
 
 	return (

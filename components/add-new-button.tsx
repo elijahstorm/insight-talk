@@ -45,7 +45,7 @@ export default function AddNewButton() {
 	}
 
 	const startConvo = () => {
-		router.push('/chat/new')
+		router.push('/chat/legacy')
 	}
 
 	const attachFile = () => {
