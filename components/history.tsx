@@ -93,7 +93,7 @@ const Skeleton = () => {
 								}
 							/>
 							{config.search.dropdownFilter && (
-								<div className="ml-auto h-6 w-6 animate-pulse rounded-full border border-slate-500 bg-slate-100 pl-1 pt-0.5 text-sm"></div>
+								<div className="ml-auto size-6 animate-pulse rounded-full border border-slate-500 bg-slate-100 pl-1 pt-0.5 text-sm"></div>
 							)}
 						</div>
 						<div
@@ -148,7 +148,7 @@ const ShowHistory = ({
 							<div className="flex w-full items-center gap-2">
 								<h2 className="line-clamp-1 flex-1 text-sm font-normal">{chat.title}</h2>
 								{config.search.dropdownFilter && (
-									<div className="h-6 w-6 rounded-full border border-slate-500 bg-slate-100 pl-1 pt-0.5 text-sm">
+									<div className="size-6 rounded-full border border-slate-500 bg-slate-100 pl-1 pt-0.5 text-sm">
 										{typeEmojis[chat.type[0] as keyof typeof typeEmojis]}
 									</div>
 								)}

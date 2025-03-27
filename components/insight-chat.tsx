@@ -13,6 +13,7 @@ import { Messages } from './messages'
 import { VisibilityType } from './visibility-selector'
 import { useArtifactSelector } from '@/hooks/use-artifact'
 import { toast } from 'sonner'
+import Image from 'next/image'
 
 const FullPageLoader = () => {
 	const [progress, setProgress] = useState(0)
@@ -30,13 +31,13 @@ const FullPageLoader = () => {
 
 	return (
 		<div
-			className={`fade-in ${isActive ? 'fade-in-active' : ''} flex h-full w-full flex-col items-center justify-center gap-4 bg-primary-foreground`}
+			className={`fade-in ${isActive ? 'fade-in-active' : ''} flex size-full flex-col items-center justify-center gap-4 bg-primary-foreground`}
 		>
-			<img src="/static/logo.svg" alt="Logo" className="h-42 w-42 pb-4" />
+			<Image src="/static/logo.svg" alt="Logo" width={'96'} height={'96'} className="pb-4" />
 
 			<h1 className="text-3xl">Hold on!</h1>
 
-			<p className="font-semibold">We're making sense of your chats...</p>
+			<p className="font-semibold">We&rsquo;re making sense of your chats...</p>
 
 			<div className="h-2 w-64 overflow-hidden bg-accent">
 				<div

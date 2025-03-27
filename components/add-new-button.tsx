@@ -22,7 +22,7 @@ function HeadsUpButton({
 			<p className="pointer-events-none text-sm text-slate-600">{description}</p>
 
 			<button
-				className="flex h-14 w-14 items-center justify-center rounded-full bg-primary-500 p-4 text-white shadow-lg ring-offset-1 transition-all hover:bg-primary hover:outline-none hover:ring-2 hover:ring-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-300"
+				className="flex size-14 items-center justify-center rounded-full bg-primary-500 p-4 text-white shadow-lg ring-offset-1 transition-all hover:bg-primary hover:outline-none hover:ring-2 hover:ring-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-300"
 				onClick={action}
 			>
 				{icon({ size: 20 })}
