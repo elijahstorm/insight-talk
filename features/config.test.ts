@@ -6,6 +6,9 @@ const config = {
 		hideSidebar: true,
 		allowChangeModel: false,
 	},
+	vote: {
+		legacyStyle: false,
+	},
 }
 
 export default config

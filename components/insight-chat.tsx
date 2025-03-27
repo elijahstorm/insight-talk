@@ -98,15 +98,16 @@ export function InsightChat({
 
 	useEffect(() => {
 		const updatedMessages = messages.map((message) => {
-			const updatedParts = message.parts?.map((part) => {
-				const typedPart = part as UIMessage['parts'][number] | InsightMessageType['parts'][number]
-				if (insightTypes.includes(typedPart.type)) {
-					return { ...part, insight: true }
-				}
-				return part
-			})
-
-			return { ...message, parts: updatedParts }
+			if (
+				message.parts?.some((part) =>
+					insightTypes.includes(
+						(part as UIMessage['parts'][number] | InsightMessageType['parts'][number]).type
+					)
+				)
+			) {
+				return { ...message, insight: true }
+			}
+			return message
 		})
 		setMessages(updatedMessages)
 	}, [messages, setMessages])

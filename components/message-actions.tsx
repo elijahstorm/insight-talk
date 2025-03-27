@@ -10,6 +10,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/t
 import { memo } from 'react'
 import equal from 'fast-deep-equal'
 import { toast } from 'sonner'
+import config from '@/features/config'
 
 export function PureMessageActions({
 	chatId,
@@ -30,39 +31,46 @@ export function PureMessageActions({
 
 	return (
 		<TooltipProvider delayDuration={0}>
-			<div className="flex flex-row gap-2">
-				<Tooltip>
-					<TooltipTrigger asChild>
-						<Button
-							className="h-fit px-2 py-1 text-muted-foreground"
-							variant="outline"
-							onClick={async () => {
-								const textFromParts = message.parts
-									?.filter((part) => part.type === 'text')
-									.map((part) => part.text)
-									.join('\n')
-									.trim()
+			<div
+				className={`gap-2 ${config.vote.legacyStyle ? 'flex-row' : 'flex-col pt-2'} flex items-start`}
+			>
+				{!config.vote.legacyStyle && (
+					<p className="text-sm font-medium text-slate-600">Was this analysis helpful?</p>
+				)}
+				{config.vote.legacyStyle && (
+					<Tooltip>
+						<TooltipTrigger asChild>
+							<Button
+								className="h-fit px-2 py-1 text-muted-foreground"
+								variant="outline"
+								onClick={async () => {
+									const textFromParts = message.parts
+										?.filter((part) => part.type === 'text')
+										.map((part) => part.text)
+										.join('\n')
+										.trim()
 
-								if (!textFromParts) {
-									toast.error("There's no text to copy!")
-									return
-								}
+									if (!textFromParts) {
+										toast.error("There's no text to copy!")
+										return
+									}
 
-								await copyToClipboard(textFromParts)
-								toast.success('Copied to clipboard!')
-							}}
-						>
-							<CopyIcon />
-						</Button>
-					</TooltipTrigger>
-					<TooltipContent>Copy</TooltipContent>
-				</Tooltip>
+									await copyToClipboard(textFromParts)
+									toast.success('Copied to clipboard!')
+								}}
+							>
+								<CopyIcon />
+							</Button>
+						</TooltipTrigger>
+						<TooltipContent>Copy</TooltipContent>
+					</Tooltip>
+				)}
 
 				<Tooltip>
 					<TooltipTrigger asChild>
 						<Button
 							data-testid="message-upvote"
-							className="!pointer-events-auto h-fit px-2 py-1 text-muted-foreground"
+							className="!pointer-events-auto h-fit px-2 py-1 text-muted-foreground disabled:bg-accent disabled:text-accent-foreground disabled:opacity-100"
 							disabled={vote?.isUpvoted}
 							variant="outline"
 							onClick={async () => {
@@ -105,7 +113,14 @@ export function PureMessageActions({
 								})
 							}}
 						>
-							<ThumbUpIcon />
+							{config.vote.legacyStyle ? (
+								<ThumbUpIcon />
+							) : (
+								<div className="flex gap-2 px-1 py-2">
+									<span className="font-light">It was accurate and useful!</span>
+									<ThumbUpIcon />
+								</div>
+							)}
 						</Button>
 					</TooltipTrigger>
 					<TooltipContent>Upvote Response</TooltipContent>
@@ -115,7 +130,7 @@ export function PureMessageActions({
 					<TooltipTrigger asChild>
 						<Button
 							data-testid="message-downvote"
-							className="!pointer-events-auto h-fit px-2 py-1 text-muted-foreground"
+							className="!pointer-events-auto h-fit px-2 py-1 text-muted-foreground disabled:bg-accent disabled:text-accent-foreground disabled:opacity-100"
 							variant="outline"
 							disabled={vote && !vote.isUpvoted}
 							onClick={async () => {
@@ -158,7 +173,14 @@ export function PureMessageActions({
 								})
 							}}
 						>
-							<ThumbDownIcon />
+							{config.vote.legacyStyle ? (
+								<ThumbDownIcon />
+							) : (
+								<div className="flex gap-2 px-1 py-2">
+									<span className="font-light">It wasn't helpful or didn't make sense.</span>
+									<ThumbDownIcon />
+								</div>
+							)}
 						</Button>
 					</TooltipTrigger>
 					<TooltipContent>Downvote Response</TooltipContent>

@@ -13,9 +13,14 @@ type CommunicationPatternPart = {
 	description: Array<string>
 }
 
-type InsightParts = CommunicationPatternPart
+type InsightPart = {
+	type: 'insight'
+	text: Array<string>
+}
 
-export const insightTypes = ['com-pattern']
+type InsightParts = CommunicationPatternPart | InsightPart
+
+export const insightTypes = ['com-pattern', 'insight']
 
 export function isInsightMessageType(
 	message: UIMessage | InsightMessageType
@@ -46,9 +51,9 @@ export default function InsightMessage({
 	const key = `message-${messageId}-part-${index}`
 	const colors = ['secondary', 'accent']
 
-	const ratioTotals = part.ratios.reduce((total, ratio) => total + ratio.ratio, 0)
-
 	if (type === 'com-pattern') {
+		const ratioTotals = part.ratios.reduce((total, ratio) => total + ratio.ratio, 0)
+
 		return (
 			<div key={key} data-testid="message-content" className="flex flex-col gap-2">
 				<p className="font-light">{part.name} Communication Pattern</p>
@@ -71,6 +76,19 @@ export default function InsightMessage({
 				</div>
 				<div className="font-light">
 					{part.description.map((markdown, index) => (
+						<Markdown key={`part-${messageId}-markdown-${index}`}>{markdown}</Markdown>
+					))}
+				</div>
+			</div>
+		)
+	}
+
+	if (type === 'insight') {
+		return (
+			<div key={key} data-testid="message-content" className="flex flex-col gap-2">
+				<h2 className="text-2xl font-semibold capitalize text-primary">Insight & Recommendation</h2>
+				<div className="space-y-4 font-light">
+					{part.text.map((markdown, index) => (
 						<Markdown key={`part-${messageId}-markdown-${index}`}>{markdown}</Markdown>
 					))}
 				</div>

@@ -91,23 +91,25 @@ const InsightChat = ({ chatId, message, vote, isLoading }: InsightMessageParams)
 					</div>
 				)}
 
-				{message.parts?.map((part, index) => (
-					<InsightMessage
-						key={`insight-message-${chatId}-part-${index}`}
-						part={part}
-						index={index}
-						messageId={message.id}
-						isLoading={isLoading}
-					/>
-				))}
+				<div className="space-y-8">
+					{message.parts?.map((part, index) => (
+						<InsightMessage
+							key={`insight-message-${chatId}-part-${index}`}
+							part={part}
+							index={index}
+							messageId={message.id}
+							isLoading={isLoading}
+						/>
+					))}
+				</div>
 
-				{/* <MessageActions
+				<MessageActions
 					key={`action-${message.id}`}
 					chatId={chatId}
 					message={message}
 					vote={vote}
 					isLoading={isLoading}
-				/> */}
+				/>
 			</div>
 		</div>
 	)
