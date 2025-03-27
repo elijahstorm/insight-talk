@@ -2,17 +2,54 @@
 
 import type { Attachment, UIMessage } from 'ai'
 import { useChat } from '@ai-sdk/react'
-import { useState } from 'react'
+import { useSearchParams } from 'next/navigation'
+import { useEffect, useState } from 'react'
 import useSWR, { useSWRConfig } from 'swr'
 import { ChatHeader } from '@/components/chat-header'
 import type { Vote } from '@/lib/db/schema'
 import { fetcher, generateUUID } from '@/lib/utils'
 import { Artifact } from './artifact'
-import { MultimodalInput } from './multimodal-input'
 import { Messages } from './messages'
 import { VisibilityType } from './visibility-selector'
 import { useArtifactSelector } from '@/hooks/use-artifact'
 import { toast } from 'sonner'
+
+const FullPageLoader = () => {
+	const [progress, setProgress] = useState(0)
+	const [isActive, setIsActive] = useState(false)
+
+	useEffect(() => {
+		// Start the fade-in effect after the component mounts
+		const timer = setTimeout(() => {
+			setProgress(100)
+			setIsActive(true)
+		}, 0)
+
+		return () => clearTimeout(timer)
+	}, [])
+
+	return (
+		<div
+			className={`fade-in ${isActive ? 'fade-in-active' : ''} flex h-full w-full flex-col items-center justify-center gap-4 bg-primary-foreground`}
+		>
+			<img src="/static/logo.svg" alt="Logo" className="h-42 w-42 pb-4" />
+
+			<h1 className="text-3xl">Hold on!</h1>
+
+			<p className="font-semibold">We're making sense of your chats...</p>
+
+			<div className="h-2 w-64 overflow-hidden bg-accent">
+				<div
+					className="h-full bg-primary"
+					style={{ width: `${progress}%`, transition: 'width 3s cubic-bezier(.08, .28, .31, .99)' }}
+				></div>
+			</div>
+
+			{/* for pushing the content slightly up */}
+			<div className="h-24"></div>
+		</div>
+	)
+}
 
 export function InsightChat({
 	id,
@@ -27,6 +64,9 @@ export function InsightChat({
 	selectedVisibilityType: VisibilityType
 	isReadonly: boolean
 }) {
+	const searchParams = useSearchParams()
+	const fileName = searchParams.get('file')
+
 	const { mutate } = useSWRConfig()
 
 	const { messages, setMessages, handleSubmit, input, setInput, append, status, stop, reload } =
@@ -50,48 +90,46 @@ export function InsightChat({
 		fetcher
 	)
 
+	const [showLoader, setShowLoader] = useState<boolean>(false)
 	const [attachments, setAttachments] = useState<Array<Attachment>>([])
 	const isArtifactVisible = useArtifactSelector((state) => state.isVisible)
 
 	return (
 		<>
-			<div className="flex h-dvh min-w-0 flex-col bg-background">
-				<ChatHeader
-					chatId={id}
-					selectedModelId={selectedChatModel}
-					selectedVisibilityType={selectedVisibilityType}
-					isReadonly={isReadonly}
-				/>
+			{showLoader ? (
+				<FullPageLoader />
+			) : (
+				<div className="flex h-dvh min-w-0 flex-col space-y-6 bg-background">
+					<ChatHeader
+						header={fileName ? 'Upload a File' : 'Start a Conversation'}
+						chatId={id}
+						selectedModelId={selectedChatModel}
+						selectedVisibilityType={selectedVisibilityType}
+						isReadonly={isReadonly}
+					/>
 
-				<Messages
-					chatId={id}
-					status={status}
-					votes={votes}
-					messages={messages}
-					setMessages={setMessages}
-					reload={reload}
-					isReadonly={isReadonly}
-					isArtifactVisible={isArtifactVisible}
-				/>
-
-				<form className="mx-auto flex w-full gap-2 bg-background px-4 pb-4 md:max-w-3xl md:pb-6">
-					{!isReadonly && (
-						<MultimodalInput
-							chatId={id}
-							input={input}
-							setInput={setInput}
-							handleSubmit={handleSubmit}
-							status={status}
-							stop={stop}
-							attachments={attachments}
-							setAttachments={setAttachments}
-							messages={messages}
-							setMessages={setMessages}
-							append={append}
-						/>
+					{fileName && (
+						<div className="space-y-2 px-4">
+							<p className="font-light">Upload Your Converstation</p>
+							<div className="pointer-events-none line-clamp-1 select-none rounded-lg border border-slate-200 px-2 py-3 font-thin text-slate-400">
+								{fileName}
+							</div>
+						</div>
 					)}
-				</form>
-			</div>
+
+					<Messages
+						chatId={id}
+						status={status}
+						votes={votes}
+						messages={messages}
+						setMessages={setMessages}
+						reload={reload}
+						isReadonly={isReadonly}
+						isArtifactVisible={isArtifactVisible}
+						setShowLoader={setShowLoader}
+					/>
+				</div>
+			)}
 
 			<Artifact
 				chatId={id}

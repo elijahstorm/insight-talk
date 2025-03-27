@@ -1,7 +1,8 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
+import { PaperclipIcon, PlusIcon, ImageIcon } from './icons'
 
 function HeadsUpButton({
 	action,
@@ -10,7 +11,7 @@ function HeadsUpButton({
 	hidden = false,
 }: {
 	action: () => void
-	icon: string
+	icon: ({ size }: { size?: number }) => React.JSX.Element
 	description: string
 	hidden?: boolean
 }) {
@@ -21,10 +22,10 @@ function HeadsUpButton({
 			<p className="pointer-events-none text-sm text-slate-600">{description}</p>
 
 			<button
-				className="h-14 w-14 rounded-full bg-primary-500 p-4 text-white shadow-lg ring-offset-1 transition-all hover:bg-primary hover:outline-none hover:ring-2 hover:ring-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-300"
+				className="flex h-14 w-14 items-center justify-center rounded-full bg-primary-500 p-4 text-white shadow-lg ring-offset-1 transition-all hover:bg-primary hover:outline-none hover:ring-2 hover:ring-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-300"
 				onClick={action}
 			>
-				{icon}
+				{icon({ size: 20 })}
 			</button>
 		</div>
 	)
@@ -33,6 +34,7 @@ function HeadsUpButton({
 export default function AddNewButton() {
 	const [menuClosed, setMenuClosed] = useState(true)
 	const router = useRouter()
+	const fileInputRef = useRef<HTMLInputElement | null>(null)
 
 	const openMenu = () => {
 		setMenuClosed(false)
@@ -46,38 +48,58 @@ export default function AddNewButton() {
 		router.push('/chat/new')
 	}
 
-	const attachFile = () => {}
+	const attachFile = () => {
+		if (fileInputRef.current) {
+			fileInputRef.current.click()
+		}
+	}
 
-	const attachImage = () => {}
+	const attachImage = () => {
+		if (fileInputRef.current) {
+			fileInputRef.current.click()
+		}
+	}
+
+	const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		const file = event.target.files?.[0]
+		if (file) {
+			const formData = new FormData()
+			formData.append('file', file)
+
+			router.push(`/chat/new?file=${encodeURIComponent(file.name)}`)
+		}
+	}
 
 	return (
 		<div className="select-none">
+			<input type="file" ref={fileInputRef} className="hidden" onChange={handleFileChange} />
+
 			<button
 				className={`fixed inset-0 cursor-default bg-white/30 backdrop-blur-sm transition-opacity ${menuClosed ? 'pointer-events-none opacity-0' : ''}`}
 				onClick={closeMenu}
 			></button>
 
 			<div className="fixed bottom-6 right-6">
-				<HeadsUpButton action={openMenu} description="" icon="+" />
+				<HeadsUpButton action={openMenu} description="" icon={PlusIcon} />
 			</div>
 
 			<div className="pointer-events-none fixed bottom-6 right-6 flex flex-col-reverse gap-8">
 				<HeadsUpButton
 					action={startConvo}
 					description="New Converstation"
-					icon="chat"
+					icon={PlusIcon}
 					hidden={menuClosed}
 				/>
 				<HeadsUpButton
 					action={attachFile}
 					description="Attach a File"
-					icon="📎"
+					icon={PaperclipIcon}
 					hidden={menuClosed}
 				/>
 				<HeadsUpButton
 					action={attachImage}
 					description="Attach an Image"
-					icon="🖼️"
+					icon={ImageIcon}
 					hidden={menuClosed}
 				/>
 			</div>

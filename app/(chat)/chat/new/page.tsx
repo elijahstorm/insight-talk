@@ -1,6 +1,6 @@
 import { cookies } from 'next/headers'
 
-import { LegacyChat } from '@/components/legacy-chat'
+import { InsightChat } from '@/components/insight-chat'
 import { DEFAULT_CHAT_MODEL } from '@/lib/ai/models'
 import { generateUUID } from '@/lib/utils'
 import { DataStreamHandler } from '@/components/data-stream-handler'
@@ -13,7 +13,7 @@ export default async function Page() {
 
 	return (
 		<>
-			<LegacyChat
+			<InsightChat
 				key={id}
 				id={id}
 				initialMessages={[]}

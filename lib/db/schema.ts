@@ -1,4 +1,4 @@
-import type { InferSelectModel } from 'drizzle-orm'
+import { sql, type InferSelectModel } from 'drizzle-orm'
 import {
 	pgTable,
 	varchar,
@@ -22,7 +22,10 @@ export type User = InferSelectModel<typeof user>
 export const chat = pgTable('Chat', {
 	id: uuid('id').primaryKey().notNull().defaultRandom(),
 	createdAt: timestamp('createdAt').notNull(),
-	type: text().default('personal').notNull(),
+	type: text('type')
+		.array()
+		.notNull()
+		.default(sql`'{}'::text[]`),
 	title: text('title').notNull(),
 	summary: text().default('no summary').notNull(),
 	userId: uuid('userId')
