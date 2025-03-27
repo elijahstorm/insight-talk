@@ -16,13 +16,13 @@ import config from '@/features/config'
 import { BackButton } from './back-button'
 
 function PureChatHeader({
-	header,
+	header = '',
 	chatId,
 	selectedModelId,
 	selectedVisibilityType,
 	isReadonly,
 }: {
-	header: string
+	header?: string
 	chatId: string
 	selectedModelId: string
 	selectedVisibilityType: VisibilityType

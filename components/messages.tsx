@@ -18,7 +18,7 @@ interface MessagesProps {
 	reload: UseChatHelpers['reload']
 	isReadonly: boolean
 	isArtifactVisible: boolean
-	setShowLoader: React.Dispatch<React.SetStateAction<boolean>>
+	setShowLoader?: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 const typesList = [
@@ -119,7 +119,7 @@ function PureMessages({
 					<Button
 						className="w-full py-6 hover:bg-accent focus:bg-accent"
 						onClick={() => {
-							setShowLoader(true)
+							setShowLoader && setShowLoader(true)
 							// create chat then go to that chat
 							// router.push('/')
 							// router.refresh()
