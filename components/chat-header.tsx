@@ -13,7 +13,7 @@ import { memo } from 'react'
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip'
 import { VisibilityType, VisibilitySelector } from './visibility-selector'
 import config from '@/features/config'
-import { BackButton } from './back-button'
+import { HomeButton } from './home-button'
 
 function PureChatHeader({
 	header = '',
@@ -35,7 +35,7 @@ function PureChatHeader({
 
 	return (
 		<header className="sticky top-0 flex items-center gap-2 bg-background px-2 py-1.5 md:px-2">
-			{config.insightChat.hideSidebar ? <BackButton /> : <SidebarToggle />}
+			{config.insightChat.hideSidebar ? <HomeButton /> : <SidebarToggle />}
 
 			{(!open || windowWidth < 768) && !pathname.includes('/chat/new') && (
 				<Tooltip>

@@ -15,8 +15,7 @@ import { useArtifactSelector } from '@/hooks/use-artifact'
 import { toast } from 'sonner'
 import Image from 'next/image'
 import CreateNewChat from './create-new-chat'
-import { PreviewMessage } from './message'
-import { InsightMessageType } from './insight-message'
+import { InsightMessageType, insightTypes } from './insight-message'
 
 const FullPageLoader = () => {
 	const [progress, setProgress] = useState(0)
@@ -97,42 +96,20 @@ export function InsightChat({
 	const [attachments, setAttachments] = useState<Array<Attachment>>([])
 	const isArtifactVisible = useArtifactSelector((state) => state.isVisible)
 
-	// set `messages` to fake data here... type of UIMessage[]
-	// ideas
-	// initial context message
-	// attachment style message
-	// percentage message
-	// describe (with boldable text) message
+	useEffect(() => {
+		const updatedMessages = messages.map((message) => {
+			const updatedParts = message.parts?.map((part) => {
+				const typedPart = part as UIMessage['parts'][number] | InsightMessageType['parts'][number]
+				if (insightTypes.includes(typedPart.type)) {
+					return { ...part, insight: true }
+				}
+				return part
+			})
 
-	let backupMessages: Array<UIMessage | InsightMessageType> = [
-		{
-			id: 'test',
-			content: 'contentn',
-			role: 'assistant',
-			parts: [
-				{
-					type: 'text',
-					text: 'one two three',
-				},
-			],
-		},
-		{
-			id: 'test2',
-			insight: true,
-			role: 'assistant',
-			content: '',
-			parts: [
-				{
-					type: 'text',
-					text: 'one two three',
-				},
-			],
-		},
-	]
-
-	if (id !== '04e62fe9-e40e-4b80-8555-996a5e724362') {
-		backupMessages = messages
-	}
+			return { ...message, parts: updatedParts }
+		})
+		setMessages(updatedMessages)
+	}, [messages, setMessages])
 
 	return (
 		<>
@@ -141,7 +118,9 @@ export function InsightChat({
 			) : (
 				<div className="flex h-dvh min-w-0 flex-col space-y-6 bg-background">
 					<ChatHeader
-						header={fileName ? 'Upload a File' : 'Start a Conversation'}
+						header={
+							messages.length ? 'Report' : fileName ? 'Upload a File' : 'Start a Conversation'
+						}
 						chatId={id}
 						selectedModelId={selectedChatModel}
 						selectedVisibilityType={selectedVisibilityType}
@@ -157,14 +136,14 @@ export function InsightChat({
 						</div>
 					)}
 
-					{backupMessages.length === 0 ? (
+					{messages.length === 0 ? (
 						<CreateNewChat setShowLoader={setShowLoader} />
 					) : (
 						<Messages
 							chatId={id}
 							status={status}
 							votes={votes}
-							messages={backupMessages}
+							messages={messages}
 							setMessages={setMessages}
 							reload={reload}
 							isReadonly={isReadonly}

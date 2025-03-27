@@ -100,7 +100,7 @@ export default function CreateNewChat({
 					// Push `selectedValues` to the database here
 					// on response and new chatId set, then:
 					setTimeout(() => {
-						const chatId = '04e62fe9-e40e-4b80-8555-996a5e724362'
+						const chatId = 'fe210abc-6c08-46bf-8f75-1fd78ad7f2bb'
 						router.push(`/chat/${chatId}`)
 						router.refresh()
 					}, 3000)
