@@ -1,11 +1,15 @@
 import { UIMessage } from 'ai'
 import { PreviewMessage, ThinkingMessage } from './message'
 import { useScrollToBottom } from './use-scroll-to-bottom'
-import { memo } from 'react'
+import { memo, useEffect, useState } from 'react'
 import { Vote } from '@/lib/db/schema'
 import equal from 'fast-deep-equal'
 import { UseChatHelpers } from '@ai-sdk/react'
 import { InsightMessageType } from './insight-message'
+import { useCopyToClipboard } from 'usehooks-ts'
+import { toast } from 'sonner'
+import { Button } from './ui/button'
+import { AnimatePresence, motion } from 'framer-motion'
 
 interface MessagesProps {
 	chatId: string
@@ -28,30 +32,95 @@ function PureMessages({
 	isReadonly,
 }: MessagesProps) {
 	const [messagesContainerRef, messagesEndRef] = useScrollToBottom<HTMLDivElement>()
+	const [currentMessage, setCurrentMessage] = useState<number>(0)
+	const [visibleMessageParts, setVisibleMessageParts] = useState<number>(0)
+	const [_, copyToClipboard] = useCopyToClipboard()
+
+	useEffect(() => {
+		if (messagesEndRef.current) {
+			messagesEndRef.current.scrollIntoView({ behavior: 'smooth' })
+		}
+	}, [visibleMessageParts, currentMessage])
+
+	const showNextPart = () => {
+		if (visibleMessageParts < (messages[currentMessage].parts?.length || 0) - 1) {
+			setVisibleMessageParts((prevIndex) => prevIndex + 1)
+		}
+	}
+
+	const showNextMessage = () => {
+		setCurrentMessage((prevIndex) => prevIndex + 1)
+		setVisibleMessageParts(0)
+	}
+
+	const share = async () => {
+		const link = `${window.location.origin}${window.location.pathname}`
+
+		if (!link) {
+			toast.error('Error trying to share')
+			return
+		}
+
+		await copyToClipboard(link)
+		toast.success('Copied link to clipboard!')
+	}
 
 	return (
-		<div
-			ref={messagesContainerRef}
-			className="flex min-w-0 flex-1 flex-col gap-6 overflow-y-scroll"
-		>
-			{messages.map((message, index) => (
+		<div className="flex h-full flex-col gap-4 overflow-hidden pb-6">
+			<div
+				ref={messagesContainerRef}
+				className="flex min-w-0 flex-1 flex-col gap-6 overflow-y-scroll"
+			>
 				<PreviewMessage
-					key={message.id}
 					chatId={chatId}
-					message={message}
-					isLoading={status === 'streaming' && messages.length - 1 === index}
-					vote={votes ? votes.find((vote) => vote.messageId === message.id) : undefined}
+					message={messages[currentMessage]}
+					visibleParts={visibleMessageParts}
+					isLoading={status === 'streaming'}
+					vote={
+						votes ? votes.find((vote) => vote.messageId === messages[currentMessage].id) : undefined
+					}
 					setMessages={setMessages}
 					reload={reload}
 					isReadonly={isReadonly}
 				/>
-			))}
 
-			{status === 'submitted' &&
-				messages.length > 0 &&
-				messages[messages.length - 1].role === 'user' && <ThinkingMessage />}
+				{status === 'submitted' &&
+					messages.length > 0 &&
+					messages[messages.length - 1].role === 'user' && <ThinkingMessage />}
 
-			<div ref={messagesEndRef} className="min-h-[24px] min-w-[24px] shrink-0" />
+				{visibleMessageParts !== 0 && <div ref={messagesEndRef} className="min-h-[0px] shrink-0" />}
+			</div>
+
+			{visibleMessageParts === (messages[currentMessage].parts?.length || 0) - 1 ? (
+				<AnimatePresence key="next-message">
+					<motion.div
+						className="flex w-full flex-col gap-4 px-4"
+						initial={{ y: 5, opacity: 0 }}
+						animate={{ y: 0, opacity: 1 }}
+					>
+						<Button className="py-6" variant={'outline'} onClick={share}>
+							Share
+						</Button>
+						{showNextMessage && currentMessage < messages.length - 1 && (
+							<Button className="py-6 hover:bg-primary focus:bg-primary" onClick={showNextMessage}>
+								See the Reply Ideas
+							</Button>
+						)}
+					</motion.div>
+				</AnimatePresence>
+			) : (
+				<AnimatePresence key="next-page">
+					<motion.div
+						className="flex w-full flex-col gap-4 px-4"
+						initial={{ y: 5, opacity: 0 }}
+						animate={{ y: 0, opacity: 1 }}
+					>
+						<Button className="py-6 hover:bg-primary focus:bg-primary" onClick={showNextPart}>
+							Check Talk Insight
+						</Button>
+					</motion.div>
+				</AnimatePresence>
+			)}
 		</div>
 	)
 }

@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { useWindowSize } from 'usehooks-ts'
 
 import { ModelSelector } from '@/components/model-selector'
@@ -31,13 +31,12 @@ function PureChatHeader({
 	const router = useRouter()
 	const { open } = useSidebar()
 	const { width: windowWidth } = useWindowSize()
-	const pathname = usePathname()
 
 	return (
 		<header className="sticky top-0 flex items-center gap-2 bg-background px-2 py-1.5 md:px-2">
 			{config.insightChat.hideSidebar ? <HomeButton /> : <SidebarToggle />}
 
-			{(!open || windowWidth < 768) && !pathname.includes('/chat/new') && (
+			{(!open || windowWidth < 768) && !config.insightChat.hideNewChatHeader && (
 				<Tooltip>
 					<TooltipTrigger asChild>
 						<Button

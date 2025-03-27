@@ -32,7 +32,7 @@ export function PureMessageActions({
 	return (
 		<TooltipProvider delayDuration={0}>
 			<div
-				className={`gap-2 ${config.vote.legacyStyle ? 'flex-row' : 'flex-col pt-2'} flex items-start`}
+				className={`pt-4 ${config.vote.legacyStyle ? 'flex-row' : 'flex-col'} flex items-start gap-2`}
 			>
 				{!config.vote.legacyStyle && (
 					<p className="text-sm font-medium text-slate-600">Was this analysis helpful?</p>
@@ -177,7 +177,9 @@ export function PureMessageActions({
 								<ThumbDownIcon />
 							) : (
 								<div className="flex gap-2 px-1 py-2">
-									<span className="font-light">It wasn't helpful or didn't make sense.</span>
+									<span className="font-light">
+										It wasn&rsquo;t helpful or didn&rsquo;t make sense.
+									</span>
 									<ThumbDownIcon />
 								</div>
 							)}

@@ -18,9 +18,14 @@ type InsightPart = {
 	text: Array<string>
 }
 
-type InsightParts = CommunicationPatternPart | InsightPart
+type RepliesPart = {
+	type: 'replies'
+	text: Array<string>
+}
 
-export const insightTypes = ['com-pattern', 'insight']
+type InsightParts = CommunicationPatternPart | InsightPart | RepliesPart
+
+export const insightTypes = ['com-pattern', 'insight', 'replies']
 
 export function isInsightMessageType(
 	message: UIMessage | InsightMessageType
@@ -84,6 +89,19 @@ export default function InsightMessage({
 	}
 
 	if (type === 'insight') {
+		return (
+			<div key={key} data-testid="message-content" className="flex flex-col gap-2">
+				<h2 className="text-2xl font-semibold capitalize text-primary">Insight & Recommendation</h2>
+				<div className="space-y-4 font-light">
+					{part.text.map((markdown, index) => (
+						<Markdown key={`part-${messageId}-markdown-${index}`}>{markdown}</Markdown>
+					))}
+				</div>
+			</div>
+		)
+	}
+
+	if (type === 'replies') {
 		return (
 			<div key={key} data-testid="message-content" className="flex flex-col gap-2">
 				<h2 className="text-2xl font-semibold capitalize text-primary">Insight & Recommendation</h2>

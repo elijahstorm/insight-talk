@@ -29,6 +29,7 @@ type MessageParams = {
 
 type InsightMessageParams = MessageParams & {
 	message: InsightMessageType
+	visibleParts: number
 }
 
 type LegacyMessageParams = MessageParams & {
@@ -41,6 +42,7 @@ type LegacyMessageParams = MessageParams & {
 const PurePreviewMessage = ({
 	chatId,
 	message,
+	visibleParts,
 	vote,
 	isLoading,
 	setMessages,
@@ -48,6 +50,7 @@ const PurePreviewMessage = ({
 	isReadonly,
 }: MessageParams & {
 	message: UIMessage | InsightMessageType
+	visibleParts: number
 	setMessages: UseChatHelpers['setMessages']
 	reload: UseChatHelpers['reload']
 	isReadonly: boolean
@@ -55,14 +58,21 @@ const PurePreviewMessage = ({
 	return (
 		<AnimatePresence>
 			<motion.div
+				key={`message-${message.id}`}
 				data-testid={`message-${message.role}`}
-				className="group/message mx-auto w-full max-w-3xl px-4"
+				className="group/message mx-auto h-full w-full max-w-3xl px-4"
 				initial={{ y: 5, opacity: 0 }}
 				animate={{ y: 0, opacity: 1 }}
 				data-role={message.role}
 			>
 				{isInsightMessageType(message) ? (
-					<InsightChat chatId={chatId} message={message} vote={vote} isLoading={isLoading} />
+					<InsightChat
+						chatId={chatId}
+						message={message}
+						visibleParts={visibleParts}
+						vote={vote}
+						isLoading={isLoading}
+					/>
 				) : (
 					<LegacyChat
 						chatId={chatId}
@@ -79,10 +89,10 @@ const PurePreviewMessage = ({
 	)
 }
 
-const InsightChat = ({ chatId, message, vote, isLoading }: InsightMessageParams) => {
+const InsightChat = ({ chatId, message, visibleParts, vote, isLoading }: InsightMessageParams) => {
 	return (
-		<div className="flex w-full gap-4 group-data-[role=user]/message:ml-auto group-data-[role=user]/message:max-w-2xl">
-			<div className="flex w-full flex-col gap-4">
+		<div className="flex h-full w-full gap-4 group-data-[role=user]/message:ml-auto group-data-[role=user]/message:max-w-2xl">
+			<div className="flex h-full w-full flex-col gap-4">
 				{message.experimental_attachments && (
 					<div data-testid={`message-attachments`} className="flex flex-row justify-end gap-2">
 						{message.experimental_attachments.map((attachment) => (
@@ -91,25 +101,25 @@ const InsightChat = ({ chatId, message, vote, isLoading }: InsightMessageParams)
 					</div>
 				)}
 
-				<div className="space-y-8">
-					{message.parts?.map((part, index) => (
-						<InsightMessage
-							key={`insight-message-${chatId}-part-${index}`}
-							part={part}
-							index={index}
-							messageId={message.id}
-							isLoading={isLoading}
-						/>
-					))}
-				</div>
+				<div className="pb-8">
+					<div className="space-y-8">
+						{message.parts
+							?.slice(0, visibleParts + 1)
+							.map((part, index) => (
+								<InsightMessage
+									key={`insight-message-${chatId}-part-${index}`}
+									part={part}
+									index={index}
+									messageId={message.id}
+									isLoading={isLoading}
+								/>
+							))}
+					</div>
 
-				<MessageActions
-					key={`action-${message.id}`}
-					chatId={chatId}
-					message={message}
-					vote={vote}
-					isLoading={isLoading}
-				/>
+					{visibleParts === (message.parts?.length || 0) - 1 && (
+						<MessageActions chatId={chatId} message={message} vote={vote} isLoading={isLoading} />
+					)}
+				</div>
 			</div>
 		</div>
 	)
@@ -285,6 +295,7 @@ const LegacyChat = ({
 }
 
 export const PreviewMessage = memo(PurePreviewMessage, (prevProps, nextProps) => {
+	if (prevProps.visibleParts !== nextProps.visibleParts) return false
 	if (prevProps.isLoading !== nextProps.isLoading) return false
 	if (prevProps.message.id !== nextProps.message.id) return false
 	if (!equal(prevProps.message.parts, nextProps.message.parts)) return false

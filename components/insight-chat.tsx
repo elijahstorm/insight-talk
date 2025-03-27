@@ -96,21 +96,14 @@ export function InsightChat({
 	const [attachments, setAttachments] = useState<Array<Attachment>>([])
 	const isArtifactVisible = useArtifactSelector((state) => state.isVisible)
 
-	useEffect(() => {
-		const updatedMessages = messages.map((message) => {
-			if (
-				message.parts?.some((part) =>
-					insightTypes.includes(
-						(part as UIMessage['parts'][number] | InsightMessageType['parts'][number]).type
-					)
-				)
-			) {
-				return { ...message, insight: true }
-			}
-			return message
-		})
-		setMessages(updatedMessages)
-	}, [messages, setMessages])
+	const updatedMessages = messages.map((message) => ({
+		...message,
+		insight: message.parts?.some((part) =>
+			insightTypes.includes(
+				(part as UIMessage['parts'][number] | InsightMessageType['parts'][number]).type
+			)
+		),
+	}))
 
 	return (
 		<>
@@ -120,7 +113,11 @@ export function InsightChat({
 				<div className="flex h-dvh min-w-0 flex-col space-y-6 bg-background">
 					<ChatHeader
 						header={
-							messages.length ? 'Report' : fileName ? 'Upload a File' : 'Start a Conversation'
+							updatedMessages.length
+								? 'Report'
+								: fileName
+									? 'Upload a File'
+									: 'Start a Conversation'
 						}
 						chatId={id}
 						selectedModelId={selectedChatModel}
@@ -137,14 +134,14 @@ export function InsightChat({
 						</div>
 					)}
 
-					{messages.length === 0 ? (
+					{updatedMessages.length === 0 ? (
 						<CreateNewChat setShowLoader={setShowLoader} />
 					) : (
 						<Messages
 							chatId={id}
 							status={status}
 							votes={votes}
-							messages={messages}
+							messages={updatedMessages}
 							setMessages={setMessages}
 							reload={reload}
 							isReadonly={isReadonly}
