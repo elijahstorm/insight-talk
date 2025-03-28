@@ -1,6 +1,6 @@
 'use client'
 
-import type { UIMessage } from 'ai'
+import type { Message, UIMessage } from 'ai'
 import cx from 'classnames'
 import { AnimatePresence, motion } from 'framer-motion'
 import { memo, useState } from 'react'
@@ -42,7 +42,7 @@ type LegacyMessageParams = MessageParams & {
 const PurePreviewMessage = ({
 	chatId,
 	message,
-	visibleParts,
+	visibleParts = 0,
 	vote,
 	isLoading,
 	setMessages,
@@ -50,7 +50,7 @@ const PurePreviewMessage = ({
 	isReadonly,
 }: MessageParams & {
 	message: UIMessage | InsightMessageType
-	visibleParts: number
+	visibleParts?: number
 	setMessages: UseChatHelpers['setMessages']
 	reload: UseChatHelpers['reload']
 	isReadonly: boolean
@@ -60,7 +60,7 @@ const PurePreviewMessage = ({
 			<motion.div
 				key={`message-${message.id}`}
 				data-testid={`message-${message.role}`}
-				className="group/message mx-auto h-full w-full max-w-3xl px-4"
+				className="group/message mx-auto size-full max-w-3xl px-4"
 				initial={{ y: 5, opacity: 0 }}
 				animate={{ y: 0, opacity: 1 }}
 				data-role={message.role}
@@ -91,8 +91,8 @@ const PurePreviewMessage = ({
 
 const InsightChat = ({ chatId, message, visibleParts, vote, isLoading }: InsightMessageParams) => {
 	return (
-		<div className="flex h-full w-full gap-4 group-data-[role=user]/message:ml-auto group-data-[role=user]/message:max-w-2xl">
-			<div className="flex h-full w-full flex-col gap-4">
+		<div className="flex size-full gap-4 group-data-[role=user]/message:ml-auto group-data-[role=user]/message:max-w-2xl">
+			<div className="flex size-full flex-col gap-4">
 				{message.experimental_attachments && (
 					<div data-testid={`message-attachments`} className="flex flex-row justify-end gap-2">
 						{message.experimental_attachments.map((attachment) => (
@@ -117,7 +117,12 @@ const InsightChat = ({ chatId, message, visibleParts, vote, isLoading }: Insight
 					</div>
 
 					{visibleParts === (message.parts?.length || 0) - 1 && (
-						<MessageActions chatId={chatId} message={message} vote={vote} isLoading={isLoading} />
+						<MessageActions
+							chatId={chatId}
+							message={message as unknown as Message}
+							vote={vote}
+							isLoading={isLoading}
+						/>
 					)}
 				</div>
 			</div>

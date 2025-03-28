@@ -40,7 +40,7 @@ function PureMessages({
 		if (messagesEndRef.current) {
 			messagesEndRef.current.scrollIntoView({ behavior: 'smooth' })
 		}
-	}, [visibleMessageParts, currentMessage])
+	}, [visibleMessageParts, currentMessage, messagesEndRef])
 
 	const showNextPart = () => {
 		if (visibleMessageParts < (messages[currentMessage].parts?.length || 0) - 1) {
@@ -88,7 +88,7 @@ function PureMessages({
 					messages.length > 0 &&
 					messages[messages.length - 1].role === 'user' && <ThinkingMessage />}
 
-				{visibleMessageParts !== 0 && <div ref={messagesEndRef} className="min-h-[0px] shrink-0" />}
+				{visibleMessageParts !== 0 && <div ref={messagesEndRef} className="h-0 shrink-0" />}
 			</div>
 
 			{visibleMessageParts === (messages[currentMessage].parts?.length || 0) - 1 ? (

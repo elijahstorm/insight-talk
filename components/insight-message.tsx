@@ -1,5 +1,9 @@
 import { UIMessage } from 'ai'
 import { Markdown } from './markdown'
+import { useCopyToClipboard } from 'usehooks-ts'
+import { toast } from 'sonner'
+import { CopyIcon } from './icons'
+import { Button } from './ui/button'
 
 type CommunicationPatternPart = {
 	type: 'com-pattern'
@@ -20,10 +24,13 @@ type InsightPart = {
 
 type RepliesPart = {
 	type: 'replies'
-	text: Array<string>
+	replies: Array<{
+		title: string
+		lines: Array<string>
+	}>
 }
 
-type InsightParts = CommunicationPatternPart | InsightPart | RepliesPart
+export type InsightParts = CommunicationPatternPart | InsightPart | RepliesPart
 
 export const insightTypes = ['com-pattern', 'insight', 'replies']
 
@@ -52,6 +59,8 @@ export default function InsightMessage({
 	messageId: string
 	isLoading: boolean
 }) {
+	const [_, copyToClipboard] = useCopyToClipboard()
+
 	const { type } = part
 	const key = `message-${messageId}-part-${index}`
 	const colors = ['secondary', 'accent']
@@ -102,12 +111,34 @@ export default function InsightMessage({
 	}
 
 	if (type === 'replies') {
+		const copy = (line: string) => async () => {
+			await copyToClipboard(line)
+			toast.success('Reply copied to clipboard')
+		}
+
 		return (
-			<div key={key} data-testid="message-content" className="flex flex-col gap-2">
-				<h2 className="text-2xl font-semibold capitalize text-primary">Insight & Recommendation</h2>
+			<div key={key} data-testid="message-content" className="flex flex-col gap-2 pb-4">
+				<h2 className="text-2xl font-semibold capitalize text-primary">Reply Ideas</h2>
 				<div className="space-y-4 font-light">
-					{part.text.map((markdown, index) => (
-						<Markdown key={`part-${messageId}-markdown-${index}`}>{markdown}</Markdown>
+					{part.replies.map((reply, index) => (
+						<div key={`reply-${reply.title}-${index}`} className="space-y-2">
+							<h3 className="pt-2 text-lg font-semibold">{reply.title}</h3>
+							{reply.lines.map((line, index) => (
+								<div
+									key={`reply-${line}-${index}`}
+									className="flex items-start justify-start gap-2"
+								>
+									<div className="text-sm font-light">{line}</div>
+									<Button
+										variant="ghost"
+										className="size-5 p-0 hover:bg-white hover:text-black"
+										onClick={copy(line)}
+									>
+										<CopyIcon />
+									</Button>
+								</div>
+							))}
+						</div>
 					))}
 				</div>
 			</div>
