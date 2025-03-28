@@ -59,7 +59,7 @@ function PureChatHeader({
 				<ModelSelector selectedModelId={selectedModelId} className="order-1 md:order-2" />
 			)}
 
-			{!isReadonly && (
+			{config.insightChat.allowPrivate && !isReadonly && (
 				<VisibilitySelector
 					chatId={chatId}
 					selectedVisibilityType={selectedVisibilityType}
@@ -69,14 +69,16 @@ function PureChatHeader({
 
 			<h1 className="order-1 mx-auto text-lg font-semibold md:order-3">{header}</h1>
 
-			<Button
-				className="order-4 hidden h-fit bg-zinc-900 px-2 py-1.5 text-zinc-50 hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 md:ml-auto md:flex md:h-[34px]"
-				asChild
-			>
-				<Link href="https://insight-talk.vercel.app/" target="_noblank">
-					[User Icon]
-				</Link>
-			</Button>
+			{config.insightChat.showUserIcon && (
+				<Button
+					className="order-4 hidden h-fit bg-zinc-900 px-2 py-1.5 text-zinc-50 hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 md:ml-auto md:flex md:h-[34px]"
+					asChild
+				>
+					<Link href="https://insight-talk.vercel.app/" target="_noblank">
+						[User Icon]
+					</Link>
+				</Button>
+			)}
 		</header>
 	)
 }

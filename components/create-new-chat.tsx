@@ -97,8 +97,10 @@ export default function CreateNewChat({
 				className="w-full py-6 hover:bg-accent focus:bg-accent"
 				onClick={() => {
 					setShowLoader && setShowLoader(true)
+					// todo
 					// Push `selectedValues` to the database here
 					// on response and new chatId set, then:
+					// if config.insightChat.allowPrivate ? set public : set private
 					setTimeout(() => {
 						const chatId = 'fe210abc-6c08-46bf-8f75-1fd78ad7f2bb'
 						router.push(`/chat/${chatId}`)
