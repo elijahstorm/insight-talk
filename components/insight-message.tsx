@@ -131,7 +131,7 @@ export default function InsightMessage({
 									<div className="text-sm font-light">{line}</div>
 									<Button
 										variant="ghost"
-										className="size-5 p-0 hover:bg-white hover:text-black"
+										className="size-5 p-0 hover:bg-background hover:text-foreground"
 										onClick={copy(line)}
 									>
 										<CopyIcon />

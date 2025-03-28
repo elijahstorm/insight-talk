@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation'
 import React, { useRef, useState } from 'react'
 import { PaperclipIcon, PlusIcon, ImageIcon } from './icons'
+import { Button } from './ui/button'
 
 function HeadsUpButton({
 	action,
@@ -21,12 +22,12 @@ function HeadsUpButton({
 		>
 			<p className="pointer-events-none text-sm text-slate-600">{description}</p>
 
-			<button
-				className="flex size-14 items-center justify-center rounded-full bg-primary-500 p-4 text-white shadow-lg ring-offset-1 transition-all hover:bg-primary hover:outline-none hover:ring-2 hover:ring-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-300"
+			<Button
+				className="flex size-14 items-center justify-center rounded-full bg-primary-500 p-4 text-primary-foreground shadow-lg ring-offset-1 transition-all hover:bg-primary hover:outline-none hover:ring-2 hover:ring-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-300"
 				onClick={action}
 			>
 				{icon({ size: 20 })}
-			</button>
+			</Button>
 		</div>
 	)
 }
@@ -75,7 +76,7 @@ export default function AddNewButton() {
 			<input type="file" ref={fileInputRef} className="hidden" onChange={handleFileChange} />
 
 			<button
-				className={`fixed inset-0 cursor-default bg-white/30 backdrop-blur-sm transition-opacity ${menuClosed ? 'pointer-events-none opacity-0' : ''}`}
+				className={`fixed inset-0 cursor-default bg-background/30 backdrop-blur-sm transition-opacity ${menuClosed ? 'pointer-events-none opacity-0' : ''}`}
 				onClick={closeMenu}
 			></button>
 

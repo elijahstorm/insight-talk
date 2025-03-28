@@ -14,6 +14,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip'
 import { VisibilityType, VisibilitySelector } from './visibility-selector'
 import config from '@/features/config'
 import { HomeButton } from './home-button'
+import LightDarkThemeToggle from './light-dark-theme-toggle'
 
 function PureChatHeader({
 	header = '',
@@ -79,6 +80,10 @@ function PureChatHeader({
 					</Link>
 				</Button>
 			)}
+
+			<div className="order-2">
+				<LightDarkThemeToggle />
+			</div>
 		</header>
 	)
 }

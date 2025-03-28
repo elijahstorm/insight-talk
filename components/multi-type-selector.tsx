@@ -48,7 +48,7 @@ export const MultiTypeSelector = ({
 									className={`flex cursor-pointer items-center gap-2 rounded-xl border px-4 py-2 transition-colors ${
 										selectedValues.includes(item.type)
 											? 'bg-accent text-accent-foreground'
-											: 'bg-white'
+											: 'bg-background'
 									}`}
 									onClick={() => toggleSelection(item.type)}
 								>
