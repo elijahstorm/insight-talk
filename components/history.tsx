@@ -181,7 +181,7 @@ export default function History({ user }: { user: User | undefined }) {
 					type="text"
 					value={filter}
 					onChange={(e) => setFilter(e.target.value)}
-					className="w-full overflow-hidden rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-slate-800"
+					className="w-full overflow-hidden rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-slate-800"
 					placeholder="Search Conversations"
 				/>
 

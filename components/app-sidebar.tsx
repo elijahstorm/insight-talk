@@ -17,13 +17,15 @@ import {
 } from '@/components/ui/sidebar'
 import Link from 'next/link'
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip'
+import { DropdownContent } from './DropdownContent'
+import { SidebarLanguageSelector } from './sidebar-language-selector'
 
 export function AppSidebar({ user }: { user: User | undefined }) {
 	const router = useRouter()
 	const { setOpenMobile } = useSidebar()
 
 	return (
-		<Sidebar className="group-data-[side=left]:border-r-0">
+		<Sidebar side="right" className="group-data-[side=right]:border-l-0">
 			<SidebarHeader>
 				<SidebarMenu>
 					<div className="flex flex-row items-center justify-between">
@@ -59,7 +61,22 @@ export function AppSidebar({ user }: { user: User | undefined }) {
 				</SidebarMenu>
 			</SidebarHeader>
 			<SidebarContent>
-				<SidebarHistory user={user} />
+				<DropdownContent
+					dropdowns={[
+						{
+							title: 'Language',
+							content: <SidebarLanguageSelector user={user} />,
+						},
+						{
+							title: 'Liked',
+							content: <SidebarHistory user={user} limitLiked />,
+						},
+						{
+							title: 'History',
+							content: <SidebarHistory user={user} />,
+						},
+					]}
+				/>
 			</SidebarContent>
 			<SidebarFooter>{user && <SidebarUserNav user={user} />}</SidebarFooter>
 		</Sidebar>

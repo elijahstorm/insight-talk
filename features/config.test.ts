@@ -1,9 +1,11 @@
 const config = {
+	header: {
+		showDarkModeToggle: false,
+	},
 	search: {
 		dropdownFilter: false,
 	},
 	insightChat: {
-		hideSidebar: true,
 		hideNewChatHeader: true,
 		allowChangeModel: false,
 		allowPrivate: false,

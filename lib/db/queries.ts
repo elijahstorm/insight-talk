@@ -90,6 +90,26 @@ export async function getChatsByUserId({ id }: { id: string }) {
 	}
 }
 
+export async function getLikedChatsByUserId({ id }: { id: string }) {
+	try {
+		const likedChatIds = await db
+			.select({ chatId: vote.chatId })
+			.from(vote)
+			.where(eq(vote.isUpvoted, true))
+
+		const chatIds = likedChatIds.map((vote) => vote.chatId)
+
+		return await db
+			.select()
+			.from(chat)
+			.where(and(eq(chat.userId, id), inArray(chat.id, chatIds)))
+			.orderBy(desc(chat.createdAt))
+	} catch (error) {
+		console.error('Failed to get liked chats by user from database')
+		throw error
+	}
+}
+
 export async function getChatById({ id }: { id: string }) {
 	try {
 		const [selectedChat] = await db.select().from(chat).where(eq(chat.id, id))

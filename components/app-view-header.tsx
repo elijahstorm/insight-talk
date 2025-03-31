@@ -4,31 +4,17 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useWindowSize } from 'usehooks-ts'
 
-import { ModelSelector } from '@/components/model-selector'
 import { SidebarToggle } from '@/components/sidebar-toggle'
 import { Button } from '@/components/ui/button'
 import { PlusIcon } from './icons'
 import { useSidebar } from './ui/sidebar'
 import { memo } from 'react'
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip'
-import { VisibilityType, VisibilitySelector } from './visibility-selector'
 import config from '@/features/config'
 import { HomeButton } from './home-button'
 import LightDarkThemeToggle from './light-dark-theme-toggle'
 
-function PureChatHeader({
-	header = '',
-	chatId,
-	selectedModelId,
-	selectedVisibilityType,
-	isReadonly,
-}: {
-	header?: string
-	chatId: string
-	selectedModelId: string
-	selectedVisibilityType: VisibilityType
-	isReadonly: boolean
-}) {
+function PureChatHeader({ header = '' }: { header?: string }) {
 	const router = useRouter()
 	const { open } = useSidebar()
 	const { width: windowWidth } = useWindowSize()
@@ -54,18 +40,6 @@ function PureChatHeader({
 					</TooltipTrigger>
 					<TooltipContent>New Chat</TooltipContent>
 				</Tooltip>
-			)}
-
-			{config.insightChat.allowChangeModel && !isReadonly && (
-				<ModelSelector selectedModelId={selectedModelId} className="order-1 md:order-2" />
-			)}
-
-			{config.insightChat.allowPrivate && !isReadonly && (
-				<VisibilitySelector
-					chatId={chatId}
-					selectedVisibilityType={selectedVisibilityType}
-					className="order-1 md:order-3"
-				/>
 			)}
 
 			<h1 className="order-1 mx-auto text-lg font-semibold md:order-3">{header}</h1>
@@ -94,7 +68,6 @@ function PureChatHeader({
 	)
 }
 
-export const ChatHeader = memo(PureChatHeader, (prevProps, nextProps) => {
-	if (prevProps.header !== nextProps.header) return false
-	return prevProps.selectedModelId === nextProps.selectedModelId
+export const AppViewHeader = memo(PureChatHeader, (prevProps, nextProps) => {
+	return prevProps.header === nextProps.header
 })

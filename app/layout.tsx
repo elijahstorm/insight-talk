@@ -4,6 +4,7 @@ import { Toaster } from 'sonner'
 import { ThemeProvider } from '@/components/theme-provider'
 
 import './globals.css'
+import { LanguageProvider } from '@/hooks/use-language'
 
 export const metadata: Metadata = {
 	metadataBase: new URL('https://insight-talk.vercel.app/'),
@@ -58,15 +59,17 @@ export default async function RootLayout({
 				/>
 			</head>
 			<body className="">
-				<ThemeProvider
-					attribute="class"
-					defaultTheme="system"
-					enableSystem
-					disableTransitionOnChange
-				>
-					<Toaster position="top-center" />
-					{children}
-				</ThemeProvider>
+				<LanguageProvider>
+					<ThemeProvider
+						attribute="class"
+						defaultTheme="system"
+						enableSystem
+						disableTransitionOnChange
+					>
+						<Toaster position="top-center" />
+						{children}
+					</ThemeProvider>
+				</LanguageProvider>
 			</body>
 		</html>
 	)

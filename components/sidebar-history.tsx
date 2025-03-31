@@ -146,7 +146,13 @@ export const ChatItem = memo(PureChatItem, (prevProps, nextProps) => {
 	return true
 })
 
-export function SidebarHistory({ user }: { user: User | undefined }) {
+export function SidebarHistory({
+	user,
+	limitLiked = false,
+}: {
+	user: User | undefined
+	limitLiked?: boolean
+}) {
 	const { setOpenMobile } = useSidebar()
 	const { id } = useParams()
 	const pathname = usePathname()
@@ -154,7 +160,7 @@ export function SidebarHistory({ user }: { user: User | undefined }) {
 		data: history,
 		isLoading,
 		mutate,
-	} = useSWR<Array<Chat>>(user ? '/api/history' : null, fetcher, {
+	} = useSWR<Array<Chat>>(user && limitLiked ? 'api/liked-chats' : '/api/history', fetcher, {
 		fallbackData: [],
 	})
 
@@ -281,9 +287,9 @@ export function SidebarHistory({ user }: { user: User | undefined }) {
 								const groupedChats = groupChatsByDate(history)
 
 								return (
-									<>
+									<div className="space-y-6">
 										{groupedChats.today.length > 0 && (
-											<>
+											<div>
 												<div className="px-2 py-1 text-xs text-sidebar-foreground/50">Today</div>
 												{groupedChats.today.map((chat) => (
 													<ChatItem
@@ -297,12 +303,12 @@ export function SidebarHistory({ user }: { user: User | undefined }) {
 														setOpenMobile={setOpenMobile}
 													/>
 												))}
-											</>
+											</div>
 										)}
 
 										{groupedChats.yesterday.length > 0 && (
-											<>
-												<div className="mt-6 px-2 py-1 text-xs text-sidebar-foreground/50">
+											<div>
+												<div className="px-2 py-1 text-xs text-sidebar-foreground/50">
 													Yesterday
 												</div>
 												{groupedChats.yesterday.map((chat) => (
@@ -317,12 +323,12 @@ export function SidebarHistory({ user }: { user: User | undefined }) {
 														setOpenMobile={setOpenMobile}
 													/>
 												))}
-											</>
+											</div>
 										)}
 
 										{groupedChats.lastWeek.length > 0 && (
-											<>
-												<div className="mt-6 px-2 py-1 text-xs text-sidebar-foreground/50">
+											<div>
+												<div className="px-2 py-1 text-xs text-sidebar-foreground/50">
 													Last 7 days
 												</div>
 												{groupedChats.lastWeek.map((chat) => (
@@ -337,12 +343,12 @@ export function SidebarHistory({ user }: { user: User | undefined }) {
 														setOpenMobile={setOpenMobile}
 													/>
 												))}
-											</>
+											</div>
 										)}
 
 										{groupedChats.lastMonth.length > 0 && (
-											<>
-												<div className="mt-6 px-2 py-1 text-xs text-sidebar-foreground/50">
+											<div>
+												<div className="px-2 py-1 text-xs text-sidebar-foreground/50">
 													Last 30 days
 												</div>
 												{groupedChats.lastMonth.map((chat) => (
@@ -357,14 +363,12 @@ export function SidebarHistory({ user }: { user: User | undefined }) {
 														setOpenMobile={setOpenMobile}
 													/>
 												))}
-											</>
+											</div>
 										)}
 
 										{groupedChats.older.length > 0 && (
-											<>
-												<div className="mt-6 px-2 py-1 text-xs text-sidebar-foreground/50">
-													Older
-												</div>
+											<div>
+												<div className="px-2 py-1 text-xs text-sidebar-foreground/50">Older</div>
 												{groupedChats.older.map((chat) => (
 													<ChatItem
 														key={chat.id}
@@ -377,9 +381,9 @@ export function SidebarHistory({ user }: { user: User | undefined }) {
 														setOpenMobile={setOpenMobile}
 													/>
 												))}
-											</>
+											</div>
 										)}
-									</>
+									</div>
 								)
 							})()}
 					</SidebarMenu>
