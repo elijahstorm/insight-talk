@@ -201,7 +201,7 @@ export default function History({ user }: { user: User | undefined }) {
 				)}
 			</div>
 
-			{isLoading ? (
+			{!isLoading ? (
 				<Skeleton />
 			) : (
 				history?.length && <ShowHistory history={history} filter={filter} typeFilter={typeFilter} />

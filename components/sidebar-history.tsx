@@ -160,7 +160,7 @@ export function SidebarHistory({
 		data: history,
 		isLoading,
 		mutate,
-	} = useSWR<Array<Chat>>(user && limitLiked ? 'api/liked-chats' : '/api/history', fetcher, {
+	} = useSWR<Array<Chat>>(user && limitLiked ? '/api/liked-chats' : '/api/history', fetcher, {
 		fallbackData: [],
 	})
 

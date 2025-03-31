@@ -19,13 +19,18 @@ import Link from 'next/link'
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip'
 import { DropdownContent } from './DropdownContent'
 import { SidebarLanguageSelector } from './sidebar-language-selector'
+import { useWindowSize } from 'usehooks-ts'
 
 export function AppSidebar({ user }: { user: User | undefined }) {
 	const router = useRouter()
 	const { setOpenMobile } = useSidebar()
+	const { width: windowWidth } = useWindowSize()
 
 	return (
-		<Sidebar side="right" className="group-data-[side=right]:border-l-0">
+		<Sidebar
+			side={windowWidth < 768 ? 'right' : 'left'}
+			className="group-data-[side=right]:border-l-0"
+		>
 			<SidebarHeader>
 				<SidebarMenu>
 					<div className="flex flex-row items-center justify-between">

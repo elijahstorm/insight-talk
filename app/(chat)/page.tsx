@@ -8,7 +8,7 @@ export default async function Page() {
 		<>
 			<AppViewHeader header="History" />
 
-			<div className="flex max-w-xl flex-col gap-8 rounded-xl p-6 text-center leading-relaxed">
+			<div className="mx-auto flex max-w-xl flex-col gap-8 rounded-xl p-6 text-center leading-relaxed md:max-w-4xl">
 				<History user={(await auth())?.user} />
 				<AddNewButton />
 			</div>

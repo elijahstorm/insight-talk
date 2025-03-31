@@ -17,11 +17,7 @@ export const Overview = () => {
 				<h2 className="text-xl font-bold">Talk Insight</h2>
 				<p>
 					You can learn more about how to use the Talk Insight AI by visiting the{' '}
-					<Link
-						className="font-medium underline underline-offset-4"
-						href="https://insight-talk.vercel.app/about"
-						target="_blank"
-					>
+					<Link className="font-medium underline underline-offset-4" href="/about" target="_blank">
 						about
 					</Link>{' '}
 					page.

@@ -2,7 +2,6 @@
 
 import type { User } from 'next-auth'
 import { memo } from 'react'
-import { toast } from 'sonner'
 
 import {
 	SidebarGroup,
@@ -25,7 +24,6 @@ const PureLanguageItem = ({
 
 	const changeLang = (lang: (typeof languages)[number]) => () => {
 		setLanguage(lang)
-		toast.info('Changed your language to ' + lang.name)
 	}
 
 	return (

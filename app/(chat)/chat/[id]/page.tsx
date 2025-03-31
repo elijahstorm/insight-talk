@@ -53,6 +53,7 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
 		<>
 			<InsightChat
 				id={chat.id}
+				user={session?.user}
 				initialMessages={convertToUIMessages(messagesFromDb)}
 				selectedChatModel={chatModelFromCookie?.value ?? DEFAULT_CHAT_MODEL}
 				selectedVisibilityType={chat.visibility}

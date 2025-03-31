@@ -120,6 +120,34 @@ export async function getChatById({ id }: { id: string }) {
 	}
 }
 
+export async function getUserLanguage({ userId }: { userId: string }) {
+	try {
+		const [userRecord] = await db
+			.select({ language: user.language })
+			.from(user)
+			.where(eq(user.id, userId))
+		return userRecord?.language
+	} catch (error) {
+		console.error('Failed to get user language', error)
+		throw error
+	}
+}
+
+export async function updateUserLanguage({
+	userId,
+	language,
+}: {
+	userId: string
+	language: string
+}) {
+	try {
+		return await db.update(user).set({ language }).where(eq(user.id, userId))
+	} catch (error) {
+		console.error('Failed to update user language', error)
+		throw error
+	}
+}
+
 export async function saveMessages({ messages }: { messages: Array<DBMessage> }) {
 	try {
 		return await db.insert(message).values(messages)

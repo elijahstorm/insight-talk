@@ -15,14 +15,18 @@ import { VisibilityType, VisibilitySelector } from './visibility-selector'
 import config from '@/features/config'
 import { HomeButton } from './home-button'
 import LightDarkThemeToggle from './light-dark-theme-toggle'
+import Image from 'next/image'
+import { User } from 'next-auth'
 
 function PureChatHeader({
+	user = undefined,
 	header = '',
 	chatId,
 	selectedModelId,
 	selectedVisibilityType,
 	isReadonly,
 }: {
+	user?: User
 	header?: string
 	chatId: string
 	selectedModelId: string
@@ -68,15 +72,19 @@ function PureChatHeader({
 				/>
 			)}
 
-			<h1 className="order-1 mx-auto text-lg font-semibold md:order-3">{header}</h1>
+			<h1 className="order-1 mx-auto text-lg font-semibold md:order-2">{header}</h1>
 
-			{config.insightChat.showUserIcon && (
-				<Button
-					className="order-4 hidden h-fit bg-zinc-900 px-2 py-1.5 text-zinc-50 hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 md:ml-auto md:flex md:h-[34px]"
-					asChild
-				>
-					<Link href="https://insight-talk.vercel.app/" target="_noblank">
-						[User Icon]
+			{config.insightChat.showUserIcon && user && (
+				<Button className="order-4 h-fit" variant="outline" asChild>
+					<Link href="/my-page" target="_noblank">
+						<Image
+							src={`https://avatar.vercel.sh/${user.email ?? ''}`}
+							alt={user.email ?? 'User Avatar'}
+							width={24}
+							height={24}
+							className="rounded-full"
+						/>
+						<span className="hidden max-w-[100px] truncate md:inline">{user?.email}</span>
 					</Link>
 				</Button>
 			)}
@@ -87,9 +95,11 @@ function PureChatHeader({
 				</div>
 			)}
 
-			<div className="order-2">
-				<SidebarToggle />
-			</div>
+			{windowWidth < 768 && (
+				<div className="order-2">
+					<SidebarToggle />
+				</div>
+			)}
 		</header>
 	)
 }

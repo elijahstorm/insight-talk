@@ -16,6 +16,7 @@ import { toast } from 'sonner'
 import Image from 'next/image'
 import CreateNewChat from './create-new-chat'
 import { InsightMessageType, insightTypes } from './insight-message'
+import { User } from 'next-auth'
 
 const FullPageLoader = () => {
 	const [progress, setProgress] = useState(0)
@@ -55,12 +56,14 @@ const FullPageLoader = () => {
 
 export function InsightChat({
 	id,
+	user = undefined,
 	initialMessages,
 	selectedChatModel,
 	selectedVisibilityType,
 	isReadonly,
 }: {
 	id: string
+	user?: User
 	initialMessages: Array<UIMessage>
 	selectedChatModel: string
 	selectedVisibilityType: VisibilityType
@@ -112,6 +115,7 @@ export function InsightChat({
 			) : (
 				<div className="flex h-dvh min-w-0 flex-col space-y-6 bg-background">
 					<ChatHeader
+						user={user}
 						header={
 							updatedMessages.length
 								? 'Report'

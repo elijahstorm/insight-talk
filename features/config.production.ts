@@ -9,11 +9,12 @@ const config = {
 		hideNewChatHeader: true,
 		allowChangeModel: false,
 		allowPrivate: false,
-		showUserIcon: false,
+		showUserIcon: true,
 	},
 	vote: {
 		legacyStyle: false,
 	},
+	errorLog: false,
 }
 
 export default config
