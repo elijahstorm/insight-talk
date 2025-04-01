@@ -47,6 +47,37 @@ export async function createUser(email: string, password: string) {
 	}
 }
 
+export async function newInsight({
+	userId,
+	title,
+	summary,
+	visibility = 'private',
+	type,
+}: {
+	userId: string
+	title: string
+	summary: string
+	visibility?: 'private' | 'public'
+	type: Array<string>
+}) {
+	try {
+		return await db
+			.insert(chat)
+			.values({
+				createdAt: new Date(),
+				userId,
+				title,
+				summary,
+				visibility,
+				type,
+			})
+			.returning()
+	} catch (error) {
+		console.error('Failed to save chat in database')
+		throw error
+	}
+}
+
 export async function saveChat({
 	id,
 	userId,

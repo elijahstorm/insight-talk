@@ -139,7 +139,7 @@ export function InsightChat({
 					)}
 
 					{updatedMessages.length === 0 ? (
-						<CreateNewChat setShowLoader={setShowLoader} />
+						<CreateNewChat setShowLoader={setShowLoader} selectedChatModel={selectedChatModel} />
 					) : (
 						<Messages
 							chatId={id}

@@ -2,6 +2,8 @@ import { MultiTypeSelector } from './multi-type-selector'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
+import config from '@/features/config'
 
 const typesList = [
 	{
@@ -76,12 +78,49 @@ const typesList = [
 ]
 
 export default function CreateNewChat({
+	selectedChatModel,
 	setShowLoader,
 }: {
+	selectedChatModel: string
 	setShowLoader?: React.Dispatch<React.SetStateAction<boolean>>
 }) {
 	const [selectedValues, setSelectedValues] = useState<string[]>([])
 	const router = useRouter()
+
+	const makeNewChat = async () => {
+		setShowLoader && setShowLoader(true)
+
+		try {
+			const response = await fetch('/api/insight', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({
+					selectedChatModel,
+					messages: [], // todo
+					type: selectedValues,
+					visibility: config.insightChat.allowPrivate ? 'private' : 'public',
+				}),
+			})
+
+			if (!response.ok) {
+				throw new Error('Failed to create chat')
+			}
+
+			const { chatId } = await response.json()
+
+			router.push(`/chat/${chatId}`)
+			router.refresh()
+		} catch (error) {
+			toast.error('Failed to create your chat. Try again later')
+			if (config.errorLog) {
+				console.error('Error creating chat:', error)
+			}
+		} finally {
+			setShowLoader && setShowLoader(false)
+		}
+	}
 
 	return (
 		<div className="flex h-full flex-col gap-4 overflow-hidden px-4">
@@ -93,21 +132,7 @@ export default function CreateNewChat({
 					selectOne={true}
 				/>
 			</div>
-			<Button
-				className="w-full py-6 hover:bg-accent focus:bg-accent"
-				onClick={() => {
-					setShowLoader && setShowLoader(true)
-					// todo
-					// Push `selectedValues` to the database here
-					// on response and new chatId set, then:
-					// if config.insightChat.allowPrivate ? set public : set private
-					setTimeout(() => {
-						const chatId = 'fe210abc-6c08-46bf-8f75-1fd78ad7f2bb'
-						router.push(`/chat/${chatId}`)
-						router.refresh()
-					}, 3000)
-				}}
-			>
+			<Button className="w-full py-6 hover:bg-accent focus:bg-accent" onClick={makeNewChat}>
 				Check Talk Insight
 			</Button>
 		</div>

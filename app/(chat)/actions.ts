@@ -30,6 +30,42 @@ export async function generateTitleFromUserMessage({ message }: { message: Messa
 	return title
 }
 
+export async function generateTitleAndSummaryFromUserMessage({ message }: { message: Message }) {
+	const { text } = await generateText({
+		model: myProvider.languageModel('title-model'),
+		system: `\n
+    - You will be given a chat log history between two or multiple people.
+    - Generate a concise title and a short summary based on the conversation logs provided.
+    - Separate the title and summary with a bar | operator.
+    - The title should be the first value before the | operator, and it should be a concise representation of the participants or the main topic of the conversation.
+    - The summary should be the second value after the | operator, and it should be a short sentence summarizing the conversation. Ensure the summary is longer than the title but no more than 250 characters.
+    - Do not use quotes, colons, or any special formatting in the response.
+    - Ensure the response format is consistent and easy to parse: [title] | [summary].`,
+		prompt: JSON.stringify(message),
+	})
+
+	const splitIndex = text.indexOf('|')
+	if (splitIndex === -1) {
+		return { title: text.trim(), summary: '' }
+	}
+
+	const title = text.substring(0, splitIndex).trim()
+	const summary = text.substring(splitIndex + 1).trim()
+
+	return { title, summary }
+}
+
+export async function generateInsight({ message }: { message: Message }) {
+	const { text } = await generateText({
+		model: myProvider.languageModel('title-model'),
+		system: `\n
+    - Hope this works`, // todo
+		prompt: JSON.stringify(message),
+	})
+
+	return { text }
+}
+
 export async function deleteTrailingMessages({ id }: { id: string }) {
 	const [message] = await getMessageById({ id })
 
