@@ -44,6 +44,7 @@ export type InsightMessageType = {
 	id: string
 	insight: true
 	role: 'assistant'
+	createdAt: Date
 	content: string
 	parts: Array<InsightParts>
 	experimental_attachments?: UIMessage['experimental_attachments']

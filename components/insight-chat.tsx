@@ -17,7 +17,7 @@ import Image from 'next/image'
 import CreateNewChat from '@/components/create-new-chat'
 import { InsightMessageType, insightTypes } from '@/components/insight-message'
 import { User } from 'next-auth'
-import { MultimodalInput } from './multimodal-input'
+import { MultimodalInput } from '@/components/multimodal-input'
 
 const FullPageLoader = () => {
 	const [progress, setProgress] = useState(0)

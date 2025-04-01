@@ -10,6 +10,8 @@ import {
 } from '@/lib/db/queries'
 import { VisibilityType } from '@/components/visibility-selector'
 import { myProvider } from '@/lib/ai/providers'
+import { InsightMessageType } from '@/components/insight-message'
+import { InsightPrompts, systemPrompt } from '@/lib/system-prompts'
 
 export async function saveChatModelAsCookie(model: string) {
 	const cookieStore = await cookies()
@@ -56,16 +58,85 @@ export async function generateTitleAndSummaryFromUserMessage({ message }: { mess
 }
 
 export async function generateInsight({ message }: { message: Message }) {
-	const { text } = await generateText({
+	const { text: communicationPatterns } = await generateText({
 		model: myProvider.languageModel('title-model'),
-		system: `\n
-    - Hope this works`, // todo
+		system: systemPrompt(InsightPrompts.communicationPatterns),
+		prompt: JSON.stringify(message),
+	})
+	const { text: replies } = await generateText({
+		model: myProvider.languageModel('title-model'),
+		system: systemPrompt(InsightPrompts.replies),
+		prompt: JSON.stringify(message),
+	})
+	const { text: insight } = await generateText({
+		model: myProvider.languageModel('title-model'),
+		system: systemPrompt(InsightPrompts.generalInsight),
 		prompt: JSON.stringify(message),
 	})
 
-	// todo
-	// parse response into insight message
-	return { text, assistantMessage: message }
+	const parseCommunicationPatternPart = (text: string) => {
+		const parseData = (text: string): [string, string, string, string, string] => {
+			const [name, style, analysis, ratiosText, descriptionText] = text
+				.split('||')
+				.map((item) => item.trim())
+			return [name, style, analysis, ratiosText, descriptionText]
+		}
+
+		const parseRatios = (ratios: string): Array<{ type: string; ratio: number }> => {
+			return ratios.split('|').map((ratio) => {
+				const [type, ratioValue] = ratio.split(':').map((item) => item.trim())
+				return { type, ratio: parseFloat(ratioValue) }
+			})
+		}
+
+		const parseDescription = (description: string): Array<string> => {
+			return description.split('|').map((item) => item.trim())
+		}
+
+		const [name, style, analysis, ratiosText, descriptionText] = parseData(text)
+		const ratios = parseRatios(ratiosText)
+		const description = parseDescription(descriptionText)
+
+		return {
+			type: 'com-pattern' as const,
+			name,
+			style,
+			text: analysis,
+			ratios,
+			description,
+		}
+	}
+
+	const parseRepliesPart = (
+		text: string
+	): { type: 'replies'; replies: Array<{ title: string; lines: string[] }> } => {
+		const replies = text.split('|||').map((reply) => {
+			const [title, linesText] = reply.split('||').map((item) => item.trim())
+			const lines = linesText.split('|').map((line) => line.trim())
+			return { title, lines }
+		})
+
+		return { type: 'replies', replies }
+	}
+
+	const parseInsightPart = (text: string) => {
+		return { type: 'insight' as const, text: text.split('||').map((item) => item.trim()) }
+	}
+
+	const assistantMessage: InsightMessageType = {
+		id: '',
+		content: '',
+		insight: true,
+		role: 'assistant',
+		createdAt: new Date(),
+		parts: [
+			parseCommunicationPatternPart(communicationPatterns),
+			parseInsightPart(insight),
+			parseRepliesPart(replies),
+		],
+	}
+
+	return { assistantMessage }
 }
 
 export async function deleteTrailingMessages({ id }: { id: string }) {

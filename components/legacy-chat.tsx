@@ -13,7 +13,7 @@ import { Messages } from '@/components/messages'
 import { VisibilityType } from '@/components/visibility-selector'
 import { useArtifactSelector } from '@/hooks/use-artifact'
 import { toast } from 'sonner'
-import { Overview } from './overview'
+import { Overview } from '@/components/overview'
 
 export function LegacyChat({
 	id,
