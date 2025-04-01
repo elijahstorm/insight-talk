@@ -5,7 +5,7 @@ import { memo, useEffect, useState } from 'react'
 import { Vote } from '@/lib/db/schema'
 import equal from 'fast-deep-equal'
 import { UseChatHelpers } from '@ai-sdk/react'
-import { InsightMessageType } from '@/components/insight-message'
+import { InsightMessageType, insightTypes } from '@/components/insight-message'
 import { useCopyToClipboard } from 'usehooks-ts'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
@@ -48,8 +48,8 @@ function PureMessages({
 		}
 	}
 
-	const showNextMessage = () => {
-		setCurrentMessage((prevIndex) => prevIndex + 1)
+	const showNextMessage = (skipIndex: number) => () => {
+		setCurrentMessage((prevIndex) => prevIndex + skipIndex)
 		setVisibleMessageParts(0)
 	}
 
@@ -65,24 +65,65 @@ function PureMessages({
 		toast.success('Copied link to clipboard!')
 	}
 
+	const showableMessages = (() => {
+		const current = messages[currentMessage]
+		if (
+			current.parts?.some((part) =>
+				insightTypes.includes(
+					(part as UIMessage['parts'][number] | InsightMessageType['parts'][number]).type
+				)
+			)
+		) {
+			return [current]
+		}
+
+		const legacyMessages = []
+		for (let i = currentMessage; i < messages.length; i++) {
+			const message = messages[i]
+			if (
+				message.parts?.some((part) =>
+					insightTypes.includes(
+						(part as UIMessage['parts'][number] | InsightMessageType['parts'][number]).type
+					)
+				)
+			) {
+				break
+			}
+			legacyMessages.push(message)
+		}
+		return legacyMessages
+	})()
+
+	type PossibleTypes = (UIMessage['parts'][number] | InsightMessageType['parts'][number])['type']
+	const showNextButtonTexts: { [K in PossibleTypes]: string } = {
+		'com-pattern': 'See Your Communication Pattern',
+		replies: 'See the Reply Ideas',
+		insight: 'See Chat Insights',
+		text: 'See Chats',
+		reasoning: 'See Chats',
+		'tool-invocation': 'See Chats',
+		source: 'See Chats',
+	}
+
 	return (
 		<div className="flex h-full flex-col gap-4 overflow-hidden pb-6">
 			<div
 				ref={messagesContainerRef}
 				className="flex min-w-0 flex-1 flex-col gap-6 overflow-y-scroll"
 			>
-				<PreviewMessage
-					chatId={chatId}
-					message={messages[currentMessage]}
-					visibleParts={visibleMessageParts}
-					isLoading={status === 'streaming'}
-					vote={
-						votes ? votes.find((vote) => vote.messageId === messages[currentMessage].id) : undefined
-					}
-					setMessages={setMessages}
-					reload={reload}
-					isReadonly={isReadonly}
-				/>
+				{showableMessages.map((message, index) => (
+					<PreviewMessage
+						key={`${chatId}-${index}`}
+						chatId={chatId}
+						message={message}
+						visibleParts={visibleMessageParts}
+						isLoading={status === 'streaming'}
+						vote={votes ? votes.find((vote) => vote.messageId === message.id) : undefined}
+						setMessages={setMessages}
+						reload={reload}
+						isReadonly={isReadonly}
+					/>
+				))}
 
 				{status === 'submitted' &&
 					messages.length > 0 &&
@@ -101,9 +142,16 @@ function PureMessages({
 						<Button className="py-6" variant={'outline'} onClick={share}>
 							Share
 						</Button>
-						{showNextMessage && currentMessage < messages.length - 1 && (
-							<Button className="py-6 hover:bg-primary focus:bg-primary" onClick={showNextMessage}>
-								See the Reply Ideas
+						{showNextMessage && currentMessage + showableMessages.length < messages.length && (
+							<Button
+								className="py-6 hover:bg-primary focus:bg-primary"
+								onClick={showNextMessage(showableMessages.length)}
+							>
+								{
+									showNextButtonTexts[
+										messages[currentMessage + showableMessages.length].parts[0].type
+									]
+								}
 							</Button>
 						)}
 					</motion.div>
@@ -116,7 +164,7 @@ function PureMessages({
 						animate={{ y: 0, opacity: 1 }}
 					>
 						<Button className="py-6 hover:bg-primary focus:bg-primary" onClick={showNextPart}>
-							Check Talk Insight
+							Read More
 						</Button>
 					</motion.div>
 				</AnimatePresence>
