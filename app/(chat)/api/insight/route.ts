@@ -10,10 +10,14 @@ export async function POST(request: Request) {
 	try {
 		const {
 			messages,
+			language,
+			name,
 			type = ['NA'],
 			visibility = 'private',
 		}: {
 			messages: Array<UIMessage>
+			language: string
+			name?: string
 			type?: Array<string>
 			visibility?: 'private' | 'public'
 		} = await request.json()
@@ -32,6 +36,9 @@ export async function POST(request: Request) {
 
 		const { title, summary } = await generateTitleAndSummaryFromUserMessage({
 			message,
+			type,
+			language,
+			name,
 		})
 
 		const chat = await newInsight({ userId: session.user.id, title, summary, type, visibility })
@@ -49,20 +56,20 @@ export async function POST(request: Request) {
 			],
 		})
 
-		const { assistantMessage } = await generateInsight({ message })
+		const { assistantMessage } = await generateInsight({ message, type, language, name })
 
-		if (!assistantMessage.id) {
+		if (assistantMessage.parts.length === 0) {
 			throw new Error('No assistant message found!')
 		}
 
 		await saveMessages({
 			messages: [
 				{
-					id: assistantMessage.id,
+					id: undefined as unknown as string,
 					chatId: chat[0].id,
 					role: assistantMessage.role,
 					parts: assistantMessage.parts,
-					attachments: assistantMessage.experimental_attachments ?? [],
+					attachments: [],
 					createdAt: new Date(),
 				},
 			],
@@ -70,6 +77,7 @@ export async function POST(request: Request) {
 
 		return Response.json({ chatId: chat[0].id }, { status: 200 })
 	} catch (error) {
+		console.error('error info - ', error)
 		return new Response('An error occurred while processing your request!', {
 			status: 404,
 		})

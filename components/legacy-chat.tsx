@@ -14,6 +14,7 @@ import { VisibilityType } from '@/components/visibility-selector'
 import { useArtifactSelector } from '@/hooks/use-artifact'
 import { toast } from 'sonner'
 import { Overview } from '@/components/overview'
+import { InsightMessageType } from '@/components/insight-message'
 
 export function LegacyChat({
 	id,
@@ -54,6 +55,15 @@ export function LegacyChat({
 	const [attachments, setAttachments] = useState<Array<Attachment>>([])
 	const isArtifactVisible = useArtifactSelector((state) => state.isVisible)
 
+	const updatedMessages = messages.filter(
+		(message) =>
+			!message.parts?.some(
+				(part) =>
+					(part as UIMessage['parts'][number] | InsightMessageType['parts'][number]).type ===
+					'chat-logs'
+			)
+	)
+
 	return (
 		<>
 			<div className="flex h-dvh min-w-0 flex-col bg-background">
@@ -72,7 +82,7 @@ export function LegacyChat({
 							chatId={id}
 							status={status}
 							votes={votes}
-							messages={messages}
+							messages={updatedMessages}
 							setMessages={setMessages}
 							reload={reload}
 							isReadonly={isReadonly}
@@ -81,7 +91,7 @@ export function LegacyChat({
 					)}
 				</div>
 
-				<form className="mx-auto flex w-full gap-2 bg-background px-4 pb-4 md:max-w-3xl md:pb-6">
+				<form className="mx-auto flex w-full gap-2 bg-background pb-4 md:max-w-3xl md:pb-6">
 					{!isReadonly && (
 						<MultimodalInput
 							chatId={id}

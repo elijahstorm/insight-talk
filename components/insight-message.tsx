@@ -5,16 +5,23 @@ import { toast } from 'sonner'
 import { CopyIcon } from '@/components/icons'
 import { Button } from '@/components/ui/button'
 
+type ChatLogs = {
+	type: 'chat-logs'
+	logs: string
+}
+
 type CommunicationPatternPart = {
 	type: 'com-pattern'
-	name: string
-	style: string
-	text: string
-	ratios: Array<{
-		type: string
-		ratio: number
+	people: Array<{
+		name: string
+		style: string
+		text: string
+		ratios: Array<{
+			type: string
+			ratio: number
+		}>
+		description: Array<string>
 	}>
-	description: Array<string>
 }
 
 type InsightPart = {
@@ -30,8 +37,9 @@ type RepliesPart = {
 	}>
 }
 
-export type InsightParts = CommunicationPatternPart | InsightPart | RepliesPart
+export type InsightParts = ChatLogs | CommunicationPatternPart | InsightPart | RepliesPart
 
+export const chatLogsType = 'chat-logs'
 export const insightTypes = ['com-pattern', 'insight', 'replies']
 
 export function isInsightMessageType(
@@ -67,33 +75,46 @@ export default function InsightMessage({
 	const colors = ['secondary', 'accent']
 
 	if (type === 'com-pattern') {
-		const ratioTotals = part.ratios.reduce((total, ratio) => total + ratio.ratio, 0)
-
 		return (
-			<div key={key} data-testid="message-content" className="flex flex-col gap-2">
-				<p className="font-light">{part.name} Communication Pattern</p>
-				<h1 className="text-3xl font-bold capitalize text-primary">{part.style}</h1>
-				<p className="font-light">{part.text}</p>
-				<div className="flex w-full py-4 text-lg font-semibold capitalize">
-					{part.ratios.map((ratio, index) => (
+			<div key={key} data-testid="message-content" className="space-y-6 divide-y-2">
+				{part.people.map((person, personIndex) => {
+					const ratioTotals = person.ratios.reduce((total, ratio) => total + ratio.ratio, 0)
+					return (
 						<div
-							key={`part-${messageId}-ratio-${index}`}
-							className={`bg-${colors[index]} text-${colors[index]}-foreground space-x-2 truncate px-1 py-2 text-center`}
-							style={{ width: `${(ratio.ratio / ratioTotals) * 100}%` }}
-							title={ratio.type}
+							key={`part-person-${personIndex}`}
+							className={`flex flex-col gap-2 ${personIndex > 0 ? 'pt-6' : ''}`}
 						>
-							<span>{ratio.type}</span>
-							{index !== part.ratios.length - 1 && (
-								<span>{(ratio.ratio / ratioTotals) * 100}%</span>
-							)}
+							<p className="font-light text-secondary-foreground">
+								<span className="font-semibold text-secondary">{person.name}&rsquo;s</span>
+								&nbsp;Communication Pattern
+							</p>
+							<h1 className="text-3xl font-bold capitalize text-primary">{person.style}</h1>
+							<p className="font-light">{person.text}</p>
+							<div className="flex w-full py-4 text-lg font-semibold capitalize">
+								{person.ratios.map((ratio, index) => (
+									<div
+										key={`part-${messageId}-person-${personIndex}-ratio-${index}`}
+										className={`bg-${colors[index]} text-${colors[index]}-foreground space-x-2 truncate px-1 py-2 text-center`}
+										style={{ width: `${(ratio.ratio / ratioTotals) * 100}%` }}
+										title={ratio.type}
+									>
+										<span>{ratio.type}</span>
+										{index !== person.ratios.length - 1 && (
+											<span>{(ratio.ratio / ratioTotals) * 100}%</span>
+										)}
+									</div>
+								))}
+							</div>
+							<div className="font-light">
+								{person.description.map((markdown, index) => (
+									<Markdown key={`part-${messageId}-person-${personIndex}-markdown-${index}`}>
+										{markdown}
+									</Markdown>
+								))}
+							</div>
 						</div>
-					))}
-				</div>
-				<div className="font-light">
-					{part.description.map((markdown, index) => (
-						<Markdown key={`part-${messageId}-markdown-${index}`}>{markdown}</Markdown>
-					))}
-				</div>
+					)
+				})}
 			</div>
 		)
 	}

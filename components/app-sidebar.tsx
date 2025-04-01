@@ -20,17 +20,24 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { DropdownContent } from '@/components/DropdownContent'
 import { SidebarLanguageSelector } from '@/components/sidebar-language-selector'
 import { useWindowSize } from 'usehooks-ts'
+import { useEffect, useState } from 'react'
 
 export function AppSidebar({ user }: { user: User | undefined }) {
 	const router = useRouter()
 	const { setOpenMobile } = useSidebar()
 	const { width: windowWidth } = useWindowSize()
+	const [side, setSide] = useState<'left' | 'right'>('left')
+
+	useEffect(() => {
+		if (windowWidth < 768) {
+			setSide('right')
+		} else {
+			setSide('left')
+		}
+	}, [windowWidth])
 
 	return (
-		<Sidebar
-			side={windowWidth < 768 ? 'right' : 'left'}
-			className="group-data-[side=right]:border-l-0"
-		>
+		<Sidebar side={side} className="group-data-[side=right]:border-l-0">
 			<SidebarHeader>
 				<SidebarMenu>
 					<div className="flex flex-row items-center justify-between">

@@ -100,14 +100,23 @@ export function InsightChat({
 	const [attachments, setAttachments] = useState<Array<Attachment>>([])
 	const isArtifactVisible = useArtifactSelector((state) => state.isVisible)
 
-	const updatedMessages = messages.map((message) => ({
-		...message,
-		insight: message.parts?.some((part) =>
-			insightTypes.includes(
-				(part as UIMessage['parts'][number] | InsightMessageType['parts'][number]).type
-			)
-		),
-	}))
+	const updatedMessages = messages
+		.filter(
+			(message) =>
+				!message.parts?.some(
+					(part) =>
+						(part as UIMessage['parts'][number] | InsightMessageType['parts'][number]).type ===
+						'chat-logs'
+				)
+		)
+		.map((message) => ({
+			...message,
+			insight: message.parts?.some((part) =>
+				insightTypes.includes(
+					(part as UIMessage['parts'][number] | InsightMessageType['parts'][number]).type
+				)
+			),
+		}))
 
 	return (
 		<>
@@ -152,7 +161,7 @@ export function InsightChat({
 							isReadonly={isReadonly}
 							isArtifactVisible={isArtifactVisible}
 						>
-							<form className="mx-auto flex w-full gap-2 bg-background px-4 pb-4 md:max-w-3xl md:pb-6">
+							<form className="mx-auto flex w-full gap-2 bg-background pb-4 md:max-w-3xl md:pb-6">
 								{!isReadonly && (
 									<MultimodalInput
 										chatId={id}

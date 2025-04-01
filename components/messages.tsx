@@ -1,7 +1,7 @@
 import { UIMessage } from 'ai'
 import { PreviewMessage, ThinkingMessage } from '@/components/message'
 import { useScrollToBottom } from '@/components/use-scroll-to-bottom'
-import { memo, ReactNode, useEffect, useState } from 'react'
+import { memo, useEffect, useState } from 'react'
 import { Vote } from '@/lib/db/schema'
 import equal from 'fast-deep-equal'
 import { UseChatHelpers } from '@ai-sdk/react'
@@ -98,6 +98,7 @@ function PureMessages({
 
 	type PossibleTypes = (UIMessage['parts'][number] | InsightMessageType['parts'][number])['type']
 	const showNextButtonTexts: { [K in PossibleTypes]: string } = {
+		'chat-logs': '',
 		'com-pattern': 'See Your Communication Pattern',
 		replies: 'See the Reply Ideas',
 		insight: 'See Chat Insights',

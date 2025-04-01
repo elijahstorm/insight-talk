@@ -10,7 +10,7 @@ const config = {
 		allowChangeModel: false,
 		allowPrivate: false,
 		showUserIcon: true,
-		previewMode: true,
+		previewMode: false,
 	},
 	vote: {
 		legacyStyle: false,

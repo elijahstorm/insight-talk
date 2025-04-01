@@ -4,78 +4,10 @@ import { Button } from '@/components/ui/button'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import config from '@/features/config'
-
-const typesList = [
-	{
-		title: 'Romantic & Dating',
-		types: [
-			{
-				icon: '💕',
-				type: 'Romantic Partner',
-			},
-			{
-				icon: '💞',
-				type: 'Potential Partner',
-			},
-			{
-				icon: '💔',
-				type: 'Ex-Partner',
-			},
-		],
-	},
-	{
-		title: 'Friendship & Social',
-		types: [
-			{
-				icon: '👫',
-				type: 'Close Friend',
-			},
-			{
-				icon: '🎉',
-				type: 'Acquaintance',
-			},
-		],
-	},
-	{
-		title: 'Family',
-		types: [
-			{
-				icon: '👪',
-				type: 'Immediate Family',
-			},
-			{
-				icon: '🏡',
-				type: 'Distant Relative',
-			},
-		],
-	},
-	{
-		title: 'Work & Professional',
-		types: [
-			{
-				icon: '🏡',
-				type: 'Coworker',
-			},
-			{
-				icon: '👩‍💼',
-				type: 'Manager',
-			},
-			{
-				icon: '🤝',
-				type: 'Business Contact',
-			},
-		],
-	},
-	{
-		title: 'Other',
-		types: [
-			{
-				icon: '❓',
-				type: 'No Listed / Prefer Not to Say',
-			},
-		],
-	},
-]
+import { demoDataDONOTCOMMIT } from '@/lib/ai/system-prompts'
+import { useLanguage } from '@/hooks/use-language'
+import { chatLogsType } from '@/components/insight-message'
+import { relationshipTypes } from '@/lib/ai/relationship-types'
 
 export default function CreateNewChat({
 	selectedChatModel,
@@ -85,6 +17,7 @@ export default function CreateNewChat({
 	setShowLoader?: React.Dispatch<React.SetStateAction<boolean>>
 }) {
 	const [selectedValues, setSelectedValues] = useState<string[]>([])
+	const { currentLanguage } = useLanguage()
 	const router = useRouter()
 
 	const makeNewChat = async () => {
@@ -98,8 +31,20 @@ export default function CreateNewChat({
 				},
 				body: JSON.stringify({
 					selectedChatModel,
-					messages: [], // todo
-					// message.role === 'user'
+					language: currentLanguage.name,
+					name: '스톰', // todo
+					messages: [
+						{
+							role: 'user',
+							createdAt: new Date(),
+							parts: [
+								{
+									type: chatLogsType,
+									logs: demoDataDONOTCOMMIT,
+								},
+							],
+						},
+					],
 					type: selectedValues,
 					visibility: config.insightChat.allowPrivate ? 'private' : 'public',
 				}),
@@ -127,7 +72,7 @@ export default function CreateNewChat({
 		<div className="flex h-full flex-col gap-4 overflow-hidden px-4">
 			<div className="flex-1 overflow-auto">
 				<MultiTypeSelector
-					types={typesList}
+					types={relationshipTypes}
 					selectedValues={selectedValues}
 					onSelectionChange={setSelectedValues}
 					selectOne={true}

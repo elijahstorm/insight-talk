@@ -6,7 +6,6 @@ import {
 	streamText,
 } from 'ai'
 import { auth } from '@/app/(auth)/auth'
-import { systemPrompt } from '@/lib/ai/prompts'
 import { deleteChatById, getChatById, saveChat, saveMessages } from '@/lib/db/queries'
 import {
 	generateMockedResponse,
@@ -22,6 +21,7 @@ import { getWeather } from '@/lib/ai/tools/get-weather'
 import { isProductionEnvironment } from '@/lib/constants'
 import { myProvider } from '@/lib/ai/providers'
 import config from '@/features/config'
+import { systemPrompt } from '@/lib/ai/system-prompts'
 
 export const maxDuration = 60
 
@@ -91,7 +91,7 @@ export async function POST(request: Request) {
 
 				const result = streamText({
 					model: myProvider.languageModel(selectedChatModel),
-					system: systemPrompt({ selectedChatModel }),
+					system: systemPrompt(),
 					messages,
 					maxSteps: 5,
 					experimental_activeTools:
