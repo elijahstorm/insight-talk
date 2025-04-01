@@ -63,7 +63,9 @@ export async function generateInsight({ message }: { message: Message }) {
 		prompt: JSON.stringify(message),
 	})
 
-	return { text }
+	// todo
+	// parse response into insight message
+	return { text, assistantMessage: message }
 }
 
 export async function deleteTrailingMessages({ id }: { id: string }) {

@@ -99,6 +99,7 @@ export default function CreateNewChat({
 				body: JSON.stringify({
 					selectedChatModel,
 					messages: [], // todo
+					// message.role === 'user'
 					type: selectedValues,
 					visibility: config.insightChat.allowPrivate ? 'private' : 'public',
 				}),
