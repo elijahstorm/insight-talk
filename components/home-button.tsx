@@ -3,8 +3,8 @@ import type { ComponentProps } from 'react'
 import { type SidebarTrigger } from '@/components/ui/sidebar'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 
-import { HomeIcon } from './icons'
-import { Button } from './ui/button'
+import { HomeIcon } from '@/components/icons'
+import { Button } from '@/components/ui/button'
 import { usePathname, useRouter } from 'next/navigation'
 
 export function HomeButton({ className }: ComponentProps<typeof SidebarTrigger>) {

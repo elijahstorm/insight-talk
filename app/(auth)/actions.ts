@@ -4,7 +4,7 @@ import { z } from 'zod'
 
 import { createUser, getUser } from '@/lib/db/queries'
 
-import { signIn } from './auth'
+import { signIn } from '@/app/(auth)/auth'
 
 const authFormSchema = z.object({
 	email: z.string().email(),

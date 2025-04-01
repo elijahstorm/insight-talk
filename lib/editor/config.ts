@@ -6,7 +6,7 @@ import type { Transaction } from 'prosemirror-state'
 import type { EditorView } from 'prosemirror-view'
 import type { MutableRefObject } from 'react'
 
-import { buildContentFromDocument } from './functions'
+import { buildContentFromDocument } from '@/lib/editor/functions'
 
 export const documentSchema = new Schema({
 	nodes: addListNodes(schema.spec.nodes, 'paragraph block*', 'block'),

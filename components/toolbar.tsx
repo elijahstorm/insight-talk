@@ -16,9 +16,9 @@ import { useOnClickOutside } from 'usehooks-ts'
 import { nanoid } from 'nanoid'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
-import { ArrowUpIcon, StopIcon, SummarizeIcon } from './icons'
-import { artifactDefinitions, ArtifactKind } from './artifact'
-import { ArtifactToolbarItem } from './create-artifact'
+import { ArrowUpIcon, StopIcon, SummarizeIcon } from '@/components/icons'
+import { artifactDefinitions, ArtifactKind } from '@/components/artifact'
+import { ArtifactToolbarItem } from '@/components/create-artifact'
 import { UseChatHelpers } from '@ai-sdk/react'
 
 type ToolProps = {

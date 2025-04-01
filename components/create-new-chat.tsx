@@ -1,4 +1,4 @@
-import { MultiTypeSelector } from './multi-type-selector'
+import { MultiTypeSelector } from '@/components/multi-type-selector'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { useRouter } from 'next/navigation'

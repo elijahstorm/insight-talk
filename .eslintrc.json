@@ -6,10 +6,20 @@
 		"prettier",
 		"plugin:tailwindcss/recommended"
 	],
-	"plugins": ["tailwindcss"],
+	"plugins": [
+		"tailwindcss"
+	],
 	"rules": {
 		"tailwindcss/no-custom-classname": "off",
-		"tailwindcss/classnames-order": "off"
+		"tailwindcss/classnames-order": "off",
+		"no-restricted-imports": [
+			"error",
+			{
+				"patterns": [
+					".*" // no relative imports
+				]
+			}
+		]
 	},
 	"settings": {
 		"import/resolver": {
@@ -18,5 +28,7 @@
 			}
 		}
 	},
-	"ignorePatterns": ["**/components/ui/**"]
+	"ignorePatterns": [
+		"**/components/ui/**"
+	]
 }

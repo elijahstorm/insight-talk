@@ -2,7 +2,7 @@
 
 import React, { ReactNode } from 'react'
 import { toast as sonnerToast } from 'sonner'
-import { CheckCircleFillIcon, WarningIcon } from './icons'
+import { CheckCircleFillIcon, WarningIcon } from '@/components/icons'
 
 const iconsByType: Record<'success' | 'error', ReactNode> = {
 	success: <CheckCircleFillIcon />,

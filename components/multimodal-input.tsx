@@ -16,13 +16,13 @@ import {
 import { toast } from 'sonner'
 import { useLocalStorage, useWindowSize } from 'usehooks-ts'
 
-import { ArrowUpIcon, PaperclipIcon, StopIcon } from './icons'
-import { PreviewAttachment } from './preview-attachment'
-import { Button } from './ui/button'
-import { Textarea } from './ui/textarea'
-import { SuggestedActions } from './suggested-actions'
+import { ArrowUpIcon, PaperclipIcon, StopIcon } from '@/components/icons'
+import { PreviewAttachment } from '@/components/preview-attachment'
+import { Button } from '@/components/ui/button'
+import { Textarea } from '@/components/ui/textarea'
+import { SuggestedActions } from '@/components/suggested-actions'
 import equal from 'fast-deep-equal'
-import { UseChatHelpers, UseChatOptions } from '@ai-sdk/react'
+import { UseChatHelpers } from '@ai-sdk/react'
 
 function PureMultimodalInput({
 	chatId,

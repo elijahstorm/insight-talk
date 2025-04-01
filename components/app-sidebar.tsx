@@ -16,9 +16,9 @@ import {
 	useSidebar,
 } from '@/components/ui/sidebar'
 import Link from 'next/link'
-import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip'
-import { DropdownContent } from './DropdownContent'
-import { SidebarLanguageSelector } from './sidebar-language-selector'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { DropdownContent } from '@/components/DropdownContent'
+import { SidebarLanguageSelector } from '@/components/sidebar-language-selector'
 import { useWindowSize } from 'usehooks-ts'
 
 export function AppSidebar({ user }: { user: User | undefined }) {

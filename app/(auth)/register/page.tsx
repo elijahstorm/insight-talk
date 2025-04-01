@@ -7,7 +7,7 @@ import { useActionState, useEffect, useState } from 'react'
 import { AuthForm } from '@/components/auth-form'
 import { SubmitButton } from '@/components/submit-button'
 
-import { register, type RegisterActionState } from '../actions'
+import { register, type RegisterActionState } from '@/app/(auth)/actions'
 import { toast } from '@/components/toast'
 
 export default function Page() {

@@ -7,8 +7,8 @@ import { renderToString } from 'react-dom/server'
 
 import { Markdown } from '@/components/markdown'
 
-import { documentSchema } from './config'
-import { createSuggestionWidget, type UISuggestion } from './suggestions'
+import { documentSchema } from '@/lib/editor/config'
+import { createSuggestionWidget, type UISuggestion } from '@/lib/editor/suggestions'
 
 export const buildDocumentFromContent = (content: string) => {
 	const parser = DOMParser.fromSchema(documentSchema)

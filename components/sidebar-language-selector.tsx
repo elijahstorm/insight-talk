@@ -10,7 +10,7 @@ import {
 	SidebarMenuButton,
 	SidebarMenuItem,
 } from '@/components/ui/sidebar'
-import { Button } from './ui/button'
+import { Button } from '@/components/ui/button'
 import { languages, useLanguage } from '@/hooks/use-language'
 
 const PureLanguageItem = ({

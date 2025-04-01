@@ -1,6 +1,6 @@
 import { config } from 'dotenv'
 import postgres from 'postgres'
-import { chat, message, messageDeprecated, vote, voteDeprecated } from '../schema'
+import { chat, message, messageDeprecated, vote, voteDeprecated } from '@/lib/db/schema'
 import { drizzle } from 'drizzle-orm/postgres-js'
 import { inArray } from 'drizzle-orm'
 import { appendResponseMessages, UIMessage } from 'ai'

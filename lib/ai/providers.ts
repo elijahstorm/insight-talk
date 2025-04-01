@@ -1,8 +1,8 @@
 import { customProvider, extractReasoningMiddleware, wrapLanguageModel } from 'ai'
 import { openai } from '@ai-sdk/openai'
 import { fireworks } from '@ai-sdk/fireworks'
-import { isTestEnvironment } from '../constants'
-import { artifactModel, chatModel, reasoningModel, titleModel } from './models.test'
+import { isTestEnvironment } from '@/lib/constants'
+import { artifactModel, chatModel, reasoningModel, titleModel } from '@/lib/ai/models.test'
 
 export const myProvider = isTestEnvironment
 	? customProvider({

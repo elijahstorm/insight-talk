@@ -2,8 +2,8 @@
 
 import { useRouter } from 'next/navigation'
 import React, { useRef, useState } from 'react'
-import { PaperclipIcon, PlusIcon, ImageIcon } from './icons'
-import { Button } from './ui/button'
+import { PaperclipIcon, PlusIcon, ImageIcon } from '@/components/icons'
+import { Button } from '@/components/ui/button'
 
 function HeadsUpButton({
 	action,

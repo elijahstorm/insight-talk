@@ -4,7 +4,7 @@ import Credentials from 'next-auth/providers/credentials'
 
 import { getUser } from '@/lib/db/queries'
 
-import { authConfig } from './auth.config'
+import { authConfig } from '@/app/(auth)/auth.config'
 
 interface ExtendedSession extends Session {
 	user: User

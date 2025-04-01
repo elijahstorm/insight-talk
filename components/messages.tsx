@@ -1,14 +1,14 @@
 import { UIMessage } from 'ai'
-import { PreviewMessage, ThinkingMessage } from './message'
-import { useScrollToBottom } from './use-scroll-to-bottom'
+import { PreviewMessage, ThinkingMessage } from '@/components/message'
+import { useScrollToBottom } from '@/components/use-scroll-to-bottom'
 import { memo, useEffect, useState } from 'react'
 import { Vote } from '@/lib/db/schema'
 import equal from 'fast-deep-equal'
 import { UseChatHelpers } from '@ai-sdk/react'
-import { InsightMessageType } from './insight-message'
+import { InsightMessageType } from '@/components/insight-message'
 import { useCopyToClipboard } from 'usehooks-ts'
 import { toast } from 'sonner'
-import { Button } from './ui/button'
+import { Button } from '@/components/ui/button'
 import { AnimatePresence, motion } from 'framer-motion'
 
 interface MessagesProps {

@@ -8,7 +8,7 @@ import { toast } from '@/components/toast'
 import { AuthForm } from '@/components/auth-form'
 import { SubmitButton } from '@/components/submit-button'
 
-import { login, type LoginActionState } from '../actions'
+import { login, type LoginActionState } from '@/app/(auth)/actions'
 
 export default function Page() {
 	const router = useRouter()

@@ -1,19 +1,19 @@
 'use client'
 
 import { memo, MouseEvent, useCallback, useEffect, useMemo, useRef } from 'react'
-import { ArtifactKind, UIArtifact } from './artifact'
-import { FileIcon, FullscreenIcon, ImageIcon, LoaderIcon } from './icons'
+import { ArtifactKind, UIArtifact } from '@/components/artifact'
+import { FileIcon, FullscreenIcon, ImageIcon, LoaderIcon } from '@/components/icons'
 import { cn, fetcher } from '@/lib/utils'
 import { Document } from '@/lib/db/schema'
-import { InlineDocumentSkeleton } from './document-skeleton'
+import { InlineDocumentSkeleton } from '@/components/document-skeleton'
 import useSWR from 'swr'
-import { Editor } from './text-editor'
-import { DocumentToolCall, DocumentToolResult } from './document'
-import { CodeEditor } from './code-editor'
+import { Editor } from '@/components/text-editor'
+import { DocumentToolCall, DocumentToolResult } from '@/components/document'
+import { CodeEditor } from '@/components/code-editor'
 import { useArtifact } from '@/hooks/use-artifact'
 import equal from 'fast-deep-equal'
-import { SpreadsheetEditor } from './sheet-editor'
-import { ImageEditor } from './image-editor'
+import { SpreadsheetEditor } from '@/components/sheet-editor'
+import { ImageEditor } from '@/components/image-editor'
 
 interface DocumentPreviewProps {
 	isReadonly: boolean

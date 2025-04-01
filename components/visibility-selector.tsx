@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { cn } from '@/lib/utils'
 
-import { CheckCircleFillIcon, ChevronDownIcon, GlobeIcon, LockIcon } from './icons'
+import { CheckCircleFillIcon, ChevronDownIcon, GlobeIcon, LockIcon } from '@/components/icons'
 import { useChatVisibility } from '@/hooks/use-chat-visibility'
 
 export type VisibilityType = 'private' | 'public'

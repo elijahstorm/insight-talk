@@ -1,9 +1,9 @@
 import { UIMessage } from 'ai'
-import { Markdown } from './markdown'
+import { Markdown } from '@/components/markdown'
 import { useCopyToClipboard } from 'usehooks-ts'
 import { toast } from 'sonner'
-import { CopyIcon } from './icons'
-import { Button } from './ui/button'
+import { CopyIcon } from '@/components/icons'
+import { Button } from '@/components/ui/button'
 
 type CommunicationPatternPart = {
 	type: 'com-pattern'
