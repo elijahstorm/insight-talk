@@ -63,7 +63,7 @@ const PurePreviewMessage = ({
 			<motion.div
 				key={`message-${message.id}`}
 				data-testid={`message-${message.role}`}
-				className="group/message mx-auto size-full max-w-3xl px-4"
+				className="group/message mx-auto w-full max-w-3xl px-4"
 				initial={{ y: 5, opacity: 0 }}
 				animate={{ y: 0, opacity: 1 }}
 				data-role={message.role}
@@ -163,7 +163,7 @@ const LegacyChat = ({
 			)}
 
 			<div className="flex w-full flex-col gap-4">
-				{message.experimental_attachments && (
+				{message.experimental_attachments && message.experimental_attachments.length > 0 && (
 					<div data-testid={`message-attachments`} className="flex flex-row justify-end gap-2">
 						{message.experimental_attachments.map((attachment) => (
 							<PreviewAttachment key={attachment.url} attachment={attachment} />
@@ -203,9 +203,10 @@ const LegacyChat = ({
 
 									<div
 										data-testid="message-content"
-										className={cn('flex flex-col gap-4', {
-											'rounded-xl bg-primary px-3 py-2 text-primary-foreground':
-												message.role === 'user',
+										className={cn('flex flex-col gap-4 px-3 py-2', {
+											'rounded-xl bg-primary text-primary-foreground': message.role === 'user',
+											'border-forground text-forground rounded-xl border bg-background':
+												message.role === 'assistant',
 										})}
 									>
 										<Markdown>{part.text}</Markdown>

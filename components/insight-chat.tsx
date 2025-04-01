@@ -17,6 +17,7 @@ import Image from 'next/image'
 import CreateNewChat from '@/components/create-new-chat'
 import { InsightMessageType, insightTypes } from '@/components/insight-message'
 import { User } from 'next-auth'
+import { MultimodalInput } from './multimodal-input'
 
 const FullPageLoader = () => {
 	const [progress, setProgress] = useState(0)
@@ -150,7 +151,25 @@ export function InsightChat({
 							reload={reload}
 							isReadonly={isReadonly}
 							isArtifactVisible={isArtifactVisible}
-						/>
+						>
+							<form className="mx-auto flex w-full gap-2 bg-background px-4 pb-4 md:max-w-3xl md:pb-6">
+								{!isReadonly && (
+									<MultimodalInput
+										chatId={id}
+										input={input}
+										setInput={setInput}
+										handleSubmit={handleSubmit}
+										status={status}
+										stop={stop}
+										attachments={attachments}
+										setAttachments={setAttachments}
+										messages={messages}
+										setMessages={setMessages}
+										append={append}
+									/>
+								)}
+							</form>
+						</Messages>
 					)}
 				</div>
 			)}

@@ -1,7 +1,7 @@
 import { UIMessage } from 'ai'
 import { PreviewMessage, ThinkingMessage } from '@/components/message'
 import { useScrollToBottom } from '@/components/use-scroll-to-bottom'
-import { memo, useEffect, useState } from 'react'
+import { memo, ReactNode, useEffect, useState } from 'react'
 import { Vote } from '@/lib/db/schema'
 import equal from 'fast-deep-equal'
 import { UseChatHelpers } from '@ai-sdk/react'
@@ -20,6 +20,7 @@ interface MessagesProps {
 	reload: UseChatHelpers['reload']
 	isReadonly: boolean
 	isArtifactVisible: boolean
+	children?: React.ReactNode
 }
 
 function PureMessages({
@@ -30,6 +31,7 @@ function PureMessages({
 	setMessages,
 	reload,
 	isReadonly,
+	children,
 }: MessagesProps) {
 	const [messagesContainerRef, messagesEndRef] = useScrollToBottom<HTMLDivElement>()
 	const [currentMessage, setCurrentMessage] = useState<number>(0)
@@ -135,31 +137,33 @@ function PureMessages({
 			{visibleMessageParts === (messages[currentMessage].parts?.length || 0) - 1 ? (
 				<AnimatePresence key="next-message">
 					<motion.div
-						className="flex w-full flex-col gap-4 px-4"
+						className="mx-auto flex w-full max-w-3xl flex-col gap-4 px-4"
 						initial={{ y: 5, opacity: 0 }}
 						animate={{ y: 0, opacity: 1 }}
 					>
 						<Button className="py-6" variant={'outline'} onClick={share}>
 							Share
 						</Button>
-						{showNextMessage && currentMessage + showableMessages.length < messages.length && (
-							<Button
-								className="py-6 hover:bg-primary focus:bg-primary"
-								onClick={showNextMessage(showableMessages.length)}
-							>
-								{
-									showNextButtonTexts[
-										messages[currentMessage + showableMessages.length].parts[0].type
-									]
-								}
-							</Button>
-						)}
+						{currentMessage + showableMessages.length < messages.length
+							? showNextMessage && (
+									<Button
+										className="py-6 hover:bg-primary focus:bg-primary"
+										onClick={showNextMessage(showableMessages.length)}
+									>
+										{
+											showNextButtonTexts[
+												messages[currentMessage + showableMessages.length].parts[0].type
+											]
+										}
+									</Button>
+								)
+							: children}
 					</motion.div>
 				</AnimatePresence>
 			) : (
 				<AnimatePresence key="next-page">
 					<motion.div
-						className="flex w-full flex-col gap-4 px-4"
+						className="mx-auto flex w-full max-w-3xl flex-col gap-4 px-4"
 						initial={{ y: 5, opacity: 0 }}
 						animate={{ y: 0, opacity: 1 }}
 					>
