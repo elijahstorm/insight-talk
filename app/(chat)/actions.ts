@@ -77,21 +77,25 @@ export async function generateInsight({
 	language: string
 	name?: string
 }) {
-	const { text: communicationPatterns } = await generateText({
-		model: myProvider.languageModel('title-model'),
-		system: systemPrompt(InsightPrompts.communicationPatterns),
-		prompt: preparePromtWithMessage({ message, type, language, name }),
-	})
-	const { text: replies } = await generateText({
-		model: myProvider.languageModel('title-model'),
-		system: systemPrompt(InsightPrompts.replies),
-		prompt: preparePromtWithMessage({ message, type, language, name }),
-	})
-	const { text: insight } = await generateText({
-		model: myProvider.languageModel('title-model'),
-		system: systemPrompt(InsightPrompts.generalInsight),
-		prompt: preparePromtWithMessage({ message, type, language, name }),
-	})
+	const [{ text: communicationPatterns }, { text: replies }, { text: insight }] = await Promise.all(
+		[
+			generateText({
+				model: myProvider.languageModel('title-model'),
+				system: systemPrompt(InsightPrompts.communicationPatterns),
+				prompt: preparePromtWithMessage({ message, type, language, name }),
+			}),
+			generateText({
+				model: myProvider.languageModel('title-model'),
+				system: systemPrompt(InsightPrompts.replies),
+				prompt: preparePromtWithMessage({ message, type, language, name }),
+			}),
+			generateText({
+				model: myProvider.languageModel('title-model'),
+				system: systemPrompt(InsightPrompts.generalInsight),
+				prompt: preparePromtWithMessage({ message, type, language, name }),
+			}),
+		]
+	)
 
 	const parseCommunicationPatternPart = (text: string) => {
 		const parsePerson = (person: string) => {
@@ -150,18 +154,22 @@ export async function generateInsight({
 		return { type: 'insight' as const, text: text.split('||').map((item) => item.trim()) }
 	}
 
-	const assistantMessage = {
-		content: '',
-		role: 'assistant',
-		createdAt: new Date(),
-		parts: [
-			parseCommunicationPatternPart(communicationPatterns),
-			parseInsightPart(insight),
-			parseRepliesPart(replies),
-		],
-	}
+	const assistantMessages = [
+		{
+			content: '',
+			role: 'assistant',
+			createdAt: new Date(),
+			parts: [parseCommunicationPatternPart(communicationPatterns), parseInsightPart(insight)],
+		},
+		{
+			content: '',
+			role: 'assistant',
+			createdAt: new Date(),
+			parts: [parseRepliesPart(replies)],
+		},
+	]
 
-	return { assistantMessage }
+	return { assistantMessages }
 }
 
 export async function deleteTrailingMessages({ id }: { id: string }) {

@@ -45,7 +45,7 @@ const FullPageLoader = () => {
 			<div className="h-2 w-64 overflow-hidden bg-accent">
 				<div
 					className="h-full bg-primary"
-					style={{ width: `${progress}%`, transition: 'width 3s cubic-bezier(.08, .28, .31, .99)' }}
+					style={{ width: `${progress}%`, transition: 'width 6s cubic-bezier(.08, .28, .31, .99)' }}
 				></div>
 			</div>
 

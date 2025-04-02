@@ -34,48 +34,51 @@ export async function POST(request: Request) {
 			return new Response('No user message found', { status: 400 })
 		}
 
-		const { title, summary } = await generateTitleAndSummaryFromUserMessage({
-			message,
-			type,
-			language,
-			name,
-		})
+		const [{ title, summary }, { assistantMessages }] = await Promise.all([
+			generateTitleAndSummaryFromUserMessage({
+				message,
+				type,
+				language,
+				name,
+			}),
+			generateInsight({ message, type, language, name }),
+		])
+
+		if (
+			assistantMessages.length === 0 ||
+			!assistantMessages.some((message) => message.parts.length > 0)
+		) {
+			throw new Error('No assistant message found!')
+		}
 
 		const chat = await newInsight({ userId: session.user.id, title, summary, type, visibility })
 
-		await saveMessages({
-			messages: [
-				{
-					chatId: chat[0].id,
-					id: message.id,
-					role: 'user',
-					parts: message.parts,
-					attachments: message.experimental_attachments ?? [],
-					createdAt: new Date(),
-				},
-			],
-		})
-
-		const { assistantMessage } = await generateInsight({ message, type, language, name })
-
-		if (assistantMessage.parts.length === 0) {
-			throw new Error('No assistant message found!')
+		if (!chat) {
+			return new Response('Chat room could not be created!', { status: 400 })
 		}
 
 		await saveMessages({
 			messages: [
 				{
 					id: undefined as unknown as string,
-					chatId: chat[0].id,
+					chatId: chat.id,
+					role: 'user',
+					parts: message.parts,
+					attachments: message.experimental_attachments ?? [],
+					createdAt: new Date(),
+				},
+				...assistantMessages.map((assistantMessage) => ({
+					id: undefined as unknown as string,
+					chatId: chat.id,
 					role: assistantMessage.role,
 					parts: assistantMessage.parts,
 					attachments: [],
 					createdAt: new Date(),
-				},
+				})),
 			],
 		})
 
-		return Response.json({ chatId: chat[0].id }, { status: 200 })
+		return Response.json({ chatId: chat.id }, { status: 200 })
 	} catch (error) {
 		console.error('error info - ', error)
 		return new Response('An error occurred while processing your request!', {

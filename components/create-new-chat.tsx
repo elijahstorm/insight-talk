@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import config from '@/features/config'
-import { demoDataDONOTCOMMIT } from '@/lib/ai/system-prompts'
 import { useLanguage } from '@/hooks/use-language'
 import { chatLogsType } from '@/components/insight-message'
 import { relationshipTypes } from '@/lib/ai/relationship-types'
@@ -19,6 +18,8 @@ export default function CreateNewChat({
 	const [selectedValues, setSelectedValues] = useState<string[]>([])
 	const { currentLanguage } = useLanguage()
 	const router = useRouter()
+
+	const textLogs = ''
 
 	const makeNewChat = async () => {
 		setShowLoader && setShowLoader(true)
@@ -40,7 +41,7 @@ export default function CreateNewChat({
 							parts: [
 								{
 									type: chatLogsType,
-									logs: demoDataDONOTCOMMIT,
+									logs: textLogs,
 								},
 							],
 						},

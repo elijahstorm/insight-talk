@@ -140,5 +140,3 @@ Here is the chat log history for analysis:
 ${JSON.stringify(message)}
 `
 }
-
-export const demoDataDONOTCOMMIT = ``

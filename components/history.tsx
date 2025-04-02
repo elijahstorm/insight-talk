@@ -133,7 +133,7 @@ const ShowHistory = ({
 	return (Object.keys(groupedChats) as Array<keyof GroupedChats>).map((timeGroup) =>
 		groupedChats[timeGroup].length ? (
 			<div key={timeGroup} className="space-y-4">
-				<div className="flex w-full text-sm font-thin text-slate-500">
+				<div className="flex w-full text-sm font-thin text-slate-500 dark:text-slate-200">
 					<h1>{timeGroupedText[timeGroup]}</h1>
 					<p className="ml-auto">{groupedChats[timeGroup].length}</p>
 				</div>
@@ -146,7 +146,9 @@ const ShowHistory = ({
 							href={`/chat/${chat.id}`}
 						>
 							<div className="flex w-full items-center gap-2">
-								<h2 className="line-clamp-1 flex-1 text-sm font-normal">{chat.title}</h2>
+								<h2 className="line-clamp-1 flex-1 text-sm font-normal dark:text-slate-100">
+									{chat.title}
+								</h2>
 								{config.search.dropdownFilter && (
 									<div className="size-6 rounded-full border border-slate-500 bg-slate-100 pl-1 pt-0.5 text-sm">
 										{typeEmojis[chat.type[0] as keyof typeof typeEmojis]}
@@ -181,7 +183,7 @@ export default function History({ user }: { user: User | undefined }) {
 					type="text"
 					value={filter}
 					onChange={(e) => setFilter(e.target.value)}
-					className="w-full overflow-hidden rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-slate-800"
+					className="w-full overflow-hidden rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-slate-800 dark:border-slate-500 dark:bg-background dark:text-slate-200 dark:placeholder:text-slate-400"
 					placeholder="Search Conversations"
 				/>
 

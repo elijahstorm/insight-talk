@@ -61,17 +61,19 @@ export async function newInsight({
 	type: Array<string>
 }) {
 	try {
-		return await db
-			.insert(chat)
-			.values({
-				createdAt: new Date(),
-				userId,
-				title,
-				summary,
-				visibility,
-				type,
-			})
-			.returning()
+		return (
+			await db
+				.insert(chat)
+				.values({
+					createdAt: new Date(),
+					userId,
+					title,
+					summary,
+					visibility,
+					type,
+				})
+				.returning()
+		)[0]
 	} catch (error) {
 		console.error('Failed to save chat in database')
 		throw error
