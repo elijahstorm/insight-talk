@@ -5,9 +5,12 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 
 import { SidebarLeftIcon } from '@/components/icons'
 import { Button } from '@/components/ui/button'
+import { dictionary } from '@/lib/language/dictionary'
+import { useLanguage } from '@/hooks/use-language'
 
 export function SidebarToggle({ className }: ComponentProps<typeof SidebarTrigger>) {
 	const { toggleSidebar } = useSidebar()
+	const { currentLanguage } = useLanguage()
 
 	return (
 		<Tooltip>
@@ -16,7 +19,9 @@ export function SidebarToggle({ className }: ComponentProps<typeof SidebarTrigge
 					<SidebarLeftIcon size={16} />
 				</Button>
 			</TooltipTrigger>
-			<TooltipContent align="start">Toggle Sidebar</TooltipContent>
+			<TooltipContent align="start">
+				{dictionary.tooltips.toggleSidebar[currentLanguage.code]}
+			</TooltipContent>
 		</Tooltip>
 	)
 }

@@ -7,7 +7,7 @@ import '@/app/globals.css'
 
 export const metadata: Metadata = {
 	metadataBase: new URL('https://insight-talk.vercel.app/'),
-	title: 'Insight Talk',
+	title: 'Talk Insight',
 	description:
 		'Talk Insight An AI-powered communication analysis tool that helps users improve interpersonal conversations, resolve conflicts, and foster healthier relationships.',
 }

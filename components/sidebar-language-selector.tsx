@@ -11,7 +11,8 @@ import {
 	SidebarMenuItem,
 } from '@/components/ui/sidebar'
 import { Button } from '@/components/ui/button'
-import { languages, useLanguage } from '@/hooks/use-language'
+import { useLanguage } from '@/hooks/use-language'
+import { languages } from '@/lib/language/dictionary'
 
 const PureLanguageItem = ({
 	lang,
@@ -57,17 +58,18 @@ export function SidebarLanguageSelector({ user }: { user: User | undefined }) {
 		)
 	}
 
-	if (languages?.length === 0) {
-		return (
-			<SidebarGroup>
-				<SidebarGroupContent>
-					<div className="flex w-full flex-row items-center justify-center gap-2 px-2 text-sm text-zinc-500">
-						No languages loaded in!
-					</div>
-				</SidebarGroupContent>
-			</SidebarGroup>
-		)
-	}
+	// todo, we might load lang from a datasource
+	// if (languages?.length === 0) {
+	// 	return (
+	// 		<SidebarGroup>
+	// 			<SidebarGroupContent>
+	// 				<div className="flex w-full flex-row items-center justify-center gap-2 px-2 text-sm text-zinc-500">
+	// 					No languages loaded in!
+	// 				</div>
+	// 			</SidebarGroupContent>
+	// 		</SidebarGroup>
+	// 	)
+	// }
 
 	return (
 		<SidebarGroup>

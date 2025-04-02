@@ -11,6 +11,8 @@ import { memo } from 'react'
 import equal from 'fast-deep-equal'
 import { toast } from 'sonner'
 import config from '@/features/config'
+import { useLanguage } from '@/hooks/use-language'
+import { dictionary } from '@/lib/language/dictionary'
 
 export function PureMessageActions({
 	chatId,
@@ -25,6 +27,7 @@ export function PureMessageActions({
 }) {
 	const { mutate } = useSWRConfig()
 	const [_, copyToClipboard] = useCopyToClipboard()
+	const { currentLanguage } = useLanguage()
 
 	if (isLoading) return null
 	if (message.role === 'user') return null
@@ -35,7 +38,9 @@ export function PureMessageActions({
 				className={`pt-4 ${config.vote.legacyStyle ? 'flex-row' : 'flex-col'} flex items-start gap-2`}
 			>
 				{!config.vote.legacyStyle && (
-					<p className="text-sm font-medium text-slate-600">Was this analysis helpful?</p>
+					<p className="text-sm font-medium text-slate-600">
+						{dictionary.messages.actions.question[currentLanguage.code]}
+					</p>
 				)}
 				{config.vote.legacyStyle && (
 					<Tooltip>
@@ -51,18 +56,22 @@ export function PureMessageActions({
 										.trim()
 
 									if (!textFromParts) {
-										toast.error("There's no text to copy!")
+										toast.error(dictionary.messages.actions.toasts.copy.error[currentLanguage.code])
 										return
 									}
 
 									await copyToClipboard(textFromParts)
-									toast.success('Copied to clipboard!')
+									toast.success(
+										dictionary.messages.actions.toasts.copy.success[currentLanguage.code]
+									)
 								}}
 							>
 								<CopyIcon />
 							</Button>
 						</TooltipTrigger>
-						<TooltipContent>Copy</TooltipContent>
+						<TooltipContent>
+							{dictionary.messages.actions.copy[currentLanguage.code]}
+						</TooltipContent>
 					</Tooltip>
 				)}
 
@@ -84,7 +93,7 @@ export function PureMessageActions({
 								})
 
 								toast.promise(upvote, {
-									loading: 'Upvoting Response...',
+									loading: dictionary.messages.actions.toasts.upvote.loading[currentLanguage.code],
 									success: () => {
 										mutate<Array<Vote>>(
 											`/api/vote?chatId=${chatId}`,
@@ -107,9 +116,9 @@ export function PureMessageActions({
 											{ revalidate: false }
 										)
 
-										return 'Upvoted Response!'
+										return dictionary.messages.actions.toasts.upvote.success[currentLanguage.code]
 									},
-									error: 'Failed to upvote response.',
+									error: dictionary.messages.actions.toasts.upvote.error[currentLanguage.code],
 								})
 							}}
 						>
@@ -117,13 +126,17 @@ export function PureMessageActions({
 								<ThumbUpIcon />
 							) : (
 								<div className="flex gap-2 px-1 py-2">
-									<span className="font-light">It was accurate and useful!</span>
+									<span className="font-light">
+										{dictionary.messages.actions.yes[currentLanguage.code]}
+									</span>
 									<ThumbUpIcon />
 								</div>
 							)}
 						</Button>
 					</TooltipTrigger>
-					<TooltipContent>Upvote Response</TooltipContent>
+					<TooltipContent>
+						{dictionary.messages.actions.toolTipYes[currentLanguage.code]}
+					</TooltipContent>
 				</Tooltip>
 
 				<Tooltip>
@@ -144,7 +157,7 @@ export function PureMessageActions({
 								})
 
 								toast.promise(downvote, {
-									loading: 'Downvoting Response...',
+									loading: dictionary.messages.actions.toasts.upvote.loading[currentLanguage.code],
 									success: () => {
 										mutate<Array<Vote>>(
 											`/api/vote?chatId=${chatId}`,
@@ -167,9 +180,9 @@ export function PureMessageActions({
 											{ revalidate: false }
 										)
 
-										return 'Downvoted Response!'
+										return dictionary.messages.actions.toasts.upvote.success[currentLanguage.code]
 									},
-									error: 'Failed to downvote response.',
+									error: dictionary.messages.actions.toasts.upvote.error[currentLanguage.code],
 								})
 							}}
 						>
@@ -178,14 +191,16 @@ export function PureMessageActions({
 							) : (
 								<div className="flex gap-2 px-1 py-2">
 									<span className="font-light">
-										It wasn&rsquo;t helpful or didn&rsquo;t make sense.
+										{dictionary.messages.actions.no[currentLanguage.code]}
 									</span>
 									<ThumbDownIcon />
 								</div>
 							)}
 						</Button>
 					</TooltipTrigger>
-					<TooltipContent>Downvote Response</TooltipContent>
+					<TooltipContent>
+						{dictionary.messages.actions.toolTipNo[currentLanguage.code]}
+					</TooltipContent>
 				</Tooltip>
 			</div>
 		</TooltipProvider>

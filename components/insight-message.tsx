@@ -4,6 +4,8 @@ import { useCopyToClipboard } from 'usehooks-ts'
 import { toast } from 'sonner'
 import { CopyIcon } from '@/components/icons'
 import { Button } from '@/components/ui/button'
+import { dictionary } from '@/lib/language/dictionary'
+import { useLanguage } from '@/hooks/use-language'
 
 type ChatLogs = {
 	type: 'chat-logs'
@@ -69,6 +71,7 @@ export default function InsightMessage({
 	isLoading: boolean
 }) {
 	const [_, copyToClipboard] = useCopyToClipboard()
+	const { currentLanguage } = useLanguage()
 
 	const { type } = part
 	const key = `message-${messageId}-part-${index}`
@@ -86,7 +89,8 @@ export default function InsightMessage({
 						>
 							<p className="font-light text-secondary-foreground">
 								<span className="font-semibold text-secondary">{person.name}&rsquo;s</span>
-								&nbsp;Communication Pattern
+								&nbsp;
+								{dictionary.messages.analysis.comPattern[currentLanguage.code]}
 							</p>
 							<h1 className="text-3xl font-bold capitalize text-primary">{person.style}</h1>
 							<p className="font-light">{person.text}</p>
@@ -122,7 +126,9 @@ export default function InsightMessage({
 	if (type === 'insight') {
 		return (
 			<div key={key} data-testid="message-content" className="flex flex-col gap-2">
-				<h2 className="text-2xl font-semibold capitalize text-primary">Insight & Recommendation</h2>
+				<h2 className="text-2xl font-semibold capitalize text-primary">
+					{dictionary.messages.analysis.insightAndRec[currentLanguage.code]}
+				</h2>
 				<div className="space-y-4 font-light">
 					{part.text.map((markdown, index) => (
 						<Markdown key={`part-${messageId}-markdown-${index}`}>{markdown}</Markdown>
@@ -135,12 +141,14 @@ export default function InsightMessage({
 	if (type === 'replies') {
 		const copy = (line: string) => async () => {
 			await copyToClipboard(line)
-			toast.success('Reply copied to clipboard')
+			toast.success(dictionary.messages.navigation.toasts.reply.copied[currentLanguage.code])
 		}
 
 		return (
 			<div key={key} data-testid="message-content" className="flex flex-col gap-2 pb-4">
-				<h2 className="text-2xl font-semibold capitalize text-primary">Reply Ideas</h2>
+				<h2 className="text-2xl font-semibold capitalize text-primary">
+					{dictionary.messages.analysis.replyIdeas[currentLanguage.code]}
+				</h2>
 				<div className="space-y-4 font-light">
 					{part.replies.map((reply, index) => (
 						<div key={`reply-${reply.title}-${index}`} className="space-y-2">

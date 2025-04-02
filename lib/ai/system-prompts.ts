@@ -48,7 +48,7 @@ ${messageType}`
 Your role is to act as a supportive, insightful, and empathetic assistant, helping users navigate their communication challenges effectively.`
 
 export const InsightPrompts = {
-	communicationPatterns: `In this message you will be focusing on analyzing each individual's communication pattern.
+	communicationPatterns: `In this message you will be focusing on analyzing each individual's communication pattern. Give a nuanced analysis that should include anywhere from 2 to 4 unique category types, denoted by the ratios and expanded upon in the descriptions.
 
 ### Formatting:
 - Write a report for each person.

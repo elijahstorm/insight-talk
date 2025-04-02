@@ -23,6 +23,8 @@ import { Textarea } from '@/components/ui/textarea'
 import { SuggestedActions } from '@/components/suggested-actions'
 import equal from 'fast-deep-equal'
 import { UseChatHelpers } from '@ai-sdk/react'
+import { useLanguage } from '@/hooks/use-language'
+import { dictionary } from '@/lib/language/dictionary'
 
 function PureMultimodalInput({
 	chatId,
@@ -51,6 +53,7 @@ function PureMultimodalInput({
 	handleSubmit: UseChatHelpers['handleSubmit']
 	className?: string
 }) {
+	const { currentLanguage } = useLanguage()
 	const textareaRef = useRef<HTMLTextAreaElement>(null)
 	const { width } = useWindowSize()
 
@@ -136,10 +139,10 @@ function PureMultimodalInput({
 					contentType: contentType,
 				}
 			}
-			const { error } = await response.json()
-			toast.error(error)
+
+			await response.json()
 		} catch (error) {
-			toast.error('Failed to upload file, please try again!')
+			toast.error(dictionary.messages.chat.uploadFailed[currentLanguage.code])
 		}
 	}
 
@@ -224,7 +227,7 @@ function PureMultimodalInput({
 						event.preventDefault()
 
 						if (status !== 'ready') {
-							toast.error('Please wait for the model to finish its response!')
+							toast.error(dictionary.messages.chat.pleaseWait[currentLanguage.code])
 						} else {
 							submitForm()
 						}

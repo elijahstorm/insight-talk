@@ -15,6 +15,8 @@ import { useArtifactSelector } from '@/hooks/use-artifact'
 import { toast } from 'sonner'
 import { Overview } from '@/components/overview'
 import { InsightMessageType } from '@/components/insight-message'
+import { useLanguage } from '@/hooks/use-language'
+import { dictionary } from '@/lib/language/dictionary'
 
 export function LegacyChat({
 	id,
@@ -29,6 +31,7 @@ export function LegacyChat({
 	selectedVisibilityType: VisibilityType
 	isReadonly: boolean
 }) {
+	const { currentLanguage } = useLanguage()
 	const { mutate } = useSWRConfig()
 
 	const { messages, setMessages, handleSubmit, input, setInput, append, status, stop, reload } =
@@ -43,7 +46,7 @@ export function LegacyChat({
 				mutate('/api/history')
 			},
 			onError: () => {
-				toast.error('An error occured, please try again!')
+				toast.error(dictionary.messages.chat.errorOccured[currentLanguage.code])
 			},
 		})
 

@@ -3,12 +3,14 @@
 import { motion } from 'framer-motion'
 
 export const MultiTypeSelector = ({
+	prompt,
 	types,
 	selectedValues,
 	onSelectionChange,
 	selectOne = false,
 }: {
-	types: { title: string; types: { icon: string; type: string }[] }[]
+	prompt: string
+	types: readonly { title: string; types: readonly { icon: string; type: string }[] }[]
 	selectedValues: string[]
 	onSelectionChange: (values: string[]) => void
 	selectOne?: boolean
@@ -35,7 +37,7 @@ export const MultiTypeSelector = ({
 			transition={{ delay: 0.5 }}
 		>
 			<div className="flex max-w-xl flex-col gap-8 rounded-xl pb-2 text-left font-light leading-relaxed">
-				Who was this conversation with?
+				{prompt}
 			</div>
 			<div className="flex flex-col gap-6">
 				{types.map((group) => (

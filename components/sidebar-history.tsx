@@ -48,6 +48,8 @@ import {
 import type { Chat } from '@/lib/db/schema'
 import { fetcher } from '@/lib/utils'
 import { useChatVisibility } from '@/hooks/use-chat-visibility'
+import { dictionary } from '@/lib/language/dictionary'
+import { useLanguage } from '@/hooks/use-language'
 
 type GroupedChats = {
 	today: Chat[]
@@ -68,6 +70,7 @@ const PureChatItem = ({
 	onDelete: (chatId: string) => void
 	setOpenMobile: (open: boolean) => void
 }) => {
+	const { currentLanguage } = useLanguage()
 	const { visibilityType, setVisibilityType } = useChatVisibility({
 		chatId: chat.id,
 		initialVisibility: chat.visibility,
@@ -88,7 +91,7 @@ const PureChatItem = ({
 						showOnHover={!isActive}
 					>
 						<MoreHorizontalIcon />
-						<span className="sr-only">More</span>
+						<span className="sr-only">{dictionary.sidebar.actions.more[currentLanguage.code]}</span>
 					</SidebarMenuAction>
 				</DropdownMenuTrigger>
 
@@ -96,7 +99,7 @@ const PureChatItem = ({
 					<DropdownMenuSub>
 						<DropdownMenuSubTrigger className="cursor-pointer">
 							<ShareIcon />
-							<span>Share</span>
+							<span>{dictionary.messages.navigation.share[currentLanguage.code]}</span>
 						</DropdownMenuSubTrigger>
 						<DropdownMenuPortal>
 							<DropdownMenuSubContent>
@@ -108,7 +111,7 @@ const PureChatItem = ({
 								>
 									<div className="flex flex-row items-center gap-2">
 										<LockIcon size={12} />
-										<span>Private</span>
+										<span>{dictionary.sidebar.actions.private[currentLanguage.code]}</span>
 									</div>
 									{visibilityType === 'private' ? <CheckCircleFillIcon /> : null}
 								</DropdownMenuItem>
@@ -120,7 +123,7 @@ const PureChatItem = ({
 								>
 									<div className="flex flex-row items-center gap-2">
 										<GlobeIcon />
-										<span>Public</span>
+										<span>{dictionary.sidebar.actions.public[currentLanguage.code]}</span>
 									</div>
 									{visibilityType === 'public' ? <CheckCircleFillIcon /> : null}
 								</DropdownMenuItem>
@@ -133,7 +136,7 @@ const PureChatItem = ({
 						onSelect={() => onDelete(chat.id)}
 					>
 						<TrashIcon />
-						<span>Delete</span>
+						<span>{dictionary.sidebar.actions.delete.delete[currentLanguage.code]}</span>
 					</DropdownMenuItem>
 				</DropdownMenuContent>
 			</DropdownMenu>
@@ -153,6 +156,7 @@ export function SidebarHistory({
 	user: User | undefined
 	limitLiked?: boolean
 }) {
+	const { currentLanguage } = useLanguage()
 	const { setOpenMobile } = useSidebar()
 	const { id } = useParams()
 	const pathname = usePathname()
@@ -177,16 +181,16 @@ export function SidebarHistory({
 		})
 
 		toast.promise(deletePromise, {
-			loading: 'Deleting chat...',
+			loading: dictionary.messages.chat.deletingChat.loading[currentLanguage.code],
 			success: () => {
 				mutate((history) => {
 					if (history) {
 						return history.filter((h) => h.id !== id)
 					}
 				})
-				return 'Chat deleted successfully'
+				return dictionary.messages.chat.deletingChat.success[currentLanguage.code]
 			},
-			error: 'Failed to delete chat',
+			error: dictionary.messages.chat.deletingChat.failed[currentLanguage.code],
 		})
 
 		setShowDeleteDialog(false)
@@ -201,7 +205,7 @@ export function SidebarHistory({
 			<SidebarGroup>
 				<SidebarGroupContent>
 					<div className="flex w-full flex-row items-center justify-center gap-2 px-2 text-sm text-zinc-500">
-						Login to save and revisit previous chats!
+						{dictionary.sidebar.actions.login[currentLanguage.code]}
 					</div>
 				</SidebarGroupContent>
 			</SidebarGroup>
@@ -211,7 +215,9 @@ export function SidebarHistory({
 	if (isLoading) {
 		return (
 			<SidebarGroup>
-				<div className="px-2 py-1 text-xs text-sidebar-foreground/50">Today</div>
+				<div className="px-2 py-1 text-xs text-sidebar-foreground/50">
+					{dictionary.history.today[currentLanguage.code]}
+				</div>
 				<SidebarGroupContent>
 					<div className="flex flex-col">
 						{[44, 32, 28, 64, 52].map((item) => (
@@ -237,7 +243,9 @@ export function SidebarHistory({
 			<SidebarGroup>
 				<SidebarGroupContent>
 					<div className="flex w-full flex-row items-center justify-center gap-2 px-2 text-sm text-zinc-500">
-						Your conversations will appear here once you start chatting!
+						{limitLiked
+							? dictionary.sidebar.actions.addChats.likeLimited[currentLanguage.code]
+							: dictionary.sidebar.actions.addChats.all[currentLanguage.code]}
 					</div>
 				</SidebarGroupContent>
 			</SidebarGroup>
@@ -290,7 +298,9 @@ export function SidebarHistory({
 									<div className="space-y-6">
 										{groupedChats.today.length > 0 && (
 											<div>
-												<div className="px-2 py-1 text-xs text-sidebar-foreground/50">Today</div>
+												<div className="px-2 py-1 text-xs text-sidebar-foreground/50">
+													{dictionary.history.today[currentLanguage.code]}
+												</div>
 												{groupedChats.today.map((chat) => (
 													<ChatItem
 														key={chat.id}
@@ -309,7 +319,7 @@ export function SidebarHistory({
 										{groupedChats.yesterday.length > 0 && (
 											<div>
 												<div className="px-2 py-1 text-xs text-sidebar-foreground/50">
-													Yesterday
+													{dictionary.history.yesterday[currentLanguage.code]}
 												</div>
 												{groupedChats.yesterday.map((chat) => (
 													<ChatItem
@@ -329,7 +339,7 @@ export function SidebarHistory({
 										{groupedChats.lastWeek.length > 0 && (
 											<div>
 												<div className="px-2 py-1 text-xs text-sidebar-foreground/50">
-													Last 7 days
+													{dictionary.history.lastWeek[currentLanguage.code]}
 												</div>
 												{groupedChats.lastWeek.map((chat) => (
 													<ChatItem
@@ -349,7 +359,7 @@ export function SidebarHistory({
 										{groupedChats.lastMonth.length > 0 && (
 											<div>
 												<div className="px-2 py-1 text-xs text-sidebar-foreground/50">
-													Last 30 days
+													{dictionary.history.lastMonth[currentLanguage.code]}
 												</div>
 												{groupedChats.lastMonth.map((chat) => (
 													<ChatItem
@@ -368,7 +378,9 @@ export function SidebarHistory({
 
 										{groupedChats.older.length > 0 && (
 											<div>
-												<div className="px-2 py-1 text-xs text-sidebar-foreground/50">Older</div>
+												<div className="px-2 py-1 text-xs text-sidebar-foreground/50">
+													{dictionary.history.older[currentLanguage.code]}
+												</div>
 												{groupedChats.older.map((chat) => (
 													<ChatItem
 														key={chat.id}
@@ -392,15 +404,20 @@ export function SidebarHistory({
 			<AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
 				<AlertDialogContent>
 					<AlertDialogHeader>
-						<AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+						<AlertDialogTitle>
+							{dictionary.sidebar.actions.delete.confirmation[currentLanguage.code]}
+						</AlertDialogTitle>
 						<AlertDialogDescription>
-							This action cannot be undone. This will permanently delete your chat and remove it
-							from our servers.
+							{dictionary.sidebar.actions.delete.details[currentLanguage.code]}
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>
-						<AlertDialogCancel>Cancel</AlertDialogCancel>
-						<AlertDialogAction onClick={handleDelete}>Continue</AlertDialogAction>
+						<AlertDialogCancel>
+							{dictionary.sidebar.actions.delete.cancel[currentLanguage.code]}
+						</AlertDialogCancel>
+						<AlertDialogAction onClick={handleDelete}>
+							{dictionary.sidebar.actions.delete.continue[currentLanguage.code]}
+						</AlertDialogAction>
 					</AlertDialogFooter>
 				</AlertDialogContent>
 			</AlertDialog>

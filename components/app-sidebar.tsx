@@ -21,8 +21,11 @@ import { DropdownContent } from '@/components/DropdownContent'
 import { SidebarLanguageSelector } from '@/components/sidebar-language-selector'
 import { useWindowSize } from 'usehooks-ts'
 import { useEffect, useState } from 'react'
+import { useLanguage } from '@/hooks/use-language'
+import { dictionary } from '@/lib/language/dictionary'
 
 export function AppSidebar({ user }: { user: User | undefined }) {
+	const { currentLanguage } = useLanguage()
 	const router = useRouter()
 	const { setOpenMobile } = useSidebar()
 	const { width: windowWidth } = useWindowSize()
@@ -67,7 +70,9 @@ export function AppSidebar({ user }: { user: User | undefined }) {
 									<PlusIcon />
 								</Button>
 							</TooltipTrigger>
-							<TooltipContent align="end">New Chat</TooltipContent>
+							<TooltipContent align="end">
+								{dictionary.tooltips.newChat[currentLanguage.code]}
+							</TooltipContent>
 						</Tooltip>
 					</div>
 				</SidebarMenu>
@@ -76,15 +81,15 @@ export function AppSidebar({ user }: { user: User | undefined }) {
 				<DropdownContent
 					dropdowns={[
 						{
-							title: 'Language',
+							title: dictionary.sidebar.language.names[currentLanguage.code],
 							content: <SidebarLanguageSelector user={user} />,
 						},
 						{
-							title: 'Liked',
+							title: dictionary.sidebar.liked[currentLanguage.code],
 							content: <SidebarHistory user={user} limitLiked />,
 						},
 						{
-							title: 'History',
+							title: dictionary.sidebar.history[currentLanguage.code],
 							content: <SidebarHistory user={user} />,
 						},
 					]}

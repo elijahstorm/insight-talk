@@ -6,7 +6,7 @@ import { toast } from 'sonner'
 import config from '@/features/config'
 import { useLanguage } from '@/hooks/use-language'
 import { chatLogsType } from '@/components/insight-message'
-import { relationshipTypes } from '@/lib/ai/relationship-types'
+import { dictionary } from '@/lib/language/dictionary'
 
 export default function CreateNewChat({
 	selectedChatModel,
@@ -60,7 +60,7 @@ export default function CreateNewChat({
 			router.push(`/chat/${chatId}`)
 			router.refresh()
 		} catch (error) {
-			toast.error('Failed to create your chat. Try again later')
+			toast.error(dictionary.messages.analysis.newChat.toasts.error[currentLanguage.code])
 			if (config.errorLog) {
 				console.error('Error creating chat:', error)
 			}
@@ -73,14 +73,15 @@ export default function CreateNewChat({
 		<div className="flex h-full flex-col gap-4 overflow-hidden px-4">
 			<div className="flex-1 overflow-auto">
 				<MultiTypeSelector
-					types={relationshipTypes}
+					prompt={dictionary.messages.analysis.newChat.partnerTypeQuestion[currentLanguage.code]}
+					types={dictionary.relationshipTypes[currentLanguage.code]}
 					selectedValues={selectedValues}
 					onSelectionChange={setSelectedValues}
 					selectOne={true}
 				/>
 			</div>
-			<Button className="w-full py-6 hover:bg-accent focus:bg-accent" onClick={makeNewChat}>
-				Check Talk Insight
+			<Button className="mb-6 w-full py-6 hover:bg-accent focus:bg-accent" onClick={makeNewChat}>
+				{dictionary.messages.analysis.newChat.start[currentLanguage.code]}
 			</Button>
 		</div>
 	)

@@ -10,6 +10,8 @@ import { useCopyToClipboard } from 'usehooks-ts'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { AnimatePresence, motion } from 'framer-motion'
+import { dictionary } from '@/lib/language/dictionary'
+import { useLanguage } from '@/hooks/use-language'
 
 interface MessagesProps {
 	chatId: string
@@ -37,6 +39,7 @@ function PureMessages({
 	const [currentMessage, setCurrentMessage] = useState<number>(0)
 	const [visibleMessageParts, setVisibleMessageParts] = useState<number>(0)
 	const [_, copyToClipboard] = useCopyToClipboard()
+	const { currentLanguage } = useLanguage()
 
 	useEffect(() => {
 		if (messagesEndRef.current) {
@@ -59,12 +62,12 @@ function PureMessages({
 		const link = `${window.location.origin}${window.location.pathname}`
 
 		if (!link) {
-			toast.error('Error trying to share')
+			toast.error(dictionary.messages.navigation.toasts.share.error[currentLanguage.code])
 			return
 		}
 
 		await copyToClipboard(link)
-		toast.success('Copied link to clipboard!')
+		toast.success(dictionary.messages.navigation.toasts.share.success[currentLanguage.code])
 	}
 
 	const showableMessages = (() => {
@@ -95,18 +98,6 @@ function PureMessages({
 		}
 		return legacyMessages
 	})()
-
-	type PossibleTypes = (UIMessage['parts'][number] | InsightMessageType['parts'][number])['type']
-	const showNextButtonTexts: { [K in PossibleTypes]: string } = {
-		'chat-logs': '',
-		'com-pattern': 'See Your Communication Pattern',
-		replies: 'See the Reply Ideas',
-		insight: 'See Chat Insights',
-		text: 'See Chats',
-		reasoning: 'See Chats',
-		'tool-invocation': 'See Chats',
-		source: 'See Chats',
-	}
 
 	return (
 		<div className="flex h-full flex-col gap-4 overflow-hidden pb-6">
@@ -143,7 +134,7 @@ function PureMessages({
 						animate={{ y: 0, opacity: 1 }}
 					>
 						<Button className="py-6" variant={'outline'} onClick={share}>
-							Share
+							{dictionary.messages.navigation.share[currentLanguage.code]}
 						</Button>
 						{currentMessage + showableMessages.length < messages.length
 							? showNextMessage && (
@@ -152,9 +143,9 @@ function PureMessages({
 										onClick={showNextMessage(showableMessages.length)}
 									>
 										{
-											showNextButtonTexts[
+											dictionary.messages.navigation.showNextButton[
 												messages[currentMessage + showableMessages.length].parts[0].type
-											]
+											][currentLanguage.code]
 										}
 									</Button>
 								)
@@ -169,7 +160,7 @@ function PureMessages({
 						animate={{ y: 0, opacity: 1 }}
 					>
 						<Button className="py-6 hover:bg-primary focus:bg-primary" onClick={showNextPart}>
-							Read More
+							{dictionary.messages.navigation.readMore[currentLanguage.code]}
 						</Button>
 					</motion.div>
 				</AnimatePresence>

@@ -1,24 +1,11 @@
 'use client'
 
 import config from '@/features/config'
+import { dictionary, languages } from '@/lib/language/dictionary'
 import { createContext, useContext, useState, ReactNode, memo, useEffect } from 'react'
 import { toast } from 'sonner'
 
-export type Lang = {
-	name: string
-	code: string
-}
-
-export const languages = [
-	{
-		name: 'English',
-		code: 'eng',
-	},
-	{
-		name: 'Korean',
-		code: 'kor',
-	},
-] as Array<Lang>
+export type Lang = (typeof languages)[number]
 
 type LanguageContextType = {
 	currentLanguage: Lang
@@ -67,24 +54,24 @@ const PureLanguageProvider = ({
 		}
 	}, [userId])
 
-	const setLanguage = async (lang: Lang) => {
+	const setLanguage = async (toLang: Lang) => {
 		try {
 			const response = await fetch('/api/language', {
 				method: 'PATCH',
 				headers: {
 					'Content-Type': 'application/json',
 				},
-				body: JSON.stringify({ language: lang.code }),
+				body: JSON.stringify({ language: toLang.code }),
 			})
 
 			if (response.ok) {
-				setCurrentLanguage(lang)
-				toast.success('Changed your language to ' + lang.name)
+				setCurrentLanguage(toLang)
+				toast.success(dictionary.sidebar.language.changed[toLang.code](toLang.name))
 			} else {
-				toast.error('Failed to update your language to ' + lang.name)
+				toast.error(dictionary.sidebar.language.failedChange[toLang.code](toLang.name))
 			}
 		} catch (error) {
-			toast.error('Failed to update your language to ' + lang.name)
+			toast.error(dictionary.sidebar.language.failedChange[toLang.code](toLang.name))
 			if (config.errorLog) {
 				console.error('Failed to update user language:', error)
 			}

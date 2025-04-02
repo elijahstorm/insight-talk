@@ -9,6 +9,8 @@ import { fetcher } from '@/lib/utils'
 import useSWR from 'swr'
 import { User } from 'next-auth'
 import config from '@/features/config'
+import { dictionary } from '@/lib/language/dictionary'
+import { useLanguage } from '@/hooks/use-language'
 
 type GroupedChats = {
 	today: Chat[]
@@ -17,14 +19,6 @@ type GroupedChats = {
 	lastMonth: Chat[]
 	older: Chat[]
 }
-
-const timeGroupedText = {
-	today: 'Today',
-	yesterday: 'Yesterday',
-	lastWeek: 'Last Week',
-	lastMonth: 'Last Month',
-	older: 'Older',
-} as const
 
 const typeEmojis = {
 	romance: '💞',
@@ -67,10 +61,12 @@ const groupChatsByDate = (chats: Chat[]): GroupedChats => {
 }
 
 const Skeleton = () => {
+	const { currentLanguage } = useLanguage()
+
 	return (
 		<div className="space-y-4">
-			<div className="flex w-full text-sm font-thin text-slate-500">
-				<h1>Today</h1>
+			<div className="flex w-full text-sm font-thin text-slate-500 dark:text-slate-200">
+				<h1>{dictionary.history.today[currentLanguage.code]}</h1>
 			</div>
 
 			<div className="grid grid-cols-2 gap-4">
@@ -85,7 +81,7 @@ const Skeleton = () => {
 					<div key={item[0]} className="space-y-4 rounded-md border p-4 text-slate-800">
 						<div className="flex w-full items-center gap-2">
 							<div
-								className="h-4 max-w-[--skeleton-width] flex-1 animate-pulse rounded-md bg-sidebar-accent-foreground/10"
+								className="h-4 max-w-[--skeleton-width] flex-1 animate-pulse rounded-md bg-sidebar-accent-foreground/10 dark:bg-slate-600"
 								style={
 									{
 										'--skeleton-width': `${item[0]}%`,
@@ -97,7 +93,7 @@ const Skeleton = () => {
 							)}
 						</div>
 						<div
-							className="h-4 max-w-[--skeleton-width] flex-1 animate-pulse rounded-md bg-sidebar-accent-foreground/10"
+							className="h-4 max-w-[--skeleton-width] flex-1 animate-pulse rounded-md bg-sidebar-accent-foreground/10 dark:bg-slate-600"
 							style={
 								{
 									'--skeleton-width': `${item[1]}%`,
@@ -120,6 +116,8 @@ const ShowHistory = ({
 	filter: string
 	typeFilter: 'none' | keyof typeof typeEmojis
 }) => {
+	const { currentLanguage } = useLanguage()
+
 	const filteredByType =
 		typeFilter === 'none' ? history : history.filter((chat) => chat.type.includes(typeFilter))
 	const filteredHistory = filteredByType.filter(
@@ -134,7 +132,7 @@ const ShowHistory = ({
 		groupedChats[timeGroup].length ? (
 			<div key={timeGroup} className="space-y-4">
 				<div className="flex w-full text-sm font-thin text-slate-500 dark:text-slate-200">
-					<h1>{timeGroupedText[timeGroup]}</h1>
+					<h1>{dictionary.history[timeGroup][currentLanguage.code]}</h1>
 					<p className="ml-auto">{groupedChats[timeGroup].length}</p>
 				</div>
 
@@ -165,6 +163,7 @@ const ShowHistory = ({
 }
 
 export default function History({ user }: { user: User | undefined }) {
+	const { currentLanguage } = useLanguage()
 	const [filter, setFilter] = useState('')
 	const [typeFilter, setTypeFilter] = useState<'none' | keyof typeof typeEmojis>('none')
 
@@ -184,7 +183,7 @@ export default function History({ user }: { user: User | undefined }) {
 					value={filter}
 					onChange={(e) => setFilter(e.target.value)}
 					className="w-full overflow-hidden rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-slate-800 dark:border-slate-500 dark:bg-background dark:text-slate-200 dark:placeholder:text-slate-400"
-					placeholder="Search Conversations"
+					placeholder={dictionary.history.search[currentLanguage.code]}
 				/>
 
 				{config.search.dropdownFilter && (

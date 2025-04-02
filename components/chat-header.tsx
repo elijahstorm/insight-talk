@@ -17,6 +17,8 @@ import { HomeButton } from '@/components/home-button'
 import LightDarkThemeToggle from '@/components/light-dark-theme-toggle'
 import Image from 'next/image'
 import { User } from 'next-auth'
+import { useLanguage } from '@/hooks/use-language'
+import { dictionary } from '@/lib/language/dictionary'
 
 function PureChatHeader({
 	user = undefined,
@@ -36,6 +38,7 @@ function PureChatHeader({
 	const router = useRouter()
 	const { open } = useSidebar()
 	const { width: windowWidth } = useWindowSize()
+	const { currentLanguage } = useLanguage()
 
 	return (
 		<header className="sticky top-0 flex items-center gap-2 bg-background px-2 py-1.5 md:px-2">
@@ -53,10 +56,12 @@ function PureChatHeader({
 							}}
 						>
 							<PlusIcon />
-							<span className="md:sr-only">New Chat</span>
+							<span className="md:sr-only">
+								{dictionary.tooltips.newChat[currentLanguage.code]}
+							</span>
 						</Button>
 					</TooltipTrigger>
-					<TooltipContent>New Chat</TooltipContent>
+					<TooltipContent>{dictionary.tooltips.newChat[currentLanguage.code]}</TooltipContent>
 				</Tooltip>
 			)}
 

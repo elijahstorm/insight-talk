@@ -13,9 +13,12 @@ import {
 	DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar'
+import { dictionary } from '@/lib/language/dictionary'
+import { useLanguage } from '@/hooks/use-language'
 
 export function SidebarUserNav({ user }: { user: User }) {
 	const { setTheme, theme } = useTheme()
+	const { currentLanguage } = useLanguage()
 
 	return (
 		<SidebarMenu>
@@ -39,7 +42,7 @@ export function SidebarUserNav({ user }: { user: User }) {
 							className="cursor-pointer"
 							onSelect={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
 						>
-							{`Toggle ${theme === 'light' ? 'dark' : 'light'} mode`}
+							{dictionary.tooltips.toggleLightMode[currentLanguage.code]}
 						</DropdownMenuItem>
 						<DropdownMenuSeparator />
 						<DropdownMenuItem asChild>

@@ -18,6 +18,8 @@ import CreateNewChat from '@/components/create-new-chat'
 import { InsightMessageType, insightTypes } from '@/components/insight-message'
 import { User } from 'next-auth'
 import { MultimodalInput } from '@/components/multimodal-input'
+import { useLanguage } from '@/hooks/use-language'
+import { dictionary } from '@/lib/language/dictionary'
 
 const FullPageLoader = () => {
 	const [progress, setProgress] = useState(0)
@@ -70,6 +72,7 @@ export function InsightChat({
 	selectedVisibilityType: VisibilityType
 	isReadonly: boolean
 }) {
+	const { currentLanguage } = useLanguage()
 	const searchParams = useSearchParams()
 	const fileName = searchParams.get('file')
 
@@ -87,7 +90,7 @@ export function InsightChat({
 				mutate('/api/history')
 			},
 			onError: () => {
-				toast.error('An error occured, please try again!')
+				toast.error(dictionary.messages.chat.errorOccured[currentLanguage.code])
 			},
 		})
 
@@ -141,7 +144,9 @@ export function InsightChat({
 
 					{fileName && (
 						<div className="space-y-2 px-4">
-							<p className="font-light">Upload Your Converstation</p>
+							<p className="font-light">
+								{dictionary.messages.analysis.newChat.uploadedFileHeader[currentLanguage.code]}
+							</p>
 							<div className="pointer-events-none line-clamp-1 select-none rounded-lg border border-slate-200 px-2 py-3 font-thin text-slate-400">
 								{fileName}
 							</div>
