@@ -163,132 +163,134 @@ const LegacyChat = ({
 				</div>
 			)}
 
-			<div className="flex w-full flex-col gap-4">
-				{message.experimental_attachments && message.experimental_attachments.length > 0 && (
-					<div data-testid={`message-attachments`} className="flex flex-row justify-end gap-2">
-						{message.experimental_attachments.map((attachment) => (
-							<PreviewAttachment key={attachment.url} attachment={attachment} />
-						))}
-					</div>
-				)}
+			<div className="w-full">
+				<div className="flex w-full flex-col gap-4">
+					{message.experimental_attachments && message.experimental_attachments.length > 0 && (
+						<div data-testid={`message-attachments`} className="flex flex-row justify-end gap-2">
+							{message.experimental_attachments.map((attachment) => (
+								<PreviewAttachment key={attachment.url} attachment={attachment} />
+							))}
+						</div>
+					)}
 
-				{message.parts?.map((part, index) => {
-					const { type } = part
-					const key = `message-${message.id}-part-${index}`
+					{message.parts?.map((part, index) => {
+						const { type } = part
+						const key = `message-${message.id}-part-${index}`
 
-					if (type === 'reasoning') {
-						return <MessageReasoning key={key} isLoading={isLoading} reasoning={part.reasoning} />
-					}
+						if (type === 'reasoning') {
+							return <MessageReasoning key={key} isLoading={isLoading} reasoning={part.reasoning} />
+						}
 
-					if (type === 'text') {
-						if (mode === 'view') {
-							return (
-								<div key={key} className="flex flex-row items-start gap-2">
-									{message.role === 'user' && !isReadonly && (
-										<Tooltip>
-											<TooltipTrigger asChild>
-												<Button
-													data-testid="message-edit-button"
-													variant="ghost"
-													className="h-fit rounded-full px-2 text-muted-foreground opacity-0 group-hover/message:opacity-100"
-													onClick={() => {
-														setMode('edit')
-													}}
-												>
-													<PencilEditIcon />
-												</Button>
-											</TooltipTrigger>
-											<TooltipContent>Edit message</TooltipContent>
-										</Tooltip>
-									)}
+						if (type === 'text') {
+							if (mode === 'view') {
+								return (
+									<div key={key} className="flex flex-row items-start gap-2">
+										{message.role === 'user' && !isReadonly && (
+											<Tooltip>
+												<TooltipTrigger asChild>
+													<Button
+														data-testid="message-edit-button"
+														variant="ghost"
+														className="h-fit rounded-full px-2 text-muted-foreground opacity-0 group-hover/message:opacity-100"
+														onClick={() => {
+															setMode('edit')
+														}}
+													>
+														<PencilEditIcon />
+													</Button>
+												</TooltipTrigger>
+												<TooltipContent>Edit message</TooltipContent>
+											</Tooltip>
+										)}
 
+										<div
+											data-testid="message-content"
+											className={cn('flex flex-col gap-4 px-3 py-2', {
+												'rounded-xl bg-primary text-primary-foreground': message.role === 'user',
+												'border-forground text-forground rounded-xl border bg-background':
+													message.role === 'assistant',
+											})}
+										>
+											<Markdown>{part.text}</Markdown>
+										</div>
+									</div>
+								)
+							}
+
+							if (mode === 'edit') {
+								return (
+									<div key={key} className="flex flex-row items-start gap-2">
+										<div className="size-8" />
+
+										<MessageEditor
+											key={message.id}
+											message={message}
+											setMode={setMode}
+											setMessages={setMessages}
+											reload={reload}
+										/>
+									</div>
+								)
+							}
+						}
+
+						if (type === 'tool-invocation') {
+							const { toolInvocation } = part
+							const { toolName, toolCallId, state } = toolInvocation
+
+							if (state === 'call') {
+								const { args } = toolInvocation
+
+								return (
 									<div
-										data-testid="message-content"
-										className={cn('flex flex-col gap-4 px-3 py-2', {
-											'rounded-xl bg-primary text-primary-foreground': message.role === 'user',
-											'border-forground text-forground rounded-xl border bg-background':
-												message.role === 'assistant',
+										key={toolCallId}
+										className={cx({
+											skeleton: ['getWeather'].includes(toolName),
 										})}
 									>
-										<Markdown>{part.text}</Markdown>
+										{toolName === 'getWeather' ? (
+											<Weather />
+										) : toolName === 'createDocument' ? (
+											<DocumentPreview isReadonly={isReadonly} args={args} />
+										) : toolName === 'updateDocument' ? (
+											<DocumentToolCall type="update" args={args} isReadonly={isReadonly} />
+										) : toolName === 'requestSuggestions' ? (
+											<DocumentToolCall
+												type="request-suggestions"
+												args={args}
+												isReadonly={isReadonly}
+											/>
+										) : null}
 									</div>
-								</div>
-							)
+								)
+							}
+
+							if (state === 'result') {
+								const { result } = toolInvocation
+
+								return (
+									<div key={toolCallId}>
+										{toolName === 'getWeather' ? (
+											<Weather weatherAtLocation={result} />
+										) : toolName === 'createDocument' ? (
+											<DocumentPreview isReadonly={isReadonly} result={result} />
+										) : toolName === 'updateDocument' ? (
+											<DocumentToolResult type="update" result={result} isReadonly={isReadonly} />
+										) : toolName === 'requestSuggestions' ? (
+											<DocumentToolResult
+												type="request-suggestions"
+												result={result}
+												isReadonly={isReadonly}
+											/>
+										) : (
+											<pre>{JSON.stringify(result, null, 2)}</pre>
+										)}
+									</div>
+								)
+							}
 						}
-
-						if (mode === 'edit') {
-							return (
-								<div key={key} className="flex flex-row items-start gap-2">
-									<div className="size-8" />
-
-									<MessageEditor
-										key={message.id}
-										message={message}
-										setMode={setMode}
-										setMessages={setMessages}
-										reload={reload}
-									/>
-								</div>
-							)
-						}
-					}
-
-					if (type === 'tool-invocation') {
-						const { toolInvocation } = part
-						const { toolName, toolCallId, state } = toolInvocation
-
-						if (state === 'call') {
-							const { args } = toolInvocation
-
-							return (
-								<div
-									key={toolCallId}
-									className={cx({
-										skeleton: ['getWeather'].includes(toolName),
-									})}
-								>
-									{toolName === 'getWeather' ? (
-										<Weather />
-									) : toolName === 'createDocument' ? (
-										<DocumentPreview isReadonly={isReadonly} args={args} />
-									) : toolName === 'updateDocument' ? (
-										<DocumentToolCall type="update" args={args} isReadonly={isReadonly} />
-									) : toolName === 'requestSuggestions' ? (
-										<DocumentToolCall
-											type="request-suggestions"
-											args={args}
-											isReadonly={isReadonly}
-										/>
-									) : null}
-								</div>
-							)
-						}
-
-						if (state === 'result') {
-							const { result } = toolInvocation
-
-							return (
-								<div key={toolCallId}>
-									{toolName === 'getWeather' ? (
-										<Weather weatherAtLocation={result} />
-									) : toolName === 'createDocument' ? (
-										<DocumentPreview isReadonly={isReadonly} result={result} />
-									) : toolName === 'updateDocument' ? (
-										<DocumentToolResult type="update" result={result} isReadonly={isReadonly} />
-									) : toolName === 'requestSuggestions' ? (
-										<DocumentToolResult
-											type="request-suggestions"
-											result={result}
-											isReadonly={isReadonly}
-										/>
-									) : (
-										<pre>{JSON.stringify(result, null, 2)}</pre>
-									)}
-								</div>
-							)
-						}
-					}
-				})}
+					})}
+				</div>
 
 				{!isReadonly && (
 					<MessageActions

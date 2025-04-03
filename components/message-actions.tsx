@@ -39,7 +39,7 @@ export function PureMessageActions({
 	return (
 		<TooltipProvider delayDuration={0}>
 			<div
-				className={`pt-4 ${shouldShowLegacyStyle() ? 'flex-row' : 'flex-col'} flex items-start gap-2`}
+				className={`${shouldShowLegacyStyle() ? 'flex-row pt-2' : 'flex-col pt-4'} flex items-start gap-2`}
 			>
 				{!shouldShowLegacyStyle() && (
 					<p className="text-sm font-medium text-slate-600">
