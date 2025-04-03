@@ -216,7 +216,7 @@ function PureMultimodalInput({
 			<Textarea
 				data-testid="multimodal-input"
 				ref={textareaRef}
-				placeholder="Send a message..."
+				placeholder={dictionary.messages.chat.sendAMessage[currentLanguage.code]}
 				value={input}
 				onChange={handleInput}
 				className={cx(

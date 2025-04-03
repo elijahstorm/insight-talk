@@ -19,11 +19,13 @@ export function PureMessageActions({
 	message,
 	vote,
 	isLoading,
+	legacy = false,
 }: {
 	chatId: string
 	message: Message
 	vote: Vote | undefined
 	isLoading: boolean
+	legacy?: boolean
 }) {
 	const { mutate } = useSWRConfig()
 	const [_, copyToClipboard] = useCopyToClipboard()
@@ -32,17 +34,19 @@ export function PureMessageActions({
 	if (isLoading) return null
 	if (message.role === 'user') return null
 
+	const shouldShowLegacyStyle = () => legacy || config.vote.legacyStyle
+
 	return (
 		<TooltipProvider delayDuration={0}>
 			<div
 				className={`pt-4 ${config.vote.legacyStyle ? 'flex-row' : 'flex-col'} flex items-start gap-2`}
 			>
-				{!config.vote.legacyStyle && (
+				{!shouldShowLegacyStyle() && (
 					<p className="text-sm font-medium text-slate-600">
 						{dictionary.messages.actions.question[currentLanguage.code]}
 					</p>
 				)}
-				{config.vote.legacyStyle && (
+				{shouldShowLegacyStyle() && (
 					<Tooltip>
 						<TooltipTrigger asChild>
 							<Button
@@ -122,7 +126,7 @@ export function PureMessageActions({
 								})
 							}}
 						>
-							{config.vote.legacyStyle ? (
+							{shouldShowLegacyStyle() ? (
 								<ThumbUpIcon />
 							) : (
 								<div className="flex gap-2 px-1 py-2">
@@ -186,7 +190,7 @@ export function PureMessageActions({
 								})
 							}}
 						>
-							{config.vote.legacyStyle ? (
+							{shouldShowLegacyStyle() ? (
 								<ThumbDownIcon />
 							) : (
 								<div className="flex gap-2 px-1 py-2">

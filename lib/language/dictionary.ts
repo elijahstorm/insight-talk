@@ -362,6 +362,13 @@ export const dictionary = {
 					fr: 'Échec de la suppression du chat',
 				},
 			},
+			sendAMessage: {
+				en: 'Send a message...',
+				kor: '메시지 보내기...',
+				ch0: '发送消息…',
+				ch1: '發送消息…',
+				fr: 'Envoyez un message...',
+			},
 		},
 	},
 	sidebar: {

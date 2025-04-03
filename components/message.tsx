@@ -121,6 +121,7 @@ const InsightChat = ({ chatId, message, visibleParts, vote, isLoading }: Insight
 
 					{visibleParts === (message.parts?.length || 0) - 1 && (
 						<MessageActions
+							key={`action-${message.id}`}
 							chatId={chatId}
 							message={message as unknown as Message}
 							vote={vote}
@@ -296,6 +297,7 @@ const LegacyChat = ({
 						message={message}
 						vote={vote}
 						isLoading={isLoading}
+						legacy={true}
 					/>
 				)}
 			</div>
