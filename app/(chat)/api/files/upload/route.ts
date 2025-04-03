@@ -48,7 +48,7 @@ export async function POST(request: Request) {
 		const fileBuffer = await file.arrayBuffer()
 
 		try {
-			const data = await put(`${filename}`, fileBuffer, {
+			const data = await put(`/temp/${filename}`, fileBuffer, {
 				access: 'public',
 			})
 

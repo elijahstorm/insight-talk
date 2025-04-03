@@ -75,7 +75,7 @@ export default function InsightMessage({
 
 	const { type } = part
 	const key = `message-${messageId}-part-${index}`
-	const colors = ['secondary', 'accent']
+	const colors = ['secondary', 'accent', 'primary', 'muted']
 
 	if (type === 'com-pattern') {
 		return (
@@ -104,7 +104,7 @@ export default function InsightMessage({
 									>
 										<span>{ratio.type}</span>
 										{index !== person.ratios.length - 1 && (
-											<span>{(ratio.ratio / ratioTotals) * 100}%</span>
+											<span>{Math.round((ratio.ratio / ratioTotals) * 10000) / 100}%</span>
 										)}
 									</div>
 								))}

@@ -156,3 +156,14 @@ export const suggestion = pgTable(
 )
 
 export type Suggestion = InferSelectModel<typeof suggestion>
+
+export const temporaryFiles = pgTable('TemporaryFiles', {
+	id: uuid('id').primaryKey().notNull().defaultRandom(),
+	userId: uuid('userId')
+		.notNull()
+		.references(() => user.id),
+	filepaths: text('filepaths').array().notNull(),
+	createdAt: timestamp('createdAt').defaultNow().notNull(),
+})
+
+export type TemporaryFiles = InferSelectModel<typeof temporaryFiles>

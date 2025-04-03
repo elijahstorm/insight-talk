@@ -15,6 +15,7 @@ import {
 	message,
 	vote,
 	type DBMessage,
+	temporaryFiles,
 } from '@/lib/db/schema'
 import { ArtifactKind } from '@/components/artifact'
 
@@ -392,6 +393,39 @@ export async function updateChatVisiblityById({
 		return await db.update(chat).set({ visibility }).where(eq(chat.id, chatId))
 	} catch (error) {
 		console.error('Failed to update chat visibility in database')
+		throw error
+	}
+}
+
+export async function saveTemporaryFiles({
+	files,
+	userId,
+}: {
+	files: Array<string>
+	userId: string
+}) {
+	try {
+		return await db.insert(temporaryFiles).values({ filepaths: files, userId }).returning()
+	} catch (error) {
+		console.error('Failed to save files in database', error)
+		throw error
+	}
+}
+
+export async function getTemporaryFilesById(uuid: string) {
+	try {
+		return await db.select().from(temporaryFiles).where(eq(temporaryFiles.id, uuid))
+	} catch (error) {
+		console.error('Failed to get files by id from database')
+		throw error
+	}
+}
+
+export async function deleteTemporaryFilesById(uuid: string) {
+	try {
+		return await db.delete(temporaryFiles).where(eq(temporaryFiles.id, uuid))
+	} catch (error) {
+		console.error('Failed to delete the files from database')
 		throw error
 	}
 }

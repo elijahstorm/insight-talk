@@ -53,6 +53,13 @@ export const dictionary = {
 					ch1: '上傳您的對話',
 					fr: 'Téléchargez votre conversation',
 				},
+				uploadFailed: {
+					en: 'Failed to get files',
+					kor: '파일을 가져오지 못했습니다',
+					ch0: '无法获取文件',
+					ch1: '無法獲取文件',
+					fr: "Échec de l'obtention des fichiers",
+				},
 				partnerTypeQuestion: {
 					en: 'Who was this conversation with?',
 					kor: '이 대화는 누구와 나눈 것인가요?',
@@ -74,6 +81,29 @@ export const dictionary = {
 						ch0: '创建聊天失败，请稍后再试。',
 						ch1: '創建聊天失敗，請稍後再試。',
 						fr: 'Échec de la création de votre chat. Réessayez plus tard.',
+					},
+				},
+				buttons: {
+					newConversation: {
+						en: 'New Converstation',
+						kor: '새로운 대화',
+						ch0: '新对话',
+						ch1: '新對話',
+						fr: 'Nouvelle conversation',
+					},
+					attachAFile: {
+						en: 'Attach a File',
+						kor: '파일 첨부',
+						ch0: '附加文件',
+						ch1: '附加文件',
+						fr: 'Joindre un Dossier',
+					},
+					attachAnImage: {
+						en: 'Attach an Image',
+						kor: '이미지 첨부',
+						ch0: '附加图像',
+						ch1: '附加圖像',
+						fr: 'Joindre une Image',
 					},
 				},
 			},

@@ -1,7 +1,7 @@
 import { MultiTypeSelector } from '@/components/multi-type-selector'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { toast } from 'sonner'
 import config from '@/features/config'
 import { useLanguage } from '@/hooks/use-language'
@@ -18,13 +18,78 @@ export default function CreateNewChat({
 	const [selectedValues, setSelectedValues] = useState<string[]>([])
 	const { currentLanguage } = useLanguage()
 	const router = useRouter()
+	const searchParams = useSearchParams()
+	const filesBatch = searchParams.get('u')
+	const [filepaths, setFilepaths] = useState<Array<string>>([])
+	const hasFetchedFilepaths = useRef(false)
 
-	const textLogs = ''
+	useEffect(() => {
+		if (filesBatch && !hasFetchedFilepaths.current) {
+			hasFetchedFilepaths.current = true
+			;(async () => {
+				try {
+					const response = await fetch(`/api/files/batch?uuid=${filesBatch}`)
+					if (response.ok) {
+						const data = await response.json()
+						setFilepaths(data.filepaths)
+					} else {
+						toast.error(dictionary.messages.analysis.newChat.uploadFailed[currentLanguage.code])
+						if (config.errorLog) {
+							console.error('Failed to fetch filepaths')
+						}
+					}
+				} catch (error) {
+					toast.error(dictionary.messages.analysis.newChat.uploadFailed[currentLanguage.code])
+					if (config.errorLog) {
+						console.error('An error occurred while fetching filepaths', error)
+					}
+				}
+			})()
+		}
+	}, [filesBatch, currentLanguage])
+
+	const deleteFiles = async () => {
+		if (!filesBatch) return
+
+		try {
+			const response = await fetch(`/api/files/batch?uuid=${filesBatch}`, {
+				method: 'DELETE',
+			})
+
+			if (!response.ok) {
+				throw new Error('Failed to delete files batch')
+			}
+		} catch (error) {
+			if (config.errorLog) {
+				console.error('Error deleting files batch:', error)
+			}
+		}
+	}
 
 	const makeNewChat = async () => {
 		setShowLoader && setShowLoader(true)
 
 		try {
+			const textLogs = await Promise.all(
+				filepaths.map(async (filepath) => {
+					try {
+						const response = await fetch(filepath)
+						if (!response.ok) {
+							throw new Error(`Failed to fetch file at ${filepath}`)
+						}
+						return await response.text()
+					} catch (error) {
+						toast.error(`Error fetching file: ${filepath}`)
+						if (config.errorLog) {
+							console.error('Error fetching file contents:', error)
+						}
+						return '(error: file upload failed)'
+					}
+				})
+			)
+
+			deleteFiles()
+
 			const response = await fetch('/api/insight', {
 				method: 'POST',
 				headers: {
@@ -41,7 +106,12 @@ export default function CreateNewChat({
 							parts: [
 								{
 									type: chatLogsType,
-									logs: textLogs,
+									logs: textLogs.join(`
+
+----------
+NEW FILE
+
+`),
 								},
 							],
 						},
@@ -70,19 +140,36 @@ export default function CreateNewChat({
 	}
 
 	return (
-		<div className="flex h-full flex-col gap-4 overflow-hidden px-4">
-			<div className="flex-1 overflow-auto">
-				<MultiTypeSelector
-					prompt={dictionary.messages.analysis.newChat.partnerTypeQuestion[currentLanguage.code]}
-					types={dictionary.relationshipTypes[currentLanguage.code]}
-					selectedValues={selectedValues}
-					onSelectionChange={setSelectedValues}
-					selectOne={true}
-				/>
+		<>
+			{filepaths.length > 0 && (
+				<div className="space-y-2 px-4">
+					<p className="font-light">
+						{dictionary.messages.analysis.newChat.uploadedFileHeader[currentLanguage.code]}
+					</p>
+					<ul className="list-disc pl-5">
+						{filepaths.map((filepath, index) => (
+							<li key={index} className="text-xs opacity-40">
+								{filepath.substring(filepath.indexOf('/temp/') + '/temp/'.length)}
+							</li>
+						))}
+					</ul>
+				</div>
+			)}
+
+			<div className="flex h-full flex-col gap-4 overflow-hidden px-4">
+				<div className="flex-1 overflow-auto">
+					<MultiTypeSelector
+						prompt={dictionary.messages.analysis.newChat.partnerTypeQuestion[currentLanguage.code]}
+						types={dictionary.relationshipTypes[currentLanguage.code]}
+						selectedValues={selectedValues}
+						onSelectionChange={setSelectedValues}
+						selectOne={true}
+					/>
+				</div>
+				<Button className="mb-6 w-full py-6 hover:bg-accent focus:bg-accent" onClick={makeNewChat}>
+					{dictionary.messages.analysis.newChat.start[currentLanguage.code]}
+				</Button>
 			</div>
-			<Button className="mb-6 w-full py-6 hover:bg-accent focus:bg-accent" onClick={makeNewChat}>
-				{dictionary.messages.analysis.newChat.start[currentLanguage.code]}
-			</Button>
-		</div>
+		</>
 	)
 }

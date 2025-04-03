@@ -25,6 +25,7 @@ import equal from 'fast-deep-equal'
 import { UseChatHelpers } from '@ai-sdk/react'
 import { useLanguage } from '@/hooks/use-language'
 import { dictionary } from '@/lib/language/dictionary'
+import config from '@/features/config'
 
 function PureMultimodalInput({
 	chatId,
@@ -164,7 +165,9 @@ function PureMultimodalInput({
 					...successfullyUploadedAttachments,
 				])
 			} catch (error) {
-				console.error('Error uploading files!', error)
+				if (config.errorLog) {
+					console.error('Error uploading files!', error)
+				}
 			} finally {
 				setUploadQueue([])
 			}

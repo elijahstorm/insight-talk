@@ -3,7 +3,7 @@
 import type { Attachment, UIMessage } from 'ai'
 import { useChat } from '@ai-sdk/react'
 import { useSearchParams } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import useSWR, { useSWRConfig } from 'swr'
 import { ChatHeader } from '@/components/chat-header'
 import type { Vote } from '@/lib/db/schema'
@@ -20,6 +20,7 @@ import { User } from 'next-auth'
 import { MultimodalInput } from '@/components/multimodal-input'
 import { useLanguage } from '@/hooks/use-language'
 import { dictionary } from '@/lib/language/dictionary'
+import config from '@/features/config'
 
 const FullPageLoader = () => {
 	const [progress, setProgress] = useState(0)
@@ -73,8 +74,6 @@ export function InsightChat({
 	isReadonly: boolean
 }) {
 	const { currentLanguage } = useLanguage()
-	const searchParams = useSearchParams()
-	const fileName = searchParams.get('file')
 
 	const { mutate } = useSWRConfig()
 
@@ -129,29 +128,12 @@ export function InsightChat({
 				<div className="flex h-dvh min-w-0 flex-col space-y-6 bg-background">
 					<ChatHeader
 						user={user}
-						header={
-							updatedMessages.length
-								? 'Report'
-								: fileName
-									? 'Upload a File'
-									: 'Start a Conversation'
-						}
+						header={updatedMessages.length > 0 ? 'Report' : 'Start a Conversation'}
 						chatId={id}
 						selectedModelId={selectedChatModel}
 						selectedVisibilityType={selectedVisibilityType}
 						isReadonly={isReadonly}
 					/>
-
-					{fileName && (
-						<div className="space-y-2 px-4">
-							<p className="font-light">
-								{dictionary.messages.analysis.newChat.uploadedFileHeader[currentLanguage.code]}
-							</p>
-							<div className="pointer-events-none line-clamp-1 select-none rounded-lg border border-slate-200 px-2 py-3 font-thin text-slate-400">
-								{fileName}
-							</div>
-						</div>
-					)}
 
 					{updatedMessages.length === 0 ? (
 						<CreateNewChat setShowLoader={setShowLoader} selectedChatModel={selectedChatModel} />

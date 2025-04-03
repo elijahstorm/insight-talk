@@ -31,7 +31,7 @@ export function SidebarUserNav({ user }: { user: User }) {
 								alt={user.email ?? 'User Avatar'}
 								width={24}
 								height={24}
-								className="rounded-full"
+								className="select-none rounded-full"
 							/>
 							<span className="truncate">{user?.email}</span>
 							<ChevronUp className="ml-auto" />

@@ -80,7 +80,7 @@ function PureChatHeader({
 			<h1 className="order-1 mx-auto text-lg font-semibold md:order-2">{header}</h1>
 
 			{config.insightChat.showUserIcon && user && (
-				<Button className="order-4 h-fit" variant="outline" asChild>
+				<Button className="order-4 h-fit select-none" variant="outline" asChild>
 					<Link href="/my-page" target="_noblank">
 						<Image
 							src={`https://avatar.vercel.sh/${user.email ?? ''}`}

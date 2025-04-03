@@ -1,9 +1,13 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import React, { useRef, useState } from 'react'
+import React, { ChangeEvent, useCallback, useRef, useState } from 'react'
 import { PaperclipIcon, PlusIcon, ImageIcon } from '@/components/icons'
 import { Button } from '@/components/ui/button'
+import { toast } from 'sonner'
+import { dictionary } from '@/lib/language/dictionary'
+import { useLanguage } from '@/hooks/use-language'
+import config from '@/features/config'
 
 function HeadsUpButton({
 	action,
@@ -33,6 +37,8 @@ function HeadsUpButton({
 }
 
 export default function AddNewButton() {
+	const { currentLanguage } = useLanguage()
+	const [uploadQueue, setUploadQueue] = useState<Array<string>>([])
 	const [menuClosed, setMenuClosed] = useState(true)
 	const router = useRouter()
 	const fileInputRef = useRef<HTMLInputElement | null>(null)
@@ -61,19 +67,76 @@ export default function AddNewButton() {
 		}
 	}
 
-	const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-		const file = event.target.files?.[0]
-		if (file) {
-			const formData = new FormData()
-			formData.append('file', file)
+	const uploadFile = async (file: File) => {
+		const formData = new FormData()
+		formData.append('file', file)
 
-			router.push(`/chat/new?file=${encodeURIComponent(file.name)}`)
+		try {
+			const response = await fetch('/api/files/upload', {
+				method: 'POST',
+				body: formData,
+			})
+
+			if (response.ok) {
+				const data = await response.json()
+				const { url, pathname, contentType } = data
+
+				return {
+					url,
+					name: pathname,
+					contentType: contentType,
+				}
+			}
+
+			await response.json()
+		} catch (error) {
+			toast.error(dictionary.messages.chat.uploadFailed[currentLanguage.code])
+		}
+	}
+
+	const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
+		const files = Array.from(event.target.files || [])
+
+		setUploadQueue(files.map((file) => file.name))
+
+		try {
+			const uploadPromises = files.map((file) => uploadFile(file))
+			const uploadedAttachments = await Promise.all(uploadPromises)
+			const successfullyUploadedAttachments = uploadedAttachments.filter(
+				(attachment) => attachment !== undefined
+			)
+
+			const response = await fetch('/api/files/batch', {
+				method: 'POST',
+				body: JSON.stringify({
+					files: successfullyUploadedAttachments.map((attachment) => attachment.url),
+				}),
+			})
+
+			if (!response.ok) {
+				throw new Error('Could not store files batch')
+			}
+
+			const { uuid } = await response.json()
+			router.push(`/chat/new?u=${uuid}`)
+		} catch (error) {
+			if (config.errorLog) {
+				console.error('Error uploading files!', error)
+			}
+		} finally {
+			setUploadQueue([])
 		}
 	}
 
 	return (
 		<div className="select-none">
-			<input type="file" ref={fileInputRef} className="hidden" onChange={handleFileChange} />
+			<input
+				type="file"
+				ref={fileInputRef}
+				className="hidden"
+				multiple
+				onChange={handleFileChange}
+			/>
 
 			<button
 				className={`fixed inset-0 cursor-default bg-background/30 backdrop-blur-sm transition-opacity ${menuClosed ? 'pointer-events-none opacity-0' : ''}`}
@@ -87,19 +150,25 @@ export default function AddNewButton() {
 			<div className="pointer-events-none fixed bottom-6 right-6 flex flex-col-reverse gap-8">
 				<HeadsUpButton
 					action={startConvo}
-					description="New Converstation"
+					description={
+						dictionary.messages.analysis.newChat.buttons.newConversation[currentLanguage.code]
+					}
 					icon={PlusIcon}
 					hidden={menuClosed}
 				/>
 				<HeadsUpButton
 					action={attachFile}
-					description="Attach a File"
+					description={
+						dictionary.messages.analysis.newChat.buttons.attachAFile[currentLanguage.code]
+					}
 					icon={PaperclipIcon}
 					hidden={menuClosed}
 				/>
 				<HeadsUpButton
 					action={attachImage}
-					description="Attach an Image"
+					description={
+						dictionary.messages.analysis.newChat.buttons.attachAnImage[currentLanguage.code]
+					}
 					icon={ImageIcon}
 					hidden={menuClosed}
 				/>
