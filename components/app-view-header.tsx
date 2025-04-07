@@ -8,7 +8,7 @@ import { SidebarToggle } from '@/components/sidebar-toggle'
 import { Button } from '@/components/ui/button'
 import { PlusIcon } from '@/components/icons'
 import { useSidebar } from '@/components/ui/sidebar'
-import { memo } from 'react'
+import { memo, useState, useEffect } from 'react'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import config from '@/features/config'
 import { HomeButton } from '@/components/home-button'
@@ -23,12 +23,17 @@ function PureChatHeader({ header = '', user }: { header?: string; user?: User })
 	const { open } = useSidebar()
 	const { width: windowWidth } = useWindowSize()
 	const { currentLanguage } = useLanguage()
+	const [isMounted, setIsMounted] = useState(false)
+
+	useEffect(() => {
+		setIsMounted(true)
+	}, [])
 
 	return (
 		<header className="sticky top-0 flex items-center gap-2 bg-background px-2 py-1.5 md:px-2">
 			<HomeButton />
 
-			{(!open || windowWidth < 768) && !config.insightChat.hideNewChatHeader && (
+			{isMounted && (!open || windowWidth < 768) && !config.insightChat.hideNewChatHeader && (
 				<Tooltip>
 					<TooltipTrigger asChild>
 						<Button
@@ -72,7 +77,7 @@ function PureChatHeader({ header = '', user }: { header?: string; user?: User })
 				</div>
 			)}
 
-			{windowWidth < 768 && (
+			{isMounted && windowWidth < 768 && (
 				<div className="order-2">
 					<SidebarToggle />
 				</div>

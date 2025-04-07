@@ -9,7 +9,7 @@ import { SidebarToggle } from '@/components/sidebar-toggle'
 import { Button } from '@/components/ui/button'
 import { PlusIcon } from '@/components/icons'
 import { useSidebar } from '@/components/ui/sidebar'
-import { memo } from 'react'
+import { memo, useState, useEffect } from 'react'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { VisibilityType, VisibilitySelector } from '@/components/visibility-selector'
 import config from '@/features/config'
@@ -19,7 +19,6 @@ import Image from 'next/image'
 import { User } from 'next-auth'
 import { useLanguage } from '@/hooks/use-language'
 import { dictionary } from '@/lib/language/dictionary'
-import { useState, useEffect } from 'react'
 
 function PureChatHeader({
 	user = undefined,
@@ -40,7 +39,6 @@ function PureChatHeader({
 	const { open } = useSidebar()
 	const { width: windowWidth } = useWindowSize()
 	const { currentLanguage } = useLanguage()
-
 	const [isMounted, setIsMounted] = useState(false)
 
 	useEffect(() => {
