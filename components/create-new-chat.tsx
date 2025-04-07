@@ -134,7 +134,7 @@ export default function CreateNewChat({
 				console.error('Error creating chat:', error)
 			}
 		}
-	}, [filepaths, setShowLoader])
+	}, [currentLanguage.code, filepaths, setShowLoader])
 
 	return (
 		<>

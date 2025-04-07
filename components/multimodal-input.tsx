@@ -172,7 +172,7 @@ function PureMultimodalInput({
 				setUploadQueue([])
 			}
 		},
-		[setAttachments]
+		[uploadFile, setAttachments]
 	)
 
 	return (

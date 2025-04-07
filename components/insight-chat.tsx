@@ -76,7 +76,6 @@ export function InsightChat({
 	isReadonly: boolean
 }) {
 	const { currentLanguage } = useLanguage()
-	const [currentMessage, setCurrentMessage] = useState<number>(0)
 
 	const { mutate } = useSWRConfig()
 
@@ -104,15 +103,6 @@ export function InsightChat({
 	const [showLoader, setShowLoader] = useState<boolean>(false)
 	const [attachments, setAttachments] = useState<Array<Attachment>>([])
 	const isArtifactVisible = useArtifactSelector((state) => state.isVisible)
-	const setToLatestPage: UseChatHelpers['handleSubmit'] = useCallback(
-		(handler) => {
-			handleSubmit(handler)
-			if (currentMessage !== messages.length - 1) {
-				// setCurrentMessage(messages.length - 1)
-			}
-		},
-		[handleSubmit]
-	)
 
 	const updatedMessages = messages
 		.filter(
@@ -155,8 +145,6 @@ export function InsightChat({
 							status={status}
 							votes={votes}
 							messages={updatedMessages}
-							currentMessage={currentMessage}
-							setCurrentMessage={setCurrentMessage}
 							setMessages={setMessages}
 							reload={reload}
 							isReadonly={isReadonly}
@@ -168,7 +156,7 @@ export function InsightChat({
 										chatId={id}
 										input={input}
 										setInput={setInput}
-										handleSubmit={setToLatestPage}
+										handleSubmit={handleSubmit}
 										status={status}
 										stop={stop}
 										attachments={attachments}

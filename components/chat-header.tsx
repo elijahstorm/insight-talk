@@ -19,6 +19,7 @@ import Image from 'next/image'
 import { User } from 'next-auth'
 import { useLanguage } from '@/hooks/use-language'
 import { dictionary } from '@/lib/language/dictionary'
+import { useState, useEffect } from 'react'
 
 function PureChatHeader({
 	user = undefined,
@@ -40,11 +41,17 @@ function PureChatHeader({
 	const { width: windowWidth } = useWindowSize()
 	const { currentLanguage } = useLanguage()
 
+	const [isMounted, setIsMounted] = useState(false)
+
+	useEffect(() => {
+		setIsMounted(true)
+	}, [])
+
 	return (
 		<header className="sticky top-0 flex items-center gap-2 bg-background px-2 py-1.5 md:px-2">
 			<HomeButton />
 
-			{(!open || windowWidth < 768) && !config.insightChat.hideNewChatHeader && (
+			{isMounted && (!open || windowWidth < 768) && !config.insightChat.hideNewChatHeader && (
 				<Tooltip>
 					<TooltipTrigger asChild>
 						<Button
@@ -100,7 +107,7 @@ function PureChatHeader({
 				</div>
 			)}
 
-			{windowWidth < 768 && (
+			{isMounted && windowWidth < 768 && (
 				<div className="order-2">
 					<SidebarToggle />
 				</div>

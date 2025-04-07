@@ -13,7 +13,7 @@ import {
 	getMostRecentUserMessage,
 	getTrailingMessageId,
 } from '@/lib/utils'
-import { generateTitleFromUserMessage } from '@/app/(chat)/actions'
+import { generateTitleFromUserMessage, messagesToPrompt } from '@/app/(chat)/actions'
 import { createDocument } from '@/lib/ai/tools/create-document'
 import { updateDocument } from '@/lib/ai/tools/update-document'
 import { requestSuggestions } from '@/lib/ai/tools/request-suggestions'
@@ -21,6 +21,7 @@ import { getWeather } from '@/lib/ai/tools/get-weather'
 import { isProductionEnvironment } from '@/lib/constants'
 import { myProvider } from '@/lib/ai/providers'
 import config from '@/features/config'
+import { systemPrompt } from '@/lib/ai/system-prompts'
 
 export const maxDuration = 60
 
@@ -75,6 +76,8 @@ export async function POST(request: Request) {
 			],
 		})
 
+		const prompt = await messagesToPrompt(messages)
+
 		return createDataStreamResponse({
 			execute: (dataStream) => {
 				if (config.insightChat.previewMode) {
@@ -90,8 +93,8 @@ export async function POST(request: Request) {
 
 				const result = streamText({
 					model: myProvider.languageModel(selectedChatModel),
-					system: `Right now you are helping me debug the code for your message memory. Please help me by answering the user to the best of your ability.`, // systemPrompt({ name: chat.userName }),
-					messages,
+					system: systemPrompt({ userName: chat.userName }),
+					prompt,
 					maxSteps: 5,
 					experimental_activeTools: [],
 					experimental_transform: smoothStream({ chunking: 'word' }),

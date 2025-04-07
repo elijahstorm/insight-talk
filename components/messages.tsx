@@ -1,7 +1,7 @@
 import { UIMessage } from 'ai'
 import { PreviewMessage, ThinkingMessage } from '@/components/message'
 import { useScrollToBottom } from '@/components/use-scroll-to-bottom'
-import { Dispatch, memo, SetStateAction, useEffect, useState } from 'react'
+import { Dispatch, memo, SetStateAction, useEffect, useRef, useState } from 'react'
 import { Vote } from '@/lib/db/schema'
 import equal from 'fast-deep-equal'
 import { UseChatHelpers } from '@ai-sdk/react'
@@ -18,8 +18,6 @@ interface MessagesProps {
 	status: UseChatHelpers['status']
 	votes: Array<Vote> | undefined
 	messages: Array<UIMessage | InsightMessageType>
-	currentMessage: number
-	setCurrentMessage: Dispatch<SetStateAction<number>>
 	setMessages: UseChatHelpers['setMessages']
 	reload: UseChatHelpers['reload']
 	isReadonly: boolean
@@ -27,22 +25,49 @@ interface MessagesProps {
 	children?: React.ReactNode
 }
 
+const isInsightMessage = (message: UIMessage | InsightMessageType) => {
+	return message.parts?.some((part) =>
+		insightTypes.includes(
+			(part as UIMessage['parts'][number] | InsightMessageType['parts'][number]).type
+		)
+	)
+}
+
 function PureMessages({
 	chatId,
 	status,
 	votes,
 	messages,
-	currentMessage,
-	setCurrentMessage,
 	setMessages,
 	reload,
 	isReadonly,
 	children,
 }: MessagesProps) {
 	const [messagesContainerRef, messagesEndRef] = useScrollToBottom<HTMLDivElement>()
+	const [currentMessage, setCurrentMessage] = useState<number>(0)
 	const [visibleMessageParts, setVisibleMessageParts] = useState<number>(0)
 	const [_, copyToClipboard] = useCopyToClipboard()
 	const { currentLanguage } = useLanguage()
+	const hasMounted = useRef(false)
+
+	useEffect(() => {
+		if (hasMounted.current) {
+			let startOfLegacyMessages = messages.length - 1
+
+			while (startOfLegacyMessages >= 0) {
+				const current = messages[startOfLegacyMessages]
+				if (isInsightMessage(current)) {
+					startOfLegacyMessages++
+					break
+				}
+				startOfLegacyMessages--
+			}
+
+			setCurrentMessage(startOfLegacyMessages)
+		} else {
+			hasMounted.current = true
+		}
+	}, [messages.length])
 
 	useEffect(() => {
 		if (messagesEndRef.current) {
@@ -75,26 +100,14 @@ function PureMessages({
 
 	const showableMessages = (() => {
 		const current = messages[currentMessage]
-		if (
-			current.parts?.some((part) =>
-				insightTypes.includes(
-					(part as UIMessage['parts'][number] | InsightMessageType['parts'][number]).type
-				)
-			)
-		) {
+		if (isInsightMessage(current)) {
 			return [current]
 		}
 
 		const legacyMessages = []
 		for (let i = currentMessage; i < messages.length; i++) {
 			const message = messages[i]
-			if (
-				message.parts?.some((part) =>
-					insightTypes.includes(
-						(part as UIMessage['parts'][number] | InsightMessageType['parts'][number]).type
-					)
-				)
-			) {
+			if (isInsightMessage(message)) {
 				break
 			}
 			legacyMessages.push(message)

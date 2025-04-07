@@ -203,3 +203,20 @@ export async function updateChatVisibility({
 }) {
 	await updateChatVisiblityById({ chatId, visibility })
 }
+
+export async function messagesToPrompt(messages: Array<UIMessage>) {
+	return messages
+		.map((message) => {
+			const partsText = message.parts
+				.map((part) => {
+					if (part.type === 'text') {
+						return part.text
+					}
+					return JSON.stringify(part, null, 2)
+				})
+				.join('\n')
+
+			return `Message from ${message.role} at ${message.createdAt}:\n${partsText}`
+		})
+		.join('\n\n')
+}
