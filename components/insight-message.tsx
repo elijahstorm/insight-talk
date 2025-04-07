@@ -98,7 +98,7 @@ export default function InsightMessage({
 								{person.ratios.map((ratio, index) => (
 									<div
 										key={`part-${messageId}-person-${personIndex}-ratio-${index}`}
-										className={`bg-${colors[index % colors.length]} text-${colors[index % colors.length]}-foreground space-x-2 truncate px-1 py-2 text-center`}
+										className={`bg-${colors[index % colors.length]} text-${colors[index % colors.length]}-foreground space-x-1 truncate px-1 py-2 text-center text-xs sm:text-sm md:text-lg`}
 										style={{ width: `${(ratio.ratio / ratioTotals) * 100}%` }}
 										title={ratio.type}
 									>

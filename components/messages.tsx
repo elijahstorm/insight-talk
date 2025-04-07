@@ -48,10 +48,10 @@ function PureMessages({
 	const [visibleMessageParts, setVisibleMessageParts] = useState<number>(0)
 	const [_, copyToClipboard] = useCopyToClipboard()
 	const { currentLanguage } = useLanguage()
-	const hasMounted = useRef(false)
+	const prevLength = useRef(messages.length)
 
 	useEffect(() => {
-		if (hasMounted.current) {
+		if (messages.length !== prevLength.current) {
 			let startOfLegacyMessages = messages.length - 1
 
 			while (startOfLegacyMessages >= 0) {
@@ -64,10 +64,9 @@ function PureMessages({
 			}
 
 			setCurrentMessage(startOfLegacyMessages)
-		} else {
-			hasMounted.current = true
+			prevLength.current = messages.length
 		}
-	}, [messages.length])
+	}, [messages, currentMessage])
 
 	useEffect(() => {
 		if (messagesEndRef.current) {

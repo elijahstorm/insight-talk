@@ -36,7 +36,7 @@ const FullPageLoader = () => {
 
 	return (
 		<div
-			className={`fade-in ${isActive ? 'fade-in-active' : ''} flex size-full flex-col items-center justify-center gap-4 bg-primary-foreground`}
+			className={`fade-in ${isActive ? 'fade-in-active' : ''} flex size-full flex-col items-center justify-center gap-4`}
 		>
 			<Image src="/static/logo.svg" alt="Logo" width={'96'} height={'96'} className="pb-4" />
 
@@ -49,7 +49,7 @@ const FullPageLoader = () => {
 					className="h-full bg-primary"
 					style={{
 						width: `${progress}%`,
-						transition: 'width 10s cubic-bezier(.08, .28, .31, .99)',
+						transition: 'width 15s cubic-bezier(.08, .28, .31, .99)',
 					}}
 				></div>
 			</div>
