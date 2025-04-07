@@ -1,5 +1,5 @@
 import { MultiTypeSelector } from '@/components/multi-type-selector'
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { toast } from 'sonner'
@@ -48,7 +48,7 @@ export default function CreateNewChat({
 		}
 	}, [filesBatch, currentLanguage])
 
-	const deleteFiles = async () => {
+	const deleteFiles = useCallback(async () => {
 		if (!filesBatch) return
 
 		try {
@@ -64,9 +64,9 @@ export default function CreateNewChat({
 				console.error('Error deleting files batch:', error)
 			}
 		}
-	}
+	}, [filesBatch])
 
-	const makeNewChat = async () => {
+	const makeNewChat = useCallback(async () => {
 		setShowLoader && setShowLoader(true)
 
 		try {
@@ -107,10 +107,7 @@ export default function CreateNewChat({
 								{
 									type: chatLogsType,
 									logs: textLogs.join(`
-
-----------
-NEW FILE
-
+---
 `),
 								},
 							],
@@ -134,10 +131,8 @@ NEW FILE
 			if (config.errorLog) {
 				console.error('Error creating chat:', error)
 			}
-		} finally {
-			setShowLoader && setShowLoader(false)
 		}
-	}
+	}, [filepaths, setShowLoader])
 
 	return (
 		<>
@@ -158,6 +153,11 @@ NEW FILE
 
 			<div className="flex h-full flex-col gap-4 overflow-hidden px-4">
 				<div className="flex-1 overflow-auto">
+					<div className="flex max-w-xl flex-col gap-8 rounded-xl pb-2 text-left font-light leading-relaxed">
+						Who are you in this Conversation?
+					</div>
+					<div className="flex flex-col gap-6">me, not me</div>
+
 					<MultiTypeSelector
 						prompt={dictionary.messages.analysis.newChat.partnerTypeQuestion[currentLanguage.code]}
 						types={dictionary.relationshipTypes[currentLanguage.code]}

@@ -1,9 +1,9 @@
 'use client'
 
-import type { Attachment, UIMessage } from 'ai'
-import { useChat } from '@ai-sdk/react'
+import type { Attachment, Message, UIMessage } from 'ai'
+import { useChat, UseChatHelpers } from '@ai-sdk/react'
 import { useSearchParams } from 'next/navigation'
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import useSWR, { useSWRConfig } from 'swr'
 import { ChatHeader } from '@/components/chat-header'
 import type { Vote } from '@/lib/db/schema'
@@ -48,7 +48,10 @@ const FullPageLoader = () => {
 			<div className="h-2 w-64 overflow-hidden bg-accent">
 				<div
 					className="h-full bg-primary"
-					style={{ width: `${progress}%`, transition: 'width 6s cubic-bezier(.08, .28, .31, .99)' }}
+					style={{
+						width: `${progress}%`,
+						transition: 'width 10s cubic-bezier(.08, .28, .31, .99)',
+					}}
 				></div>
 			</div>
 
@@ -101,6 +104,12 @@ export function InsightChat({
 	const [showLoader, setShowLoader] = useState<boolean>(false)
 	const [attachments, setAttachments] = useState<Array<Attachment>>([])
 	const isArtifactVisible = useArtifactSelector((state) => state.isVisible)
+	const setToLatestPage: UseChatHelpers['handleSubmit'] = useCallback(
+		(handler) => {
+			// setMessages(handler)
+		},
+		[setMessages]
+	)
 
 	const updatedMessages = messages
 		.filter(
@@ -154,7 +163,7 @@ export function InsightChat({
 										chatId={id}
 										input={input}
 										setInput={setInput}
-										handleSubmit={handleSubmit}
+										handleSubmit={setToLatestPage}
 										status={status}
 										stop={stop}
 										attachments={attachments}

@@ -10,7 +10,12 @@ import {
 } from '@/lib/db/queries'
 import { VisibilityType } from '@/components/visibility-selector'
 import { myProvider } from '@/lib/ai/providers'
-import { InsightPrompts, preparePromtWithMessage, systemPrompt } from '@/lib/ai/system-prompts'
+import {
+	InsightPrompts,
+	preparePromtWithMessage,
+	systemPrompt,
+	titleAndSummaryPrompt,
+} from '@/lib/ai/system-prompts'
 
 export async function saveChatModelAsCookie(model: string) {
 	const cookieStore = await cookies()
@@ -33,26 +38,19 @@ export async function generateTitleFromUserMessage({ message }: { message: Messa
 
 export async function generateTitleAndSummaryFromUserMessage({
 	message,
-	type,
+	relationshipTypes,
 	language,
 	name,
 }: {
 	message: Message
-	type: Array<string>
+	relationshipTypes: Array<string>
 	language: string
 	name?: string
 }) {
 	const { text } = await generateText({
 		model: myProvider.languageModel('title-model'),
-		system: `\n
-- You will be given a chat log history between two or multiple people.
-- Generate a concise title and a short summary based on the conversation logs provided.
-- Separate the title and summary with a bar | operator.
-- The title should be the first value before the | operator, and it should be a concise representation of the participants or the main topic of the conversation.
-- The summary should be the second value after the | operator, and it should be a short sentence summarizing the conversation. Ensure the summary is longer than the title but no more than 250 characters.
-- Do not use quotes, colons, or any special formatting in the response.
-- Ensure the response format is consistent and easy to parse: [title] | [summary].`,
-		prompt: preparePromtWithMessage({ message, type, language, name }),
+		system: titleAndSummaryPrompt({ relationshipTypes, language, name }),
+		prompt: preparePromtWithMessage({ message }),
 	})
 
 	const splitIndex = text.indexOf('|')
@@ -68,12 +66,12 @@ export async function generateTitleAndSummaryFromUserMessage({
 
 export async function generateInsight({
 	message,
-	type,
+	relationshipTypes,
 	language,
 	name,
 }: {
 	message: Message
-	type: Array<string>
+	relationshipTypes: Array<string>
 	language: string
 	name?: string
 }) {
@@ -81,18 +79,33 @@ export async function generateInsight({
 		[
 			generateText({
 				model: myProvider.languageModel('title-model'),
-				system: systemPrompt(InsightPrompts.communicationPatterns),
-				prompt: preparePromtWithMessage({ message, type, language, name }),
+				system: systemPrompt({
+					messageType: InsightPrompts.communicationPatterns,
+					relationshipTypes,
+					language,
+					name,
+				}),
+				prompt: preparePromtWithMessage({ message }),
 			}),
 			generateText({
 				model: myProvider.languageModel('title-model'),
-				system: systemPrompt(InsightPrompts.replies),
-				prompt: preparePromtWithMessage({ message, type, language, name }),
+				system: systemPrompt({
+					messageType: InsightPrompts.replies,
+					relationshipTypes,
+					language,
+					name,
+				}),
+				prompt: preparePromtWithMessage({ message }),
 			}),
 			generateText({
 				model: myProvider.languageModel('title-model'),
-				system: systemPrompt(InsightPrompts.generalInsight),
-				prompt: preparePromtWithMessage({ message, type, language, name }),
+				system: systemPrompt({
+					messageType: InsightPrompts.generalInsight,
+					relationshipTypes,
+					language,
+					name,
+				}),
+				prompt: preparePromtWithMessage({ message }),
 			}),
 		]
 	)

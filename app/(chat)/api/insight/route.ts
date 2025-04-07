@@ -37,11 +37,11 @@ export async function POST(request: Request) {
 		const [{ title, summary }, { assistantMessages }] = await Promise.all([
 			generateTitleAndSummaryFromUserMessage({
 				message,
-				type,
+				relationshipTypes: type,
 				language,
 				name,
 			}),
-			generateInsight({ message, type, language, name }),
+			generateInsight({ message, relationshipTypes: type, language, name }),
 		])
 
 		if (

@@ -1,10 +1,20 @@
 import { Message } from 'ai'
 
-export const systemPrompt = (
-	messageType?: string,
-	containsLegal: boolean = false,
-	containsHistoryForGrowthSentiment: boolean = false
-) => `You are Talk Insight, an AI-powered communication analysis assistant designed to help users improve interpersonal conversations, resolve conflicts, and foster healthier relationships. Your primary goal is to analyze conversations, detect communication patterns, and provide actionable insights tailored to the user's needs.
+export const systemPrompt = ({
+	messageType,
+	name,
+	language,
+	relationshipTypes,
+	containsLegal = false,
+	containsHistoryForGrowthSentiment = false,
+}: {
+	messageType?: string
+	name?: string
+	language?: string
+	relationshipTypes?: Array<string>
+	containsLegal?: boolean
+	containsHistoryForGrowthSentiment?: boolean
+}) => `You are Talk Insight, an AI-powered communication analysis assistant designed to help users improve interpersonal conversations, resolve conflicts, and foster healthier relationships. Your primary goal is to analyze conversations, detect communication patterns, and provide actionable insights tailored to the user's needs.
 
 ### Key Responsibilities:
 1. **Conversation Analysis**:
@@ -32,11 +42,15 @@ ${
    - Summarize communication trends and patterns over time to help users understand their progress and areas for growth.`
 }
 
+### User information:
+${userInformation({ name, language, relationshipTypes })}
+
 ### Guidelines:
 - Always ensure your responses are concise, actionable, and easy to parse.
 - Avoid using quotes, colons, or special formatting unless explicitly requested.
 - The Pipe Operator (|) is to be only used for seperating data parts. NEVER use it in your general sentence generation.
-- When generating insights, maintain a professional and empathetic tone.
+- When generating insights, maintain an empathetic tone. Do not be overly positive, because that makes user's feel like you're not responding honestly.
+- When analysing a person's personality type, it is better to follow one positive trait with a slightly negative trait, or something they can work on.
 - Ensure all outputs are consistent with the format as required.
 
 ${
@@ -51,10 +65,13 @@ export const InsightPrompts = {
 	communicationPatterns: `In this message you will be focusing on analyzing each individual's communication pattern. Give a nuanced analysis that should include anywhere from 2 to 4 unique category types, denoted by the ratios and expanded upon in the descriptions.
 
 ### Formatting:
-- Write a report for each person.
+- Detect emotional tone, attachment styles, and toxic language in text conversations.
+- Write a report for each person. Make sure each person has a unique and thoughtful report. Never give the same traits and analysis to the multiple people.
+- You want the user to feel like they can trust your insight, so make sure to provide quotes as refrence. And make your analysis nuanced and detailed.
+- Analyze key personality traits and list them as ratios so we can get nuanced report about the person.
 - Separate people with triple pipes (|||).
 - Use double pipe (||) to separate fields in the order: [name] || [style] || [text] || [ratios] || [description].
-- Format ratios as key-value pairs separated by pipes (e.g., logical:3|emotional:1).
+- Format ratios as key-value pairs separated by pipes (e.g., competitive:3|planning:1|stressed:1). Use at least three but never more than four personality type ratios.
 - Format descriptions as a pipe-separated list of strings.
 
 ### Required Data:
@@ -69,7 +86,7 @@ export const InsightPrompts = {
 }
 
 ### Example:
-Elena||Avoidant Style||Elena's attachment style in this exchange appears to be anxious-avoidant, where emotional expressions from your partner are met with logical reasoning rather than reassurance.||logical:3|emotional:1||In recent conversations with Elena, **logical explanations** were used instead of emotional responses in **75%** of messages.|However, **emotional validation words** (e.g., "I understand," "That must have been hard") appeared in only **10%** of the messages.||||Jane||Balanced Style||Jane's communication style in this exchange is balanced, showing a mix of humor, support, and personal sharing.||logical:1|emotional:1||Jane uses a **balanced approach** in communication, mixing **logical content** (e.g., discussing plans, sharing videos) with **emotional expressions** (e.g., encouragement, showing interest in the partner's activities).|This style helps in maintaining a light-hearted yet meaningful connection, especially in the early stages of a potential partnership.
+Elena||Avoidant Style||Elena's attachment style in this exchange appears to be anxious-avoidant, where emotional expressions from your partner are met with logical reasoning rather than reassurance.||logical:3|easy-going:2|emotional:1||In recent conversations with Elena, **logical explanations** were used instead of emotional responses in **75%** of messages.|However, **emotional validation words** (e.g., "I understand," "That must have been hard") appeared in only **10%** of the messages.||||Jane||Balanced Style||Jane's communication style in this exchange is balanced, showing a mix of humor, support, and personal sharing.||logical:1|emotional:1||Jane uses a **balanced approach** in communication, mixing **logical content** (e.g., discussing plans, sharing videos) with **emotional expressions** (e.g., encouragement, showing interest in the partner's activities).|This style helps in maintaining a light-hearted yet meaningful connection, especially in the early stages of a potential partnership.
 `,
 
 	replies: `In this message you will be focusing on generating possible replies that help the user achieve their goals, within the context of each party's communication patterns. Come up with multiple emotional directions, and multiple possible reply ideas for each emotional group.
@@ -109,34 +126,53 @@ Playfully||Lmaooo so you're just playing it cool now?|Damn, so all the emojis we
 `,
 }
 
-export const preparePromtWithMessage = ({
-	message,
-	type,
-	language,
-	name,
-}: {
-	message: Message
-	type: Array<string>
-	language: string
-	name?: string
-}) => {
-	const relationshipContext = type.length
-		? `The user has defined the relationship(s) in this chat log as: ${type.join(
-				', '
-			)}. Please keep in mind that this is the user's perspective and may not reflect how the other person views the relationship.`
-		: `The user has not specified the type of relationship for this chat log.`
+export const preparePromtWithMessage = ({ message }: { message: Message }) => {
+	return `The chat log for analysis:
+${JSON.stringify(message)}`
+}
 
+export const titleAndSummaryPrompt = ({
+	name,
+	language,
+	relationshipTypes,
+}: {
+	name?: string
+	language?: string
+	relationshipTypes?: Array<string>
+}) => {
+	return `
+- You will be given a chat log history between two or multiple people.
+- Generate a concise title and a short summary based on the conversation logs provided.
+- Separate the title and summary with a bar | operator.
+- The title should be the first value before the | operator, and it should be a concise representation of the participants or the main topic of the conversation.
+- The summary should be the second value after the | operator, and it should be a short sentence summarizing the conversation. Ensure the summary is longer than the title but no more than 250 characters.
+- Do not use quotes, colons, or any special formatting in the response.
+- Ensure the response format is consistent and easy to parse: [title] | [summary].
+
+### User Information:
+${userInformation({ name, language, relationshipTypes })}`
+}
+
+const userInformation = ({
+	name,
+	language,
+	relationshipTypes,
+}: {
+	name?: string
+	language?: string
+	relationshipTypes?: Array<string>
+}) => {
 	return `${
 		name
-			? `User's name: ${name}. Keep in mind who the user is when providing reply suggestions.
-
-`
+			? `- User's name: ${name}. Keep in mind who the user is when providing reply suggestions.`
 			: ``
-	}${relationshipContext}
-
-User's preferred language: ${language}. Reply in this language, regardless of the language of the chat logs.
-
-Here is the chat log history for analysis:
-${JSON.stringify(message)}
-`
+	}
+${
+	relationshipTypes && relationshipTypes.length > 0
+		? `- The user has defined the relationship(s) in this chat log as: ${relationshipTypes.join(
+				', '
+			)}. Please keep in mind that this is the user's perspective and may not reflect how the other person views the relationship.`
+		: `- The user has not specified the type of relationship for this chat log.`
+}
+${language && `- User's preferred language: ${language}. Reply in this language, regardless of the language of the chat logs.`}`
 }
