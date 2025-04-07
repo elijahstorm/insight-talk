@@ -40,16 +40,16 @@ export async function generateTitleAndSummaryFromUserMessage({
 	message,
 	relationshipTypes,
 	language,
-	name,
+	userName,
 }: {
 	message: Message
 	relationshipTypes: Array<string>
 	language: string
-	name?: string
+	userName?: string
 }) {
 	const { text } = await generateText({
 		model: myProvider.languageModel('title-model'),
-		system: titleAndSummaryPrompt({ relationshipTypes, language, name }),
+		system: titleAndSummaryPrompt({ relationshipTypes, language, userName }),
 		prompt: preparePromtWithMessage({ message }),
 	})
 
@@ -68,12 +68,12 @@ export async function generateInsight({
 	message,
 	relationshipTypes,
 	language,
-	name,
+	userName,
 }: {
 	message: Message
 	relationshipTypes: Array<string>
 	language: string
-	name?: string
+	userName?: string
 }) {
 	const [{ text: communicationPatterns }, { text: replies }, { text: insight }] = await Promise.all(
 		[
@@ -83,7 +83,7 @@ export async function generateInsight({
 					messageType: InsightPrompts.communicationPatterns,
 					relationshipTypes,
 					language,
-					name,
+					userName,
 				}),
 				prompt: preparePromtWithMessage({ message }),
 			}),
@@ -93,7 +93,7 @@ export async function generateInsight({
 					messageType: InsightPrompts.replies,
 					relationshipTypes,
 					language,
-					name,
+					userName,
 				}),
 				prompt: preparePromtWithMessage({ message }),
 			}),
@@ -103,7 +103,7 @@ export async function generateInsight({
 					messageType: InsightPrompts.generalInsight,
 					relationshipTypes,
 					language,
-					name,
+					userName,
 				}),
 				prompt: preparePromtWithMessage({ message }),
 			}),

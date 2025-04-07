@@ -11,13 +11,13 @@ export async function POST(request: Request) {
 		const {
 			messages,
 			language,
-			name,
+			userName,
 			type = ['NA'],
 			visibility = 'private',
 		}: {
 			messages: Array<UIMessage>
 			language: string
-			name?: string
+			userName?: string
 			type?: Array<string>
 			visibility?: 'private' | 'public'
 		} = await request.json()
@@ -39,9 +39,9 @@ export async function POST(request: Request) {
 				message,
 				relationshipTypes: type,
 				language,
-				name,
+				userName,
 			}),
-			generateInsight({ message, relationshipTypes: type, language, name }),
+			generateInsight({ message, relationshipTypes: type, language, userName }),
 		])
 
 		if (
@@ -56,7 +56,7 @@ export async function POST(request: Request) {
 			title,
 			summary,
 			type,
-			userName: name,
+			userName,
 			visibility,
 		})
 

@@ -2,14 +2,14 @@ import { Message } from 'ai'
 
 export const systemPrompt = ({
 	messageType,
-	name,
+	userName,
 	language,
 	relationshipTypes,
 	containsLegal = false,
 	containsHistoryForGrowthSentiment = false,
 }: {
 	messageType?: string
-	name?: string | null
+	userName?: string | null
 	language?: string
 	relationshipTypes?: Array<string>
 	containsLegal?: boolean
@@ -43,7 +43,7 @@ ${
 }
 
 ### User information:
-${userInformation({ name, language, relationshipTypes })}
+${userInformation({ userName, language, relationshipTypes })}
 
 ### Guidelines:
 - Always ensure your responses are concise, actionable, and easy to parse.
@@ -134,11 +134,11 @@ ${JSON.stringify(message)}`
 }
 
 export const titleAndSummaryPrompt = ({
-	name,
+	userName,
 	language,
 	relationshipTypes,
 }: {
-	name?: string
+	userName?: string
 	language?: string
 	relationshipTypes?: Array<string>
 }) => {
@@ -152,21 +152,21 @@ export const titleAndSummaryPrompt = ({
 - Ensure the response format is consistent and easy to parse: [title] | [summary].
 
 ### User Information:
-${userInformation({ name, language, relationshipTypes })}`
+${userInformation({ userName, language, relationshipTypes })}`
 }
 
 const userInformation = ({
-	name,
+	userName,
 	language,
 	relationshipTypes,
 }: {
-	name?: string | null
+	userName?: string | null
 	language?: string
 	relationshipTypes?: Array<string>
 }) => {
 	return `${
-		name
-			? `- User's name: ${name}. Keep in mind who the user is when providing reply suggestions.`
+		userName
+			? `- User's name: ${userName}. Keep in mind who the user is when providing reply suggestions.`
 			: ``
 	}
 ${

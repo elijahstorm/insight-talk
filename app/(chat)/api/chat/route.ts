@@ -21,7 +21,6 @@ import { getWeather } from '@/lib/ai/tools/get-weather'
 import { isProductionEnvironment } from '@/lib/constants'
 import { myProvider } from '@/lib/ai/providers'
 import config from '@/features/config'
-import { systemPrompt } from '@/lib/ai/system-prompts'
 
 export const maxDuration = 60
 

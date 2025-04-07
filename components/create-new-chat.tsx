@@ -23,6 +23,8 @@ export default function CreateNewChat({
 	const [filepaths, setFilepaths] = useState<Array<string>>([])
 	const hasFetchedFilepaths = useRef(false)
 
+	const userName = '스톰' // todo
+
 	useEffect(() => {
 		if (filesBatch && !hasFetchedFilepaths.current) {
 			hasFetchedFilepaths.current = true
@@ -98,7 +100,7 @@ export default function CreateNewChat({
 				body: JSON.stringify({
 					selectedChatModel,
 					language: currentLanguage.name,
-					name: '스톰', // todo
+					userName,
 					messages: [
 						{
 							role: 'user',
