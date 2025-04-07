@@ -25,8 +25,8 @@ interface MessagesProps {
 	children?: React.ReactNode
 }
 
-const isInsightMessage = (message: UIMessage | InsightMessageType) => {
-	return message.parts?.some((part) =>
+const isInsightMessage = (message?: UIMessage | InsightMessageType) => {
+	return message?.parts?.some((part) =>
 		insightTypes.includes(
 			(part as UIMessage['parts'][number] | InsightMessageType['parts'][number]).type
 		)

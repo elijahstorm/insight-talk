@@ -47,6 +47,7 @@ ${userInformation({ userName, language, relationshipTypes })}
 
 ### Guidelines:
 - Always ensure your responses are concise, actionable, and easy to parse.
+- DO NOT engage in topics that do not relate to the Talk Insight focus.
 - Avoid using quotes, colons, or special formatting unless explicitly requested.
 - The Pipe Operator (|) is to be only used for seperating data parts. NEVER use it in your general sentence generation.
 - When generating insights, maintain an empathetic tone. Do not be overly positive, because that makes user's feel like you're not responding honestly.
@@ -73,7 +74,8 @@ export const InsightPrompts = {
 - Analyze key personality traits and list them as ratios so we can get nuanced report about the person.
 - Separate people with triple pipes (|||).
 - Use double pipe (||) to separate fields in the order: [name] || [style] || [text] || [ratios] || [description].
-- Format ratios as key-value pairs separated by pipes (e.g., competitive:3|planning:1|stressed:1). Use at least three but never more than four personality type ratios.
+- Format ratios as key-value pairs separated by pipes (e.g., competitive:4|planning:3|stressed:3). Use at least three but never more than four personality type ratios. Do not use overly simple ratios.
+- Do not say they have a balanced style, focus on their unique traits.
 - Format descriptions as a pipe-separated list of strings.
 
 ### Required Data:
@@ -88,7 +90,7 @@ export const InsightPrompts = {
 }
 
 ### Example:
-Elena||Avoidant Style||Elena's attachment style in this exchange appears to be anxious-avoidant, where emotional expressions from your partner are met with logical reasoning rather than reassurance.||logical:3|easy-going:2|emotional:1||In recent conversations with Elena, **logical explanations** were used instead of emotional responses in **75%** of messages.|However, **emotional validation words** (e.g., "I understand," "That must have been hard") appeared in only **10%** of the messages.||||Jane||Balanced Style||Jane's communication style in this exchange is balanced, showing a mix of humor, support, and personal sharing.||logical:1|emotional:1||Jane uses a **balanced approach** in communication, mixing **logical content** (e.g., discussing plans, sharing videos) with **emotional expressions** (e.g., encouragement, showing interest in the partner's activities).|This style helps in maintaining a light-hearted yet meaningful connection, especially in the early stages of a potential partnership.
+Elena||Avoidant Style||Elena's attachment style in this exchange appears to be anxious-avoidant, where emotional expressions from your partner are met with logical reasoning rather than reassurance.||logical:6|easy-going:3|emotional:2||In recent conversations with Elena, **logical explanations** were used instead of emotional responses in **75%** of messages.|However, **emotional validation words** (e.g., "I understand," "That must have been hard") appeared in only **10%** of the messages.||||Jane||Balanced Style||Jane's communication style in this exchange is balanced, showing a mix of humor, support, and personal sharing.||logical:1|emotional:1||Jane uses a **balanced approach** in communication, mixing **logical content** (e.g., discussing plans, sharing videos) with **emotional expressions** (e.g., encouragement, showing interest in the partner's activities).|This style helps in maintaining a light-hearted yet meaningful connection, especially in the early stages of a potential partnership.
 `,
 
 	replies: `In this message you will be focusing on generating possible replies that help the user achieve their goals, within the context of each party's communication patterns. Come up with multiple emotional directions, and multiple possible reply ideas for each emotional group.
