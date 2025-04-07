@@ -53,12 +53,14 @@ export async function newInsight({
 	title,
 	summary,
 	visibility = 'private',
+	userName,
 	type,
 }: {
 	userId: string
 	title: string
 	summary: string
 	visibility?: 'private' | 'public'
+	userName?: string
 	type: Array<string>
 }) {
 	try {
@@ -71,6 +73,7 @@ export async function newInsight({
 					title,
 					summary,
 					visibility,
+					userName,
 					type,
 				})
 				.returning()

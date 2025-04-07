@@ -20,7 +20,6 @@ import { User } from 'next-auth'
 import { MultimodalInput } from '@/components/multimodal-input'
 import { useLanguage } from '@/hooks/use-language'
 import { dictionary } from '@/lib/language/dictionary'
-import config from '@/features/config'
 
 const FullPageLoader = () => {
 	const [progress, setProgress] = useState(0)
@@ -77,6 +76,7 @@ export function InsightChat({
 	isReadonly: boolean
 }) {
 	const { currentLanguage } = useLanguage()
+	const [currentMessage, setCurrentMessage] = useState<number>(0)
 
 	const { mutate } = useSWRConfig()
 
@@ -106,9 +106,12 @@ export function InsightChat({
 	const isArtifactVisible = useArtifactSelector((state) => state.isVisible)
 	const setToLatestPage: UseChatHelpers['handleSubmit'] = useCallback(
 		(handler) => {
-			// setMessages(handler)
+			handleSubmit(handler)
+			if (currentMessage !== messages.length - 1) {
+				// setCurrentMessage(messages.length - 1)
+			}
 		},
-		[setMessages]
+		[handleSubmit]
 	)
 
 	const updatedMessages = messages
@@ -152,6 +155,8 @@ export function InsightChat({
 							status={status}
 							votes={votes}
 							messages={updatedMessages}
+							currentMessage={currentMessage}
+							setCurrentMessage={setCurrentMessage}
 							setMessages={setMessages}
 							reload={reload}
 							isReadonly={isReadonly}

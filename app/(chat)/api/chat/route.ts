@@ -91,13 +91,10 @@ export async function POST(request: Request) {
 
 				const result = streamText({
 					model: myProvider.languageModel(selectedChatModel),
-					system: systemPrompt(),
+					system: `Right now you are helping me debug the code for your message memory. Please help me by answering the user to the best of your ability.`, // systemPrompt({ name: chat.userName }),
 					messages,
 					maxSteps: 5,
-					experimental_activeTools:
-						selectedChatModel === 'chat-model-reasoning'
-							? []
-							: ['getWeather', 'createDocument', 'updateDocument', 'requestSuggestions'],
+					experimental_activeTools: [],
 					experimental_transform: smoothStream({ chunking: 'word' }),
 					experimental_generateMessageId: generateUUID,
 					tools: {

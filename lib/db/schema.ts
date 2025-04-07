@@ -28,6 +28,7 @@ export const chat = pgTable('Chat', {
 		.notNull()
 		.default(sql`'{}'::text[]`),
 	title: text('title').notNull(),
+	userName: text('userName'),
 	summary: text().default('no summary').notNull(),
 	userId: uuid('userId')
 		.notNull()

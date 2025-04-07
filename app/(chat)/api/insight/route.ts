@@ -51,7 +51,14 @@ export async function POST(request: Request) {
 			throw new Error('No assistant message found!')
 		}
 
-		const chat = await newInsight({ userId: session.user.id, title, summary, type, visibility })
+		const chat = await newInsight({
+			userId: session.user.id,
+			title,
+			summary,
+			type,
+			userName: name,
+			visibility,
+		})
 
 		if (!chat) {
 			return new Response('Chat room could not be created!', { status: 400 })

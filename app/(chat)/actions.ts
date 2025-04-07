@@ -1,6 +1,6 @@
 'use server'
 
-import { generateText, Message } from 'ai'
+import { CoreMessage, generateText, Message, UIMessage } from 'ai'
 import { cookies } from 'next/headers'
 
 import {
@@ -115,7 +115,7 @@ export async function generateInsight({
 			const parseData = (data: string): [string, string, string, string, string] => {
 				const [name, style, analysis, ratiosText, descriptionText] = data
 					.split('||')
-					.map((item) => item.trim())
+					.map((item) => item.trim().replace(/^\|+|\|+$/g, ''))
 				return [name, style, analysis, ratiosText, descriptionText]
 			}
 

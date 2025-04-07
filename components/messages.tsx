@@ -1,7 +1,7 @@
 import { UIMessage } from 'ai'
 import { PreviewMessage, ThinkingMessage } from '@/components/message'
 import { useScrollToBottom } from '@/components/use-scroll-to-bottom'
-import { memo, useEffect, useState } from 'react'
+import { Dispatch, memo, SetStateAction, useEffect, useState } from 'react'
 import { Vote } from '@/lib/db/schema'
 import equal from 'fast-deep-equal'
 import { UseChatHelpers } from '@ai-sdk/react'
@@ -18,6 +18,8 @@ interface MessagesProps {
 	status: UseChatHelpers['status']
 	votes: Array<Vote> | undefined
 	messages: Array<UIMessage | InsightMessageType>
+	currentMessage: number
+	setCurrentMessage: Dispatch<SetStateAction<number>>
 	setMessages: UseChatHelpers['setMessages']
 	reload: UseChatHelpers['reload']
 	isReadonly: boolean
@@ -30,13 +32,14 @@ function PureMessages({
 	status,
 	votes,
 	messages,
+	currentMessage,
+	setCurrentMessage,
 	setMessages,
 	reload,
 	isReadonly,
 	children,
 }: MessagesProps) {
 	const [messagesContainerRef, messagesEndRef] = useScrollToBottom<HTMLDivElement>()
-	const [currentMessage, setCurrentMessage] = useState<number>(0)
 	const [visibleMessageParts, setVisibleMessageParts] = useState<number>(0)
 	const [_, copyToClipboard] = useCopyToClipboard()
 	const { currentLanguage } = useLanguage()

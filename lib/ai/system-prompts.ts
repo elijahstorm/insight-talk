@@ -9,7 +9,7 @@ export const systemPrompt = ({
 	containsHistoryForGrowthSentiment = false,
 }: {
 	messageType?: string
-	name?: string
+	name?: string | null
 	language?: string
 	relationshipTypes?: Array<string>
 	containsLegal?: boolean
@@ -55,7 +55,9 @@ ${userInformation({ name, language, relationshipTypes })}
 
 ${
 	messageType &&
-	`### Message Type:
+	`- Base your analysis off the first message, which should be the of chat-logs.
+	
+	### Message Type:
 ${messageType}`
 }
 
@@ -158,7 +160,7 @@ const userInformation = ({
 	language,
 	relationshipTypes,
 }: {
-	name?: string
+	name?: string | null
 	language?: string
 	relationshipTypes?: Array<string>
 }) => {
