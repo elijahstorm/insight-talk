@@ -101,7 +101,7 @@ export function InsightChat({
 					isReadonly={isReadonly}
 					isArtifactVisible={isArtifactVisible}
 				>
-					<form className="mx-auto flex w-full gap-2 bg-background pb-4 md:max-w-3xl md:pb-6">
+					<form className="mx-auto flex w-full gap-2 bg-background md:max-w-3xl md:pb-6">
 						{!isReadonly && (
 							<MultimodalInput
 								chatId={id}

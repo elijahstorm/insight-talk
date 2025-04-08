@@ -43,6 +43,7 @@ function PureMessages({
 	isReadonly,
 	children,
 }: MessagesProps) {
+	const [__, messagesStartRef] = useScrollToBottom<HTMLDivElement>()
 	const [messagesContainerRef, messagesEndRef] = useScrollToBottom<HTMLDivElement>()
 	const [currentMessage, setCurrentMessage] = useState<number>(0)
 	const [visibleMessageParts, setVisibleMessageParts] = useState<number>(0)
@@ -69,10 +70,17 @@ function PureMessages({
 	}, [messages, currentMessage])
 
 	useEffect(() => {
-		if (messagesEndRef.current) {
-			messagesEndRef.current.scrollIntoView({ behavior: 'smooth' })
+		if (visibleMessageParts === 0) {
+			if (messagesStartRef.current) {
+				// scroll to top
+				messagesStartRef.current.scrollIntoView({ behavior: 'smooth' })
+			}
+		} else {
+			if (messagesEndRef.current) {
+				messagesEndRef.current.scrollIntoView({ behavior: 'smooth' })
+			}
 		}
-	}, [visibleMessageParts, currentMessage, messagesEndRef])
+	}, [visibleMessageParts, currentMessage, messagesEndRef, messagesStartRef])
 
 	const showNextPart = () => {
 		if (visibleMessageParts < (messages[currentMessage].parts?.length || 0) - 1) {
@@ -120,6 +128,8 @@ function PureMessages({
 				ref={messagesContainerRef}
 				className="flex min-w-0 flex-1 flex-col gap-6 overflow-y-scroll"
 			>
+				<div ref={messagesStartRef} className="h-0 shrink-0" />
+
 				{showableMessages.map((message, index) => (
 					<PreviewMessage
 						key={`${chatId}-${index}`}
