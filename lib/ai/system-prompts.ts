@@ -131,7 +131,7 @@ Playfully||Lmaooo so you're just playing it cool now?|Damn, so all the emojis we
 }
 
 export const preparePromtWithMessage = ({ message }: { message: Message }) => {
-	return `The chat log for analysis:
+	return `The chat logs:
 ${JSON.stringify(message)}`
 }
 
@@ -180,3 +180,7 @@ ${
 }
 ${language && `- User's preferred language: ${language}. Reply in this language, regardless of the language of the chat logs.`}`
 }
+
+export const seperateFiles = `
+---
+`

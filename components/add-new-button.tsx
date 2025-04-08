@@ -136,6 +136,11 @@ export default function AddNewButton() {
 				className="hidden"
 				multiple
 				onChange={handleFileChange}
+				accept={
+					config.insightChat.allowImages
+						? '.txt,.csv,.log,.json,.xml,.png,.jpg,.jpeg,.webp'
+						: '.txt,.csv,.log,.json,.xml'
+				}
 			/>
 
 			<button
@@ -164,14 +169,16 @@ export default function AddNewButton() {
 					icon={PaperclipIcon}
 					hidden={menuClosed}
 				/>
-				<HeadsUpButton
-					action={attachImage}
-					description={
-						dictionary.messages.analysis.newChat.buttons.attachAnImage[currentLanguage.code]
-					}
-					icon={ImageIcon}
-					hidden={menuClosed}
-				/>
+				{config.insightChat.allowImages && (
+					<HeadsUpButton
+						action={attachImage}
+						description={
+							dictionary.messages.analysis.newChat.buttons.attachAnImage[currentLanguage.code]
+						}
+						icon={ImageIcon}
+						hidden={menuClosed}
+					/>
+				)}
 			</div>
 		</div>
 	)

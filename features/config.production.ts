@@ -6,10 +6,11 @@ const config = {
 		dropdownFilter: false,
 	},
 	insightChat: {
+		allowImages: false,
 		hideNewChatHeader: true,
 		allowChangeModel: false,
 		allowPrivate: false,
-		showUserIcon: true,
+		showUserIcon: false,
 		previewMode: false,
 	},
 	vote: {
