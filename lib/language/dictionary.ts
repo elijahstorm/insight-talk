@@ -491,6 +491,13 @@ export const dictionary = {
 				ch1: '登錄以保存並重新訪問以前的聊天！',
 				fr: 'Connectez-vous pour enregistrer et revisiter vos conversations précédentes !',
 			},
+			signOut: {
+				en: 'Sign out',
+				kor: '로그아웃',
+				ch0: '登出',
+				ch1: '登出',
+				fr: 'Déconnexion',
+			},
 		},
 	},
 	history: {

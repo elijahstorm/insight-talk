@@ -55,7 +55,7 @@ export function SidebarUserNav({ user }: { user: User }) {
 									})
 								}}
 							>
-								Sign out
+								{dictionary.sidebar.actions.signOut[currentLanguage.code]}
 							</button>
 						</DropdownMenuItem>
 					</DropdownMenuContent>
