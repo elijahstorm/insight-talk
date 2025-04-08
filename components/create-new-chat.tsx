@@ -22,7 +22,7 @@ export default function CreateNewChat({ selectedChatModel }: { selectedChatModel
 	const [filepaths, setFilepaths] = useState<Array<string>>([])
 	const hasFetchedFilepaths = useRef(false)
 
-	const userName = '스톰' // todo
+	const userName = '' // todo
 
 	useEffect(() => {
 		if (filesBatch && !hasFetchedFilepaths.current) {
@@ -171,10 +171,12 @@ export default function CreateNewChat({ selectedChatModel }: { selectedChatModel
 
 			<div className="flex h-full flex-col gap-4 overflow-hidden px-4">
 				<div className="flex-1 overflow-auto">
-					<div className="flex max-w-xl flex-col gap-8 rounded-xl pb-2 text-left font-light leading-relaxed">
-						Who are you in this Conversation?
+					<div className="hidden">
+						<div className="flex max-w-xl flex-col gap-8 rounded-xl pb-2 text-left font-light leading-relaxed">
+							Who are you in this Conversation?
+						</div>
+						<div className="flex flex-col gap-6">me, not me</div>
 					</div>
-					<div className="flex flex-col gap-6">me, not me</div>
 
 					<MultiTypeSelector
 						prompt={dictionary.messages.analysis.newChat.partnerTypeQuestion[currentLanguage.code]}
