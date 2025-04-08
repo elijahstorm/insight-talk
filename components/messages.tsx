@@ -72,7 +72,6 @@ function PureMessages({
 	useEffect(() => {
 		if (visibleMessageParts === 0) {
 			if (messagesStartRef.current) {
-				// scroll to top
 				messagesStartRef.current.scrollIntoView({ behavior: 'smooth' })
 			}
 		} else {
