@@ -148,7 +148,7 @@ export default function CreateNewChat({ selectedChatModel }: { selectedChatModel
 		} finally {
 			deleteFiles()
 		}
-	}, [currentLanguage.code, filepaths, setShowLoader])
+	}, [currentLanguage.name, currentLanguage.code, filepaths, selectedValues, setShowLoader])
 
 	return showLoader ? (
 		<FullPageLoader />

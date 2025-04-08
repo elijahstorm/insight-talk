@@ -12,7 +12,7 @@ export async function POST(request: Request) {
 			messages,
 			language,
 			userName,
-			type = ['NA'],
+			type = undefined,
 			visibility = 'private',
 		}: {
 			messages: Array<UIMessage>

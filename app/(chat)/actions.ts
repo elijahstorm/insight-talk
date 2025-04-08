@@ -43,7 +43,7 @@ export async function generateTitleAndSummaryFromUserMessage({
 	userName,
 }: {
 	message: Message
-	relationshipTypes: Array<string>
+	relationshipTypes?: Array<string>
 	language: string
 	userName?: string
 }) {
@@ -71,7 +71,7 @@ export async function generateInsight({
 	userName,
 }: {
 	message: Message
-	relationshipTypes: Array<string>
+	relationshipTypes?: Array<string>
 	language: string
 	userName?: string
 }) {
@@ -121,10 +121,13 @@ export async function generateInsight({
 
 			const parseRatios = (ratios?: string): Array<{ type: string; ratio: number }> => {
 				return (
-					ratios?.split('|').map((ratio) => {
-						const [type, ratioValue] = ratio.split(':').map((item) => item.trim())
-						return { type, ratio: parseFloat(ratioValue) }
-					}) ?? [{ type: 'ERROR', ratio: 0 }]
+					ratios
+						?.split('|')
+						.map((ratio) => {
+							const [type, ratioValue] = ratio.split(':').map((item) => item.trim())
+							return { type, ratio: parseFloat(ratioValue) }
+						})
+						.sort((a, b) => b.ratio - a.ratio) ?? [{ type: 'ERROR', ratio: 0 }]
 				)
 			}
 
