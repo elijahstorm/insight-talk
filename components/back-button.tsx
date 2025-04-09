@@ -13,7 +13,7 @@ export function BackButton({ className }: ComponentProps<typeof SidebarTrigger>)
 	return (
 		<Tooltip>
 			<TooltipTrigger asChild>
-				<Button variant="outline" className="pr-1" onClick={() => router.back()}>
+				<Button variant="ghost" className="pr-5" onClick={() => router.back()}>
 					<span className="sr-only">Home</span>
 					<BackIcon size={16} />
 				</Button>

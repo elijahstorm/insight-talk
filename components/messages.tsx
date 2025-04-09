@@ -46,9 +46,8 @@ function PureMessages({
 	const searchParams = useSearchParams()
 	const [__, messagesStartRef] = useScrollToBottom<HTMLDivElement>()
 	const [messagesContainerRef, messagesEndRef] = useScrollToBottom<HTMLDivElement>()
-	const [currentMessage, setCurrentMessage] = useState<number>(
-		parseInt(searchParams.get('page') ?? '0')
-	)
+	const currentPage = searchParams.get('page')
+	const [currentMessage, setCurrentMessage] = useState<number>(parseInt(currentPage ?? '0'))
 	const [visibleMessageParts, setVisibleMessageParts] = useState<number>(0)
 	const { currentLanguage } = useLanguage()
 	const router = useRouter()
@@ -56,9 +55,9 @@ function PureMessages({
 	const [userPaid, setUserPaid] = useState(false)
 
 	useEffect(() => {
-		setCurrentMessage(parseInt(searchParams.get('page') ?? '0'))
+		setCurrentMessage(parseInt(currentPage ?? '0'))
 		setVisibleMessageParts(0)
-	}, [setCurrentMessage, searchParams, searchParams.get('page')])
+	}, [setCurrentMessage, searchParams, currentPage])
 
 	useEffect(() => {
 		if (messages.length !== prevLength.current) {
@@ -145,21 +144,21 @@ function PureMessages({
 			</div>
 		) : (
 			<div className="flex size-full flex-col justify-between pt-48">
-				<div className="relative mx-auto w-full space-y-4 px-4 text-center">
-					<p className="absolute left-[calc(50%+80px)] top-[calc(50%-230px)] w-fit -translate-x-1/2 -translate-y-1/2 rounded-2xl rounded-bl-none bg-primary px-4 py-2 text-primary-foreground">
+				<div className="relative mx-auto w-full max-w-[90%] space-y-4 px-4 text-center">
+					<p className="absolute left-[calc(50%+70px)] top-[calc(50%-232px)] w-44 -translate-x-1/2 -translate-y-1/2 rounded-2xl rounded-bl-none bg-primary px-4 py-2 text-primary-foreground">
 						{dictionary.messages.analysis.upsale.lookingForClarity[currentLanguage.code]}
 					</p>
 
-					<p className="absolute right-[calc(50%+80px)] top-[calc(50%-185px)] w-fit -translate-y-1/2 translate-x-1/2 rounded-2xl rounded-br-none bg-secondary px-4 py-2 text-secondary-foreground">
+					<p className="absolute right-[calc(50%+80px)] top-[calc(50%-180px)] w-48 -translate-y-1/2 translate-x-1/2 rounded-2xl rounded-br-none bg-secondary px-4 py-2 text-left text-secondary-foreground">
 						{dictionary.messages.analysis.upsale.wonderedWhy[currentLanguage.code]}
 					</p>
 
 					<Image
-						src="/static/logo-clouds.svg"
+						src="/static/animated-logo-clouds.svg"
 						alt="Logo"
-						width={'300'}
-						height={'300'}
-						className="relative mx-auto pb-4"
+						width={300}
+						height={300}
+						className="relative mx-auto select-none pb-4"
 					/>
 
 					<h1 className="pt-4 text-3xl font-bold">
@@ -172,37 +171,40 @@ function PureMessages({
 				</div>
 
 				<div className="px-4 pb-6">
-					<Button className="w-full py-6" variant={'outline'} onClick={() => setUserPaid(true)}>
-						Let me add more detail
+					<Button
+						className="w-full py-6 shadow-lg shadow-slate-200 hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground"
+						variant={'default'}
+						onClick={() => setUserPaid(true)}
+					>
+						{dictionary.messages.analysis.upsale.addMoreDetail[currentLanguage.code]}
 					</Button>
 				</div>
 			</div>
 		)
 	) : (
 		<div className="flex h-full flex-col gap-4 overflow-hidden pb-6">
-			<div
-				ref={messagesContainerRef}
-				className="flex min-w-0 flex-1 flex-col gap-6 overflow-y-scroll"
-			>
+			<div ref={messagesContainerRef} className="min-w-0 flex-1 overflow-y-scroll">
 				<div ref={messagesStartRef} className="h-0 shrink-0" />
 
-				{showableMessages.map((message, index) => (
-					<PreviewMessage
-						key={`${chatId}-${index}`}
-						chatId={chatId}
-						message={message}
-						visibleParts={visibleMessageParts}
-						isLoading={status === 'streaming'}
-						vote={votes ? votes.find((vote) => vote.messageId === message.id) : undefined}
-						setMessages={setMessages}
-						reload={reload}
-						isReadonly={isReadonly}
-					/>
-				))}
+				<div className="flex min-w-0 flex-1 flex-col gap-6 overflow-y-scroll">
+					{showableMessages.map((message, index) => (
+						<PreviewMessage
+							key={`${chatId}-${index}`}
+							chatId={chatId}
+							message={message}
+							visibleParts={visibleMessageParts}
+							isLoading={status === 'streaming'}
+							vote={votes ? votes.find((vote) => vote.messageId === message.id) : undefined}
+							setMessages={setMessages}
+							reload={reload}
+							isReadonly={isReadonly}
+						/>
+					))}
 
-				{status === 'submitted' &&
-					messages.length > 0 &&
-					messages[messages.length - 1].role === 'user' && <ThinkingMessage />}
+					{status === 'submitted' &&
+						messages.length > 0 &&
+						messages[messages.length - 1].role === 'user' && <ThinkingMessage />}
+				</div>
 
 				{visibleMessageParts !== 0 && <div ref={messagesEndRef} className="h-0 shrink-0" />}
 			</div>
@@ -218,7 +220,7 @@ function PureMessages({
 							{currentMessage + showableMessages.length < messages.length ? (
 								showNextMessage && (
 									<Button
-										className="py-6"
+										className="py-6 shadow-lg shadow-slate-200"
 										variant={'outline'}
 										onClick={showNextMessage(showableMessages.length)}
 									>
@@ -226,7 +228,7 @@ function PureMessages({
 											? dictionary.messages.navigation.showNextButton[
 													messages[currentMessage + showableMessages.length].parts[0].type
 												][currentLanguage.code]
-											: dictionary.messages.navigation.showNextButton.text[currentLanguage.code]}
+											: dictionary.messages.navigation.readMore[currentLanguage.code]}
 									</Button>
 								)
 							) : (
@@ -235,7 +237,7 @@ function PureMessages({
 								</Button>
 							)}
 							<Button
-								className="py-6 hover:bg-primary focus:bg-primary"
+								className="py-6 shadow-lg shadow-slate-200 hover:bg-primary focus:bg-primary"
 								onClick={goToDeeperInsight}
 							>
 								{dictionary.messages.navigation.getDeeperInsight[currentLanguage.code]}
@@ -249,8 +251,15 @@ function PureMessages({
 							initial={{ y: 5, opacity: 0 }}
 							animate={{ y: 0, opacity: 1 }}
 						>
-							<Button className="py-6 hover:bg-primary focus:bg-primary" onClick={showNextPart}>
-								{dictionary.messages.navigation.readMore[currentLanguage.code]}
+							<Button
+								className="py-6 shadow-lg shadow-slate-200 hover:bg-primary focus:bg-primary"
+								onClick={showNextPart}
+							>
+								{messages[currentMessage].parts[visibleMessageParts + 1]
+									? dictionary.messages.navigation.showNextButton[
+											messages[currentMessage].parts[visibleMessageParts + 1].type
+										][currentLanguage.code]
+									: dictionary.messages.navigation.readMore[currentLanguage.code]}
 							</Button>
 						</motion.div>
 					</AnimatePresence>

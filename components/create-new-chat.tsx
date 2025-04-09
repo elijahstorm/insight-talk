@@ -291,7 +291,13 @@ const FullPageLoader = () => {
 		<div
 			className={`fade-in ${isActive ? 'opacity-100' : 'opacity-0'} flex size-full flex-col items-center justify-center gap-4`}
 		>
-			<Image src="/static/logo.svg" alt="Logo" width={'96'} height={'96'} className="pb-4" />
+			<Image
+				src="/static/animated-logo.svg"
+				alt="Logo"
+				width={'96'}
+				height={'96'}
+				className="pb-4"
+			/>
 
 			<h1 className="text-3xl">
 				{dictionary.messages.analysis.newChat.holdOn[currentLanguage.code]}

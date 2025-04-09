@@ -290,6 +290,13 @@ export const dictionary = {
 					ch1: '讓我幫您了解真正發生了什麼',
 					fr: 'Laissez-moi vous aider à comprendre ce qui se passe vraiment',
 				},
+				addMoreDetail: {
+					en: 'Let me add more detail',
+					kor: '자세한 내용을 추가할게요',
+					ch0: '让我补充更多细节',
+					ch1: '讓我補充更多細節',
+					fr: 'Laissez-moi ajouter plus de détails',
+				},
 			},
 		},
 		actions: {
@@ -573,6 +580,13 @@ export const dictionary = {
 				ch0: '向 Talk Insight 提问...',
 				ch1: '向 Talk Insight 提問...',
 				fr: 'Demandez à Talk Insight...',
+			},
+			hmm: {
+				en: 'Hmm...',
+				kor: '음...',
+				ch0: '嗯...',
+				ch1: '嗯...',
+				fr: 'Hmm...',
 			},
 		},
 	},

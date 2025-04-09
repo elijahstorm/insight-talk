@@ -82,7 +82,7 @@ export function InsightChat({
 
 	return (
 		<>
-			<div className="flex h-dvh min-w-0 flex-col space-y-6 bg-background">
+			<div className="flex h-dvh min-w-0 flex-col space-y-2 bg-background">
 				<ChatHeader
 					user={user}
 					header={'Report'}

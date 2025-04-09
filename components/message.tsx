@@ -6,7 +6,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { memo, useState } from 'react'
 import type { Vote } from '@/lib/db/schema'
 import { DocumentToolCall, DocumentToolResult } from '@/components/document'
-import { PencilEditIcon, SparklesIcon } from '@/components/icons'
+import { PencilEditIcon } from '@/components/icons'
 import { Markdown } from '@/components/markdown'
 import { MessageActions } from '@/components/message-actions'
 import { PreviewAttachment } from '@/components/preview-attachment'
@@ -24,6 +24,8 @@ import InsightMessage, {
 	isInsightMessageType,
 } from '@/components/insight-message'
 import Image from 'next/image'
+import { dictionary } from '@/lib/language/dictionary'
+import { useLanguage } from '@/hooks/use-language'
 
 type MessageParams = {
 	chatId: string
@@ -319,6 +321,7 @@ export const PreviewMessage = memo(PurePreviewMessage, (prevProps, nextProps) =>
 })
 
 export const ThinkingMessage = () => {
+	const { currentLanguage } = useLanguage()
 	const role = 'assistant'
 
 	return (
@@ -337,12 +340,22 @@ export const ThinkingMessage = () => {
 					}
 				)}
 			>
-				<div className="flex size-8 shrink-0 items-center justify-center rounded-full ring-1 ring-border">
-					<SparklesIcon size={14} />
+				<div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-background">
+					<div className="translate-y-px">
+						<Image
+							src="/static/animated-logo.svg"
+							alt="Logo"
+							width={'32'}
+							height={'32'}
+							className="pb-4"
+						/>
+					</div>
 				</div>
 
-				<div className="flex w-full flex-col gap-2">
-					<div className="flex flex-col gap-4 text-muted-foreground">Hmm...</div>
+				<div className="flex w-full animate-pulse flex-col gap-2 pt-1">
+					<div className="flex flex-col gap-4 text-muted-foreground">
+						{dictionary.messages.chat.hmm[currentLanguage.code]}
+					</div>
 				</div>
 			</div>
 		</motion.div>
