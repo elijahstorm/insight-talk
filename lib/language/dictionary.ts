@@ -38,6 +38,13 @@ export const dictionary = {
 				ch1: '洞察與建議',
 				fr: 'Aperçu et recommandation',
 			},
+			potentialTriggers: {
+				en: 'Potential Conflict Triggers',
+				kor: '잠재적 갈등 요인',
+				ch0: '潜在冲突触发因素',
+				ch1: '潛在衝突觸發因素',
+				fr: 'Déclencheurs de conflits potentiels',
+			},
 			replyIdeas: {
 				en: 'Reply Ideas',
 				kor: '답변 아이디어',
@@ -134,6 +141,125 @@ export const dictionary = {
 						fr: 'Joindre une Image',
 					},
 				},
+			},
+			followUp: {
+				en: 'Ask about your communication style, their emotions, or even your next message. Let’s explore together.',
+				kor: '당신의 의사소통 스타일, 상대방의 감정, 또는 다음 메시지에 대해 물어보세요. 함께 탐구해 봅시다.',
+				ch0: '询问您的沟通风格、对方的情绪，甚至是您的下一条消息。让我们一起探索。',
+				ch1: '詢問您的溝通風格、對方的情緒，甚至是您的下一條消息。讓我們一起探索。',
+				fr: 'Posez des questions sur votre style de communication, leurs émotions ou même votre prochain message. Explorons ensemble.',
+			},
+			defaultSuggestedActions: {
+				en: [
+					{
+						title: 'Analyze my tone',
+						label: 'in a recent conversation',
+						action: 'Can you analyze the tone of this conversation?',
+					},
+					{
+						title: 'Detect toxic language',
+						label: 'in a workplace message',
+						action: 'Can you detect toxic language in this workplace message?',
+					},
+					{
+						title: 'Identify conflict triggers',
+						label: 'in my communication',
+						action: 'What are the conflict triggers in this conversation?',
+					},
+					{
+						title: 'Suggest empathetic responses',
+						label: 'to improve my communication',
+						action: 'Can you suggest empathetic responses for this situation?',
+					},
+				],
+				kor: [
+					{
+						title: '내 톤 분석하기',
+						label: '최근 대화에서',
+						action: '이 대화의 톤을 분석해 줄 수 있나요?',
+					},
+					{
+						title: '유해한 언어 감지하기',
+						label: '직장 메시지에서',
+						action: '이 직장 메시지에서 유해한 언어를 감지할 수 있나요?',
+					},
+					{
+						title: '갈등 요인 식별하기',
+						label: '내 의사소통에서',
+						action: '이 대화에서 갈등 요인은 무엇인가요?',
+					},
+					{
+						title: '공감적인 답변 제안하기',
+						label: '내 의사소통을 개선하기 위해',
+						action: '이 상황에 대해 공감적인 답변을 제안해 줄 수 있나요?',
+					},
+				],
+				ch0: [
+					{
+						title: '分析我的语气',
+						label: '在最近的对话中',
+						action: '你能分析这次对话的语气吗？',
+					},
+					{
+						title: '检测有害语言',
+						label: '在工作场所的消息中',
+						action: '你能检测这条工作场所消息中的有害语言吗？',
+					},
+					{
+						title: '识别冲突触发因素',
+						label: '在我的沟通中',
+						action: '这次对话中的冲突触发因素是什么？',
+					},
+					{
+						title: '建议富有同理心的回应',
+						label: '以改善我的沟通',
+						action: '你能为这种情况建议富有同理心的回应吗？',
+					},
+				],
+				ch1: [
+					{
+						title: '分析我的語氣',
+						label: '在最近的對話中',
+						action: '你能分析這次對話的語氣嗎？',
+					},
+					{
+						title: '檢測有害語言',
+						label: '在工作場所的消息中',
+						action: '你能檢測這條工作場所消息中的有害語言嗎？',
+					},
+					{
+						title: '識別衝突觸發因素',
+						label: '在我的溝通中',
+						action: '這次對話中的衝突觸發因素是什麼？',
+					},
+					{
+						title: '建議富有同理心的回應',
+						label: '以改善我的溝通',
+						action: '你能為這種情況建議富有同理心的回應嗎？',
+					},
+				],
+				fr: [
+					{
+						title: 'Analyser mon ton',
+						label: 'dans une conversation récente',
+						action: 'Pouvez-vous analyser le ton de cette conversation ?',
+					},
+					{
+						title: 'Détecter un langage toxique',
+						label: 'dans un message professionnel',
+						action: 'Pouvez-vous détecter un langage toxique dans ce message professionnel ?',
+					},
+					{
+						title: 'Identifier les déclencheurs de conflit',
+						label: 'dans ma communication',
+						action: 'Quels sont les déclencheurs de conflit dans cette conversation ?',
+					},
+					{
+						title: 'Suggérer des réponses empathiques',
+						label: 'pour améliorer ma communication',
+						action: 'Pouvez-vous suggérer des réponses empathiques pour cette situation ?',
+					},
+				],
 			},
 		},
 		actions: {
@@ -279,6 +405,20 @@ export const dictionary = {
 				ch1: '分享',
 				fr: 'Partager',
 			},
+			getDeeperInsight: {
+				en: 'Get a Deeper Insight',
+				kor: '더 깊은 통찰 얻기',
+				ch0: '获取更深入的洞察',
+				ch1: '獲取更深入的洞察',
+				fr: 'Obtenez une analyse plus approfondie',
+			},
+			backToHistory: {
+				en: 'Back to History',
+				kor: '기록으로 돌아가기',
+				ch0: '返回历史记录',
+				ch1: '返回歷史記錄',
+				fr: 'Retour à l’historique',
+			},
 			readMore: {
 				en: 'Read more',
 				kor: '더 읽기',
@@ -307,6 +447,13 @@ export const dictionary = {
 					ch0: '查看回复建议',
 					ch1: '查看回覆建議',
 					fr: 'Voir les idées de réponse',
+				},
+				triggers: {
+					en: 'Potential Triggers',
+					kor: '잠재적 갈등 요인',
+					ch0: '潜在触发因素',
+					ch1: '潛在觸發因素',
+					fr: 'Déclencheurs potentiels',
 				},
 				insight: {
 					en: 'See Chat Insights',
@@ -391,11 +538,11 @@ export const dictionary = {
 				},
 			},
 			sendAMessage: {
-				en: 'Send a message...',
-				kor: '메시지 보내기...',
-				ch0: '发送消息…',
-				ch1: '發送消息…',
-				fr: 'Envoyez un message...',
+				en: 'Ask Talk Insight...',
+				kor: 'Talk Insight에게 물어보세요...',
+				ch0: '向 Talk Insight 提问...',
+				ch1: '向 Talk Insight 提問...',
+				fr: 'Demandez à Talk Insight...',
 			},
 		},
 	},

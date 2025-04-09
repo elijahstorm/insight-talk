@@ -31,6 +31,11 @@ type InsightPart = {
 	text: Array<string>
 }
 
+type PotentialConflictTriggersPart = {
+	type: 'triggers'
+	text: Array<string>
+}
+
 type RepliesPart = {
 	type: 'replies'
 	replies: Array<{
@@ -39,10 +44,15 @@ type RepliesPart = {
 	}>
 }
 
-export type InsightParts = ChatLogs | CommunicationPatternPart | InsightPart | RepliesPart
+export type InsightParts =
+	| ChatLogs
+	| CommunicationPatternPart
+	| InsightPart
+	| RepliesPart
+	| PotentialConflictTriggersPart
 
 export const chatLogsType = 'chat-logs'
-export const insightTypes = ['com-pattern', 'insight', 'replies']
+export const insightTypes = ['com-pattern', 'insight', 'replies', 'triggers']
 
 export function isInsightMessageType(
 	message: UIMessage | InsightMessageType
@@ -128,6 +138,21 @@ export default function InsightMessage({
 			<div key={key} data-testid="message-content" className="flex flex-col gap-2">
 				<h2 className="text-2xl font-semibold capitalize text-primary">
 					{dictionary.messages.analysis.insightAndRec[currentLanguage.code]}
+				</h2>
+				<div className="space-y-4 font-light">
+					{part.text.map((markdown, index) => (
+						<Markdown key={`part-${messageId}-markdown-${index}`}>{markdown}</Markdown>
+					))}
+				</div>
+			</div>
+		)
+	}
+
+	if (type === 'triggers') {
+		return (
+			<div key={key} data-testid="message-content" className="flex flex-col gap-2">
+				<h2 className="text-2xl font-semibold capitalize text-primary">
+					{dictionary.messages.analysis.potentialTriggers[currentLanguage.code]}
 				</h2>
 				<div className="space-y-4 font-light">
 					{part.text.map((markdown, index) => (

@@ -2,12 +2,12 @@
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useWindowSize } from 'usehooks-ts'
+import { useCopyToClipboard, useWindowSize } from 'usehooks-ts'
 
 import { ModelSelector } from '@/components/model-selector'
 import { SidebarToggle } from '@/components/sidebar-toggle'
 import { Button } from '@/components/ui/button'
-import { PlusIcon } from '@/components/icons'
+import { PlusIcon, ShareIcon } from '@/components/icons'
 import { useSidebar } from '@/components/ui/sidebar'
 import { memo, useState, useEffect } from 'react'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
@@ -19,6 +19,7 @@ import Image from 'next/image'
 import { User } from 'next-auth'
 import { useLanguage } from '@/hooks/use-language'
 import { dictionary } from '@/lib/language/dictionary'
+import { toast } from 'sonner'
 
 function PureChatHeader({
 	user = undefined,
@@ -39,11 +40,24 @@ function PureChatHeader({
 	const { open } = useSidebar()
 	const { width: windowWidth } = useWindowSize()
 	const { currentLanguage } = useLanguage()
+	const [_, copyToClipboard] = useCopyToClipboard()
 	const [isMounted, setIsMounted] = useState(false)
 
 	useEffect(() => {
 		setIsMounted(true)
 	}, [])
+
+	const share = async () => {
+		const link = `${window.location.origin}${window.location.pathname}`
+
+		if (!link) {
+			toast.error(dictionary.messages.navigation.toasts.share.error[currentLanguage.code])
+			return
+		}
+
+		await copyToClipboard(link)
+		toast.success(dictionary.messages.navigation.toasts.share.success[currentLanguage.code])
+	}
 
 	return (
 		<header className="sticky top-0 flex items-center gap-2 bg-background px-2 py-1.5 md:px-2">
@@ -104,6 +118,19 @@ function PureChatHeader({
 					<LightDarkThemeToggle />
 				</div>
 			)}
+
+			<div className="order-2">
+				<Tooltip>
+					<TooltipTrigger asChild>
+						<Button variant="outline" onClick={share}>
+							<ShareIcon size={16} />
+						</Button>
+					</TooltipTrigger>
+					<TooltipContent align="start">
+						{dictionary.tooltips.toggleSidebar[currentLanguage.code]}
+					</TooltipContent>
+				</Tooltip>
+			</div>
 
 			{isMounted && windowWidth < 768 && (
 				<div className="order-2">

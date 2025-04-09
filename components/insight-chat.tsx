@@ -17,6 +17,7 @@ import { User } from 'next-auth'
 import { MultimodalInput } from '@/components/multimodal-input'
 import { useLanguage } from '@/hooks/use-language'
 import { dictionary } from '@/lib/language/dictionary'
+import { SuggestedActions } from './suggested-actions'
 
 export function InsightChat({
 	id,
@@ -101,6 +102,8 @@ export function InsightChat({
 					isReadonly={isReadonly}
 					isArtifactVisible={isArtifactVisible}
 				>
+					<SuggestedActions append={append} chatId={id} />
+
 					<form className="mx-auto flex w-full gap-2 bg-background md:max-w-3xl md:pb-6">
 						{!isReadonly && (
 							<MultimodalInput
