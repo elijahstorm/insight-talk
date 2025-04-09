@@ -25,32 +25,35 @@ export default function BatchFileUploader({
 	const [uploadQueue, setUploadQueue] = useState<Array<string>>([])
 	const [uploadProgress, setUploadProgress] = useState(0)
 
-	const uploadFile = async (file: File) => {
-		const formData = new FormData()
-		formData.append('file', file)
+	const uploadFile = useCallback(
+		async (file: File) => {
+			const formData = new FormData()
+			formData.append('file', file)
 
-		try {
-			const response = await fetch('/api/files/upload', {
-				method: 'POST',
-				body: formData,
-			})
+			try {
+				const response = await fetch('/api/files/upload', {
+					method: 'POST',
+					body: formData,
+				})
 
-			if (response.ok) {
-				const data = await response.json()
-				const { url, pathname, contentType } = data
+				if (response.ok) {
+					const data = await response.json()
+					const { url, pathname, contentType } = data
 
-				return {
-					url,
-					name: pathname,
-					contentType: contentType,
+					return {
+						url,
+						name: pathname,
+						contentType: contentType,
+					}
 				}
-			}
 
-			await response.json()
-		} catch (error) {
-			toast.error(dictionary.messages.chat.uploadFailed[currentLanguage.code])
-		}
-	}
+				await response.json()
+			} catch (error) {
+				toast.error(dictionary.messages.chat.uploadFailed[currentLanguage.code])
+			}
+		},
+		[currentLanguage.code]
+	)
 
 	const handleFileChange = useCallback(
 		async (event: ChangeEvent<HTMLInputElement>) => {
@@ -94,7 +97,7 @@ export default function BatchFileUploader({
 				setUploadProgress(0)
 			}
 		},
-		[handleFinish, setUploadQueue, setUploadProgress]
+		[uploadFile, handleFinish, setUploadQueue, setUploadProgress]
 	)
 
 	return (

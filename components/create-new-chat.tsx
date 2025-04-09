@@ -152,7 +152,16 @@ export default function CreateNewChat({ selectedChatModel }: { selectedChatModel
 		} finally {
 			deleteFiles()
 		}
-	}, [currentLanguage.name, currentLanguage.code, filepaths, selectedValues, setShowLoader])
+	}, [
+		deleteFiles,
+		router,
+		selectedChatModel,
+		currentLanguage.name,
+		currentLanguage.code,
+		filepaths,
+		selectedValues,
+		setShowLoader,
+	])
 
 	const finishUploadingBatch = useCallback(
 		(uuid: string) => {
@@ -206,7 +215,7 @@ export default function CreateNewChat({ selectedChatModel }: { selectedChatModel
 							<div className="pointer-events-none select-none px-4">
 								<div className="relative w-full overflow-hidden bg-accent text-center">
 									<div
-										className="absolute bottom-0 left-0 top-0 bg-primary"
+										className="absolute inset-y-0 left-0 bg-primary"
 										style={{
 											width: `${uploadProgress}%`,
 											transition: 'width 1s ease-out',

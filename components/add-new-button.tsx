@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { dictionary } from '@/lib/language/dictionary'
 import { useLanguage } from '@/hooks/use-language'
 import config from '@/features/config'
-import BatchFileUploader from './BatchFileUploader'
+import BatchFileUploader from '@/components/BatchFileUploader'
 import Image from 'next/image'
 
 function HeadsUpButton({
