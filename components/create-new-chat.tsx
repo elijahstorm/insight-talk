@@ -4,6 +4,7 @@ import { MultiTypeSelector } from '@/components/multi-type-selector'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { motion } from 'framer-motion'
 import { toast } from 'sonner'
 import config from '@/features/config'
 import Image from 'next/image'
@@ -11,6 +12,8 @@ import { useLanguage } from '@/hooks/use-language'
 import { chatLogsType } from '@/components/insight-message'
 import { dictionary } from '@/lib/language/dictionary'
 import { seperateFiles } from '@/lib/ai/system-prompts'
+import BatchFileUploader from '@/components/BatchFileUploader'
+import { PaperclipIcon } from '@/components/icons'
 
 export default function CreateNewChat({ selectedChatModel }: { selectedChatModel: string }) {
 	const [showLoader, setShowLoader] = useState<boolean>(false)
@@ -18,9 +21,10 @@ export default function CreateNewChat({ selectedChatModel }: { selectedChatModel
 	const { currentLanguage } = useLanguage()
 	const router = useRouter()
 	const searchParams = useSearchParams()
-	const filesBatch = searchParams.get('u')
+	const [filesBatch, setFilesBatch] = useState(searchParams.get('u'))
 	const [filepaths, setFilepaths] = useState<Array<string>>([])
 	const hasFetchedFilepaths = useRef(false)
+	const fileInputRef = useRef<HTMLInputElement | null>(null)
 
 	const userName = '' // todo
 
@@ -150,11 +154,31 @@ export default function CreateNewChat({ selectedChatModel }: { selectedChatModel
 		}
 	}, [currentLanguage.name, currentLanguage.code, filepaths, selectedValues, setShowLoader])
 
+	const finishUploadingBatch = useCallback(
+		(uuid: string) => {
+			setFilesBatch(uuid)
+		},
+		[setFilesBatch]
+	)
+
+	const attachFile = () => {
+		if (fileInputRef.current) {
+			fileInputRef.current.click()
+		}
+	}
+
 	return showLoader ? (
 		<FullPageLoader />
 	) : (
-		<>
-			{filepaths.length > 0 && (
+		<motion.div
+			className="flex h-full flex-col gap-4 overflow-hidden"
+			key="overview"
+			initial={{ opacity: 0, scale: 0.98 }}
+			animate={{ opacity: 1, scale: 1 }}
+			exit={{ opacity: 0, scale: 0.98 }}
+			transition={{ delay: 0.5 }}
+		>
+			{filepaths.length > 0 ? (
 				<div className="space-y-2 px-4">
 					<p className="font-light">
 						{dictionary.messages.analysis.newChat.uploadedFileHeader[currentLanguage.code]}
@@ -167,34 +191,81 @@ export default function CreateNewChat({ selectedChatModel }: { selectedChatModel
 						))}
 					</ul>
 				</div>
+			) : filesBatch ? (
+				<div className="pointer-events-none select-none px-4">
+					<div className="relative w-full overflow-hidden bg-primary text-center">
+						<p className="relative py-2">
+							{dictionary.messages.analysis.newChat.uploading[currentLanguage.code]}
+						</p>
+					</div>
+				</div>
+			) : (
+				<BatchFileUploader fileInputRef={fileInputRef} handleFinish={finishUploadingBatch}>
+					{({ uploadQueue, uploadProgress }) =>
+						uploadQueue.length > 0 ? (
+							<div className="pointer-events-none select-none px-4">
+								<div className="relative w-full overflow-hidden bg-accent text-center">
+									<div
+										className="absolute bottom-0 left-0 top-0 bg-primary"
+										style={{
+											width: `${uploadProgress}%`,
+											transition: 'width 1s ease-out',
+										}}
+									></div>
+									<p className="relative py-2">
+										{dictionary.messages.analysis.newChat.uploading[currentLanguage.code]}
+									</p>
+								</div>
+							</div>
+						) : (
+							<div className="px-4">
+								<Button
+									className="w-full py-6 hover:bg-accent focus:bg-accent"
+									onClick={attachFile}
+								>
+									<PaperclipIcon size={20} />
+									<span className="hidden sm:block">
+										{dictionary.messages.analysis.newChat.buttons.attachAFile[currentLanguage.code]}
+									</span>
+								</Button>
+							</div>
+						)
+					}
+				</BatchFileUploader>
 			)}
 
 			<div className="flex h-full flex-col gap-4 overflow-hidden px-4">
 				<div className="flex-1 overflow-auto">
 					<div className="hidden">
 						<div className="flex max-w-xl flex-col gap-8 rounded-xl pb-2 text-left font-light leading-relaxed">
+							{/* todo */}
 							Who are you in this Conversation?
 						</div>
 						<div className="flex flex-col gap-6">me, not me</div>
 					</div>
 
-					<MultiTypeSelector
-						prompt={dictionary.messages.analysis.newChat.partnerTypeQuestion[currentLanguage.code]}
-						types={dictionary.relationshipTypes[currentLanguage.code]}
-						selectedValues={selectedValues}
-						onSelectionChange={setSelectedValues}
-						selectOne={true}
-					/>
+					<div className="mx-auto max-w-3xl">
+						<MultiTypeSelector
+							prompt={
+								dictionary.messages.analysis.newChat.partnerTypeQuestion[currentLanguage.code]
+							}
+							types={dictionary.relationshipTypes[currentLanguage.code]}
+							selectedValues={selectedValues}
+							onSelectionChange={setSelectedValues}
+							selectOne={true}
+						/>
+					</div>
 				</div>
 				<Button className="mb-6 w-full py-6 hover:bg-accent focus:bg-accent" onClick={makeNewChat}>
 					{dictionary.messages.analysis.newChat.start[currentLanguage.code]}
 				</Button>
 			</div>
-		</>
+		</motion.div>
 	)
 }
 
 const FullPageLoader = () => {
+	const { currentLanguage } = useLanguage()
 	const [progress, setProgress] = useState(0)
 	const [isActive, setIsActive] = useState(false)
 
@@ -209,13 +280,17 @@ const FullPageLoader = () => {
 
 	return (
 		<div
-			className={`fade-in ${isActive ? 'fade-in-active' : ''} flex size-full flex-col items-center justify-center gap-4`}
+			className={`fade-in ${isActive ? 'opacity-100' : 'opacity-0'} flex size-full flex-col items-center justify-center gap-4`}
 		>
 			<Image src="/static/logo.svg" alt="Logo" width={'96'} height={'96'} className="pb-4" />
 
-			<h1 className="text-3xl">Hold on!</h1>
+			<h1 className="text-3xl">
+				{dictionary.messages.analysis.newChat.holdOn[currentLanguage.code]}
+			</h1>
 
-			<p className="font-semibold">We&rsquo;re making sense of your chats...</p>
+			<p className="font-semibold">
+				{dictionary.messages.analysis.newChat.makingSenseOfChats[currentLanguage.code]}
+			</p>
 
 			<div className="h-2 w-64 overflow-hidden bg-accent">
 				<div

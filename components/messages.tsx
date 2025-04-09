@@ -166,11 +166,11 @@ function PureMessages({
 										className="py-6 hover:bg-primary focus:bg-primary"
 										onClick={showNextMessage(showableMessages.length)}
 									>
-										{
-											dictionary.messages.navigation.showNextButton[
-												messages[currentMessage + showableMessages.length].parts[0].type
-											][currentLanguage.code]
-										}
+										{messages[currentMessage + showableMessages.length].parts[0]
+											? dictionary.messages.navigation.showNextButton[
+													messages[currentMessage + showableMessages.length].parts[0].type
+												][currentLanguage.code]
+											: dictionary.messages.navigation.showNextButton.text[currentLanguage.code]}
 									</Button>
 								)
 							: children}

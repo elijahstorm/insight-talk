@@ -23,12 +23,7 @@
 }
 
 .fade-in {
-	opacity: 0;
 	transition: opacity 300ms ease-in-out;
-}
-
-.fade-in-active {
-	opacity: 1;
 }
 
 @layer base {

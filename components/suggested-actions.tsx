@@ -7,36 +7,45 @@ import { memo } from 'react'
 
 interface SuggestedActionsProps {
 	chatId: string
+	suggestedActions?: Array<{
+		title: string
+		label: string
+		action: string
+	}>
 	append: (
 		message: Message | CreateMessage,
 		chatRequestOptions?: ChatRequestOptions
 	) => Promise<string | null | undefined>
 }
 
-function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
-	const suggestedActions = [
-		{
-			title: 'What are the advantages',
-			label: 'of using Next.js?',
-			action: 'What are the advantages of using Next.js?',
-		},
-		{
-			title: 'Write code to',
-			label: `demonstrate djikstra's algorithm`,
-			action: `Write code to demonstrate djikstra's algorithm`,
-		},
-		{
-			title: 'Help me write an essay',
-			label: `about silicon valley`,
-			action: `Help me write an essay about silicon valley`,
-		},
-		{
-			title: 'What is the weather',
-			label: 'in San Francisco?',
-			action: 'What is the weather in San Francisco?',
-		},
-	]
+const defaultSuggestedActions = [
+	{
+		title: 'Analyze my tone',
+		label: 'in a recent conversation',
+		action: 'Can you analyze the tone of this conversation?',
+	},
+	{
+		title: 'Detect toxic language',
+		label: 'in a workplace message',
+		action: 'Can you detect toxic language in this workplace message?',
+	},
+	{
+		title: 'Identify conflict triggers',
+		label: 'in my communication',
+		action: 'What are the conflict triggers in this conversation?',
+	},
+	{
+		title: 'Suggest empathetic responses',
+		label: 'to improve my communication',
+		action: 'Can you suggest empathetic responses for this situation?',
+	},
+]
 
+function PureSuggestedActions({
+	chatId,
+	suggestedActions = defaultSuggestedActions,
+	append,
+}: SuggestedActionsProps) {
 	return (
 		<div data-testid="suggested-actions" className="grid w-full gap-2 sm:grid-cols-2">
 			{suggestedActions.map((suggestedAction, index) => (
