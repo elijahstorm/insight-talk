@@ -17,7 +17,7 @@ import { User } from 'next-auth'
 import { MultimodalInput } from '@/components/multimodal-input'
 import { useLanguage } from '@/hooks/use-language'
 import { dictionary } from '@/lib/language/dictionary'
-import { SuggestedActions } from './suggested-actions'
+import { SuggestedActions } from '@/components/suggested-actions'
 
 export function InsightChat({
 	id,

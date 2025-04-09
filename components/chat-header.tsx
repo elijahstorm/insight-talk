@@ -13,13 +13,13 @@ import { memo, useState, useEffect } from 'react'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { VisibilityType, VisibilitySelector } from '@/components/visibility-selector'
 import config from '@/features/config'
-import { HomeButton } from '@/components/home-button'
 import LightDarkThemeToggle from '@/components/light-dark-theme-toggle'
 import Image from 'next/image'
 import { User } from 'next-auth'
 import { useLanguage } from '@/hooks/use-language'
 import { dictionary } from '@/lib/language/dictionary'
 import { toast } from 'sonner'
+import { BackButton } from '@/components/back-button'
 
 function PureChatHeader({
 	user = undefined,
@@ -61,7 +61,7 @@ function PureChatHeader({
 
 	return (
 		<header className="sticky top-0 flex items-center gap-2 bg-background px-2 py-1.5 md:px-2">
-			<HomeButton />
+			<BackButton />
 
 			{isMounted && (!open || windowWidth < 768) && !config.insightChat.hideNewChatHeader && (
 				<Tooltip>

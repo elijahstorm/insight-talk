@@ -10,13 +10,14 @@ import { Button } from '@/components/ui/button'
 import { AnimatePresence, motion } from 'framer-motion'
 import { dictionary } from '@/lib/language/dictionary'
 import { useLanguage } from '@/hooks/use-language'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
+import Image from 'next/image'
 
 interface MessagesProps {
 	chatId: string
 	status: UseChatHelpers['status']
 	votes: Array<Vote> | undefined
-	messages: Array<UIMessage | InsightMessageType>
+	messages: Array<(UIMessage | InsightMessageType) & { insight?: boolean }>
 	setMessages: UseChatHelpers['setMessages']
 	reload: UseChatHelpers['reload']
 	isReadonly: boolean
@@ -42,13 +43,22 @@ function PureMessages({
 	isReadonly,
 	children,
 }: MessagesProps) {
+	const searchParams = useSearchParams()
 	const [__, messagesStartRef] = useScrollToBottom<HTMLDivElement>()
 	const [messagesContainerRef, messagesEndRef] = useScrollToBottom<HTMLDivElement>()
-	const [currentMessage, setCurrentMessage] = useState<number>(0)
+	const [currentMessage, setCurrentMessage] = useState<number>(
+		parseInt(searchParams.get('page') ?? '0')
+	)
 	const [visibleMessageParts, setVisibleMessageParts] = useState<number>(0)
 	const { currentLanguage } = useLanguage()
 	const router = useRouter()
 	const prevLength = useRef(messages.length)
+	const [userPaid, setUserPaid] = useState(false)
+
+	useEffect(() => {
+		setCurrentMessage(parseInt(searchParams.get('page') ?? '0'))
+		setVisibleMessageParts(0)
+	}, [setCurrentMessage, searchParams, searchParams.get('page')])
 
 	useEffect(() => {
 		if (messages.length !== prevLength.current) {
@@ -86,19 +96,25 @@ function PureMessages({
 		}
 	}
 
-	const showNextMessage = (skipIndex: number) => () => {
-		setCurrentMessage((prevIndex) => prevIndex + skipIndex)
-		setVisibleMessageParts(0)
-	}
-
 	const goBackToHistory = useCallback(() => {
 		router.push('/')
-	}, [])
+	}, [router])
+
+	const showNextMessage = useCallback(
+		(skipIndex: number) => () => {
+			const nextPage = currentMessage + skipIndex
+			const currentUrl = new URL(window.location.href)
+			currentUrl.searchParams.set('page', nextPage.toString())
+			router.push(currentUrl.toString())
+		},
+		[router, currentMessage]
+	)
 
 	const goToDeeperInsight = useCallback(() => {
-		setVisibleMessageParts(0)
-		setCurrentMessage(messages.length)
-	}, [messages, setCurrentMessage])
+		const currentUrl = new URL(window.location.href)
+		currentUrl.searchParams.set('page', messages.length.toString())
+		router.push(currentUrl.toString())
+	}, [router, messages])
 
 	const showableMessages = (() => {
 		const current = messages[currentMessage]
@@ -118,14 +134,50 @@ function PureMessages({
 	})()
 
 	return currentMessage >= messages.length ? (
-		<div className="flex h-full flex-col gap-4 overflow-hidden px-4 pb-6">
-			<div className="flex min-w-0 flex-1 flex-col gap-6 overflow-y-scroll">
-				<p className="px-16 pt-16 text-slate-600 dark:text-slate-400">
-					{dictionary.messages.analysis.followUp[currentLanguage.code]}
-				</p>
+		userPaid ? (
+			<div className="flex h-full flex-col gap-4 overflow-hidden px-4 pb-6">
+				<div className="flex min-w-0 flex-1 flex-col gap-6 overflow-y-scroll">
+					<p className="px-16 pt-16 text-slate-600 dark:text-slate-400">
+						{dictionary.messages.analysis.followUp[currentLanguage.code]}
+					</p>
+				</div>
+				{children}
 			</div>
-			{children}
-		</div>
+		) : (
+			<div className="flex size-full flex-col justify-between pt-48">
+				<div className="relative mx-auto w-full space-y-4 px-4 text-center">
+					<p className="absolute left-[calc(50%+80px)] top-[calc(50%-230px)] w-fit -translate-x-1/2 -translate-y-1/2 rounded-2xl rounded-bl-none bg-primary px-4 py-2 text-primary-foreground">
+						{dictionary.messages.analysis.upsale.lookingForClarity[currentLanguage.code]}
+					</p>
+
+					<p className="absolute right-[calc(50%+80px)] top-[calc(50%-185px)] w-fit -translate-y-1/2 translate-x-1/2 rounded-2xl rounded-br-none bg-secondary px-4 py-2 text-secondary-foreground">
+						{dictionary.messages.analysis.upsale.wonderedWhy[currentLanguage.code]}
+					</p>
+
+					<Image
+						src="/static/logo-clouds.svg"
+						alt="Logo"
+						width={'300'}
+						height={'300'}
+						className="relative mx-auto pb-4"
+					/>
+
+					<h1 className="pt-4 text-3xl font-bold">
+						{dictionary.messages.analysis.upsale.wantToGoDeeper[currentLanguage.code]}
+					</h1>
+
+					<h3 className="font-normal">
+						{dictionary.messages.analysis.upsale.letMeHelp[currentLanguage.code]}
+					</h3>
+				</div>
+
+				<div className="px-4 pb-6">
+					<Button className="w-full py-6" variant={'outline'} onClick={() => setUserPaid(true)}>
+						Let me add more detail
+					</Button>
+				</div>
+			</div>
+		)
 	) : (
 		<div className="flex h-full flex-col gap-4 overflow-hidden pb-6">
 			<div

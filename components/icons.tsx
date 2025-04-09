@@ -17,6 +17,27 @@ export const BotIcon = () => {
 	)
 }
 
+export const BackIcon = ({ size = 16 }: { size: number }) => {
+	return (
+		<svg
+			height={size}
+			strokeLinejoin="round"
+			viewBox="0 0 9 16"
+			fill="none"
+			width={size}
+			style={{ color: 'currentcolor' }}
+		>
+			<path
+				d="M7.75 1.75L1.5 8L7.75 14.25"
+				stroke="currentColor"
+				strokeWidth="1.875"
+				strokeLinecap="round"
+				strokeLinejoin="round"
+			/>
+		</svg>
+	)
+}
+
 export const UserIcon = () => {
 	return (
 		<svg

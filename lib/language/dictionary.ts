@@ -261,6 +261,36 @@ export const dictionary = {
 					},
 				],
 			},
+			upsale: {
+				lookingForClarity: {
+					en: 'Looking for clarity?',
+					kor: '명확성을 찾고 계신가요?',
+					ch0: '在寻找清晰的答案吗？',
+					ch1: '在尋找清晰的答案嗎？',
+					fr: 'Vous cherchez de la clarté ?',
+				},
+				wonderedWhy: {
+					en: 'Ever wondered why they said that?',
+					kor: '그들이 왜 그렇게 말했는지 궁금하셨나요?',
+					ch0: '有没有想过他们为什么这么说？',
+					ch1: '有沒有想過他們為什麼這麼說？',
+					fr: 'Vous êtes-vous déjà demandé pourquoi ils ont dit cela ?',
+				},
+				wantToGoDeeper: {
+					en: 'Want to go deeper?',
+					kor: '더 깊이 들어가고 싶으신가요?',
+					ch0: '想更深入了解吗？',
+					ch1: '想更深入了解嗎？',
+					fr: 'Envie d’aller plus loin ?',
+				},
+				letMeHelp: {
+					en: 'Let me help you understand what’s really going on',
+					kor: '무슨 일이 일어나고 있는지 이해할 수 있도록 도와드릴게요',
+					ch0: '让我帮您了解真正发生了什么',
+					ch1: '讓我幫您了解真正發生了什麼',
+					fr: 'Laissez-moi vous aider à comprendre ce qui se passe vraiment',
+				},
+			},
 		},
 		actions: {
 			question: {
