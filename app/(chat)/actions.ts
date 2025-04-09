@@ -75,40 +75,53 @@ export async function generateInsight({
 	language: string
 	userName?: string
 }) {
-	const [{ text: communicationPatterns }, { text: replies }, { text: insight }] = await Promise.all(
-		[
-			generateText({
-				model: myProvider.languageModel('title-model'),
-				system: systemPrompt({
-					messageType: InsightPrompts.communicationPatterns,
-					relationshipTypes,
-					language,
-					userName,
-				}),
-				prompt: preparePromtWithMessage({ message }),
+	const [
+		{ text: communicationPatterns },
+		{ text: replies },
+		{ text: insight },
+		// { text: potentialTriggers },
+	] = await Promise.all([
+		generateText({
+			model: myProvider.languageModel('talk-insight'),
+			system: systemPrompt({
+				messageType: InsightPrompts.communicationPatterns,
+				relationshipTypes,
+				language,
+				userName,
 			}),
-			generateText({
-				model: myProvider.languageModel('title-model'),
-				system: systemPrompt({
-					messageType: InsightPrompts.replies,
-					relationshipTypes,
-					language,
-					userName,
-				}),
-				prompt: preparePromtWithMessage({ message }),
+			prompt: preparePromtWithMessage({ message }),
+		}),
+		generateText({
+			model: myProvider.languageModel('talk-insight'),
+			system: systemPrompt({
+				messageType: InsightPrompts.replies,
+				relationshipTypes,
+				language,
+				userName,
 			}),
-			generateText({
-				model: myProvider.languageModel('title-model'),
-				system: systemPrompt({
-					messageType: InsightPrompts.generalInsight,
-					relationshipTypes,
-					language,
-					userName,
-				}),
-				prompt: preparePromtWithMessage({ message }),
+			prompt: preparePromtWithMessage({ message }),
+		}),
+		generateText({
+			model: myProvider.languageModel('talk-insight'),
+			system: systemPrompt({
+				messageType: InsightPrompts.generalInsight,
+				relationshipTypes,
+				language,
+				userName,
 			}),
-		]
-	)
+			prompt: preparePromtWithMessage({ message }),
+		}),
+		// generateText({
+		// 	model: myProvider.languageModel('talk-insight'),
+		// 	system: systemPrompt({
+		// 		messageType: InsightPrompts.potentialTriggers,
+		// 		relationshipTypes,
+		// 		language,
+		// 		userName,
+		// 	}),
+		// 	prompt: preparePromtWithMessage({ message }),
+		// }),
+	])
 
 	const parseCommunicationPatternPart = (text: string) => {
 		const parsePerson = (person: string) => {

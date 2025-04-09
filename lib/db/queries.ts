@@ -36,6 +36,16 @@ export async function getUser(email: string): Promise<Array<User>> {
 	}
 }
 
+export async function getLanguageByUser({ id }: { id: string }): Promise<string | null> {
+	try {
+		const [result] = await db.select().from(user).where(eq(user.id, id))
+		return result.language
+	} catch (error) {
+		console.error('Failed to get user from database')
+		throw error
+	}
+}
+
 export async function createUser(email: string, password: string) {
 	const salt = genSaltSync(10)
 	const hash = hashSync(password, salt)
@@ -64,20 +74,19 @@ export async function newInsight({
 	type?: Array<string>
 }) {
 	try {
-		return (
-			await db
-				.insert(chat)
-				.values({
-					createdAt: new Date(),
-					userId,
-					title,
-					summary,
-					visibility,
-					userName,
-					type,
-				})
-				.returning()
-		)[0]
+		const [result] = await db
+			.insert(chat)
+			.values({
+				createdAt: new Date(),
+				userId,
+				title,
+				summary,
+				visibility,
+				userName,
+				type,
+			})
+			.returning()
+		return result
 	} catch (error) {
 		console.error('Failed to save chat in database')
 		throw error

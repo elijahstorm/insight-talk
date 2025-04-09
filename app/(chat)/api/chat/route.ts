@@ -6,7 +6,13 @@ import {
 	streamText,
 } from 'ai'
 import { auth } from '@/app/(auth)/auth'
-import { deleteChatById, getChatById, saveChat, saveMessages } from '@/lib/db/queries'
+import {
+	deleteChatById,
+	getChatById,
+	getLanguageByUser,
+	saveChat,
+	saveMessages,
+} from '@/lib/db/queries'
 import {
 	generateMockedResponse,
 	generateUUID,
@@ -49,7 +55,10 @@ export async function POST(request: Request) {
 			return new Response('No user message found', { status: 400 })
 		}
 
-		const chat = await getChatById({ id })
+		const [chat, language] = await Promise.all([
+			getChatById({ id }),
+			getLanguageByUser({ id: session.user.id }),
+		])
 
 		if (!chat) {
 			const title = await generateTitleFromUserMessage({
@@ -93,7 +102,7 @@ export async function POST(request: Request) {
 
 				const result = streamText({
 					model: myProvider.languageModel(selectedChatModel),
-					system: systemPrompt({ userName: chat.userName }),
+					system: systemPrompt({ userName: chat.userName, language }),
 					prompt,
 					maxSteps: 5,
 					experimental_activeTools: [],

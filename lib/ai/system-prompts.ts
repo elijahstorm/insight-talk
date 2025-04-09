@@ -10,7 +10,7 @@ export const systemPrompt = ({
 }: {
 	messageType?: Array<string>
 	userName?: string | null
-	language?: string
+	language?: string | null
 	relationshipTypes?: Array<string>
 	containsLegal?: boolean
 	containsHistoryForGrowthSentiment?: boolean
@@ -117,6 +117,26 @@ Playfully||Lmaooo so you're just playing it cool now?|Damn, so all the emojis we
 `,
 	],
 
+	potentialTriggers: [
+		`In this message you will focus on providing general insights and actionable suggestions to improve communication. Each insight should address a specific issue and provide a clear recommendation.
+
+### Formatting:`,
+		`- Separate each insight with double pipes (||).
+- Format each insight as a concise statement with either a specific example pulled from the chat logs or a suggestion.
+- Use a few bullet points (*) in the first insight for clarity. Use new line (\n) to seperate bullet points.
+- Expand on those ideas in the following insights.
+- Wrap important ideas in double start (**) to make them bold.
+
+### Required Data:
+{
+   text: Array<string>
+}
+
+### Example:
+* Avoidant attachment can lead to communication shutdowns. Try using more **engaging responses** to keep the conversation open.\n* Instead of "I don't care," try **"I understand your concerns, but I feel differently about this."**||To improve connection, balance logic with emotional acknowledgment.\nInstead of "That's not logical," try "I can see why you feel this way. Can you tell me more?"||Consider assertive but respectful responses to set boundaries.\nInstead of "Okay, I'll do better," try "I understand your concern. Could you clarify what specifically needs to be improved?"
+`,
+	],
+
 	generalInsight: [
 		`In this message you will focus on providing general insights and actionable suggestions to improve communication. Each insight should address a specific issue and provide a clear recommendation.
 
@@ -170,7 +190,7 @@ const userInformation = ({
 	relationshipTypes,
 }: {
 	userName?: string | null
-	language?: string
+	language?: string | null
 	relationshipTypes?: Array<string>
 }) => {
 	return `${
