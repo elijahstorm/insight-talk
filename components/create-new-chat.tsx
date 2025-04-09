@@ -296,7 +296,7 @@ const FullPageLoader = () => {
 				alt="Logo"
 				width={'96'}
 				height={'96'}
-				className="pb-4"
+				className="select-none pb-4"
 			/>
 
 			<h1 className="text-3xl">

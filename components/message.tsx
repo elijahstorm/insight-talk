@@ -161,7 +161,13 @@ const LegacyChat = ({
 			{message.role === 'assistant' && (
 				<div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-background">
 					<div className="translate-y-px">
-						<Image src="/static/logo.svg" alt="Logo" width={'32'} height={'32'} className="pb-4" />
+						<Image
+							src="/static/logo.svg"
+							alt="Logo"
+							width={'32'}
+							height={'32'}
+							className="select-none pb-4"
+						/>
 					</div>
 				</div>
 			)}
@@ -347,7 +353,7 @@ export const ThinkingMessage = () => {
 							alt="Logo"
 							width={'32'}
 							height={'32'}
-							className="pb-4"
+							className="select-none pb-4"
 						/>
 					</div>
 				</div>
