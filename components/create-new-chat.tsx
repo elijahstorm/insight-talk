@@ -10,6 +10,7 @@ import config from '@/features/config'
 import Image from 'next/image'
 import { useLanguage } from '@/hooks/use-language'
 import { chatLogsType } from '@/components/insight-message'
+import { createWorker } from 'tesseract.js'
 import { dictionary } from '@/lib/language/dictionary'
 import { seperateFiles } from '@/lib/ai/system-prompts'
 import BatchFileUploader from '@/components/BatchFileUploader'
@@ -84,7 +85,11 @@ export default function CreateNewChat({ selectedChatModel }: { selectedChatModel
 
 			const attachments = await Promise.all(
 				imageFilepaths.map(async (filepath) => {
-					return filepath
+					const worker = await createWorker('eng')
+					const ret = await worker.recognize(filepath)
+					const text = ret.data.text
+					await worker.terminate()
+					return text
 				})
 			)
 
@@ -118,14 +123,13 @@ export default function CreateNewChat({ selectedChatModel }: { selectedChatModel
 					messages: [
 						{
 							role: 'user',
-							createdAt: new Date(),
-							experimental_attachments: attachments.map((attachment) => ({ url: attachment })),
+							experimental_attachments: [], // attachments.map((attachment) => ({ url: attachment })),
 							parts:
-								textLogs.length > 0
+								[...textLogs, ...attachments].length > 0
 									? [
 											{
 												type: chatLogsType,
-												logs: textLogs.join(seperateFiles),
+												logs: [...textLogs, ...attachments].join(seperateFiles),
 											},
 										]
 									: [],

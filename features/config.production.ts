@@ -6,7 +6,7 @@ const config = {
 		dropdownFilter: false,
 	},
 	insightChat: {
-		allowImages: false,
+		allowImages: true,
 		hideNewChatHeader: true,
 		allowChangeModel: false,
 		allowPrivate: false,
