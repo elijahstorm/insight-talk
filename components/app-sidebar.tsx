@@ -81,16 +81,16 @@ export function AppSidebar({ user }: { user: User | undefined }) {
 				<DropdownContent
 					dropdowns={[
 						{
-							title: dictionary.sidebar.language.names[currentLanguage.code],
-							content: <SidebarLanguageSelector user={user} />,
-						},
-						{
 							title: dictionary.sidebar.liked[currentLanguage.code],
 							content: <SidebarHistory user={user} limitLiked />,
 						},
 						{
 							title: dictionary.sidebar.history[currentLanguage.code],
 							content: <SidebarHistory user={user} />,
+						},
+						{
+							title: dictionary.sidebar.language.names[currentLanguage.code],
+							content: <SidebarLanguageSelector user={user} />,
 						},
 					]}
 				/>

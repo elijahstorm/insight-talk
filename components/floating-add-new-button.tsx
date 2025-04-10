@@ -1,14 +1,14 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useRef, useState } from 'react'
 import { PaperclipIcon, PlusIcon, ImageIcon } from '@/components/icons'
 import { Button } from '@/components/ui/button'
 import { dictionary } from '@/lib/language/dictionary'
 import { useLanguage } from '@/hooks/use-language'
 import config from '@/features/config'
 import BatchFileUploader from '@/components/BatchFileUploader'
-import Image from 'next/image'
+import FullPageLoader from '@/components/full-page-loader'
 
 function HeadsUpButton({
 	action,
@@ -37,7 +37,7 @@ function HeadsUpButton({
 	)
 }
 
-export default function AddNewButton() {
+export default function FloatingAddNewButton() {
 	const { currentLanguage } = useLanguage()
 	const [menuClosed, setMenuClosed] = useState(true)
 	const router = useRouter()
@@ -74,7 +74,7 @@ export default function AddNewButton() {
 	return (
 		<BatchFileUploader fileInputRef={fileInputRef} handleFinish={finishUploadingBatch}>
 			{({ uploadQueue, uploadProgress }) =>
-				uploadQueue.length > 0 ? (
+				uploadProgress === 100 || uploadQueue.length > 0 ? (
 					<FullPageLoader progress={uploadProgress} />
 				) : (
 					<div className="select-none">
@@ -123,53 +123,5 @@ export default function AddNewButton() {
 				)
 			}
 		</BatchFileUploader>
-	)
-}
-
-const FullPageLoader = ({ progress }: { progress: number }) => {
-	const { currentLanguage } = useLanguage()
-	const [isActive, setIsActive] = useState(false)
-
-	useEffect(() => {
-		const timer = setTimeout(() => {
-			setIsActive(true)
-		}, 0)
-
-		return () => clearTimeout(timer)
-	}, [])
-
-	return (
-		<div
-			className={`absolute inset-0 max-h-screen bg-background fade-in ${isActive ? 'opacity-100' : 'opacity-0'} flex size-full flex-col items-center justify-center gap-4`}
-		>
-			<Image
-				src="/static/logo.svg"
-				alt="Logo"
-				width={'96'}
-				height={'96'}
-				className="select-none pb-4"
-			/>
-
-			<h1 className="text-3xl">
-				{dictionary.messages.analysis.newChat.holdOn[currentLanguage.code]}
-			</h1>
-
-			<p className="font-semibold">
-				{dictionary.messages.analysis.newChat.uploadingFiles[currentLanguage.code]}
-			</p>
-
-			<div className="h-2 w-64 overflow-hidden bg-accent">
-				<div
-					className="h-full bg-primary"
-					style={{
-						width: `${progress}%`,
-						transition: 'width 1s ease-out',
-					}}
-				></div>
-			</div>
-
-			{/* for pushing the content slightly up */}
-			<div className="h-24"></div>
-		</div>
 	)
 }

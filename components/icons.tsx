@@ -747,6 +747,57 @@ export const SidebarLeftIcon = ({ size = 16 }: { size?: number }) => (
 	</svg>
 )
 
+export const ChatIcon = ({ size = 16 }: { size?: number }) => (
+	<svg
+		height={size}
+		strokeLinejoin="round"
+		viewBox="4 4 20 21"
+		width={size}
+		style={{ color: 'currentcolor' }}
+	>
+		<path
+			fillRule="evenodd"
+			clipRule="evenodd"
+			d="M10.448 8.5H18.5532C21.0274 8.51541 23.0181 10.1794 22.9999 12.217V16.73C23.0086 17.7087 22.5449 18.6501 21.7107 19.3472C20.8766 20.0442 19.7404 20.4399 18.552 20.447H10.448L6.00012 22.5V12.217C5.99139 11.2383 6.45511 10.2969 7.28925 9.59984C8.1234 8.90276 9.25963 8.50713 10.448 8.5Z"
+			stroke="currentColor"
+			strokeWidth="1.3"
+			strokeLinecap="round"
+			strokeLinejoin="round"
+			fill="none"
+		/>
+		<path
+			fillRule="evenodd"
+			clipRule="evenodd"
+			d="M9 14.5536C9 13.9717 9.50367 13.5 10.125 13.5C10.7463 13.5 11.25 13.9717 11.25 14.5536C11.25 15.1354 10.7463 15.6071 10.125 15.6071C9.82662 15.6071 9.54048 15.4961 9.3295 15.2985C9.11852 15.101 9 14.833 9 14.5536Z"
+			stroke="currentColor"
+			strokeWidth="1.05356"
+			strokeLinecap="round"
+			strokeLinejoin="round"
+			fill="none"
+		/>
+		<path
+			fillRule="evenodd"
+			clipRule="evenodd"
+			d="M13.4999 14.5536C13.4999 13.9717 14.0036 13.5 14.6249 13.5C15.2462 13.5 15.7498 13.9717 15.7498 14.5536C15.7498 15.1354 15.2462 15.6071 14.6249 15.6071C14.0036 15.6071 13.4999 15.1354 13.4999 14.5536Z"
+			stroke="currentColor"
+			strokeWidth="1.05356"
+			strokeLinecap="round"
+			strokeLinejoin="round"
+			fill="none"
+		/>
+		<path
+			fillRule="evenodd"
+			clipRule="evenodd"
+			d="M17.9998 14.5536C17.9998 13.9717 18.5035 13.5 19.1248 13.5C19.7461 13.5 20.2498 13.9717 20.2498 14.5536C20.2498 15.1354 19.7461 15.6071 19.1248 15.6071C18.5035 15.6071 17.9998 15.1354 17.9998 14.5536Z"
+			stroke="currentColor"
+			strokeWidth="1.05356"
+			strokeLinecap="round"
+			strokeLinejoin="round"
+			fill="none"
+		/>
+	</svg>
+)
+
 export const PlusIcon = ({ size = 16 }: { size?: number }) => (
 	<svg
 		height={size}

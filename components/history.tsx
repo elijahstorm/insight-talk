@@ -11,6 +11,7 @@ import { User } from 'next-auth'
 import config from '@/features/config'
 import { dictionary } from '@/lib/language/dictionary'
 import { useLanguage } from '@/hooks/use-language'
+import HistoryAddNewButton from './history-add-new-button'
 
 type GroupedChats = {
 	today: Chat[]
@@ -51,7 +52,18 @@ const groupChatsByDate = (chats: Chat[]): GroupedChats => {
 			return groups
 		},
 		{
-			today: [],
+			today: [
+				{
+					id: 'history-add-new-button',
+					createdAt: new Date(),
+					type: [''],
+					title: '',
+					userName: '',
+					summary: '',
+					userId: '',
+					visibility: 'private',
+				},
+			],
 			yesterday: [],
 			lastWeek: [],
 			lastMonth: [],
@@ -108,11 +120,11 @@ const Skeleton = () => {
 }
 
 const ShowHistory = ({
-	history,
+	history = [],
 	filter,
 	typeFilter,
 }: {
-	history: Chat[]
+	history?: Chat[]
 	filter: string
 	typeFilter: 'none' | keyof typeof typeEmojis
 }) => {
@@ -136,26 +148,30 @@ const ShowHistory = ({
 					<p className="ml-auto">{groupedChats[timeGroup].length}</p>
 				</div>
 
-				<div className="grid grid-cols-2 gap-4">
-					{groupedChats[timeGroup].map((chat) => (
-						<Link
-							key={chat.id}
-							className="space-y-2 rounded-md border p-4 text-slate-800"
-							href={`/chat/${chat.id}`}
-						>
-							<div className="flex w-full items-center gap-2">
-								<h2 className="line-clamp-1 flex-1 text-sm font-normal dark:text-slate-100">
-									{chat.title}
-								</h2>
-								{config.search.dropdownFilter && (
-									<div className="size-6 rounded-full border border-slate-500 bg-slate-100 pl-1 pt-0.5 text-sm">
-										{typeEmojis[chat.type[0] as keyof typeof typeEmojis]}
-									</div>
-								)}
-							</div>
-							<p className="line-clamp-2 text-xs font-light text-slate-400">{chat.summary}</p>
-						</Link>
-					))}
+				<div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+					{groupedChats[timeGroup].map((chat) =>
+						chat.id === 'history-add-new-button' ? (
+							<HistoryAddNewButton key={chat.id} />
+						) : (
+							<Link
+								key={chat.id}
+								className="space-y-2 rounded-md border p-4 text-slate-800"
+								href={`/chat/${chat.id}`}
+							>
+								<div className="flex w-full items-center gap-2">
+									<h2 className="line-clamp-1 flex-1 text-sm font-normal dark:text-slate-100">
+										{chat.title}
+									</h2>
+									{config.search.dropdownFilter && (
+										<div className="size-6 rounded-full border border-slate-500 bg-slate-100 pl-1 pt-0.5 text-sm">
+											{typeEmojis[chat.type[0] as keyof typeof typeEmojis]}
+										</div>
+									)}
+								</div>
+								<p className="line-clamp-2 text-xs font-light text-slate-400">{chat.summary}</p>
+							</Link>
+						)
+					)}
 				</div>
 			</div>
 		) : null
@@ -170,10 +186,6 @@ export default function History({ user }: { user: User | undefined }) {
 	const { data: history, isLoading } = useSWR<Array<Chat>>(user ? '/api/history' : null, fetcher, {
 		fallbackData: [],
 	})
-
-	if (!isLoading && (!history || history.length === 0)) {
-		return <Overview />
-	}
 
 	return (
 		<div className="flex flex-col gap-8 text-left">
@@ -205,7 +217,10 @@ export default function History({ user }: { user: User | undefined }) {
 			{isLoading ? (
 				<Skeleton />
 			) : (
-				history?.length && <ShowHistory history={history} filter={filter} typeFilter={typeFilter} />
+				<div className="space-y-8">
+					<ShowHistory history={history} filter={filter} typeFilter={typeFilter} />
+					<Overview />
+				</div>
 			)}
 		</div>
 	)

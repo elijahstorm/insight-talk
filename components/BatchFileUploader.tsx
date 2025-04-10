@@ -60,6 +60,7 @@ export default function BatchFileUploader({
 			const files = Array.from(event.target.files || [])
 
 			setUploadQueue(files.map((file) => file.name))
+			setUploadProgress(0)
 
 			try {
 				let totalUploaded = 0
@@ -94,7 +95,6 @@ export default function BatchFileUploader({
 				}
 			} finally {
 				setUploadQueue([])
-				setUploadProgress(0)
 			}
 		},
 		[uploadFile, handleFinish, setUploadQueue, setUploadProgress]

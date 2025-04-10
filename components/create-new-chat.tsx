@@ -83,32 +83,42 @@ export default function CreateNewChat({ selectedChatModel }: { selectedChatModel
 				(filepath) => !/\.(jpg|jpeg|png|gif|bmp|tiff|webp)$/i.test(filepath)
 			)
 
-			const attachments = await Promise.all(
-				imageFilepaths.map(async (filepath) => {
-					const worker = await createWorker('eng')
-					const ret = await worker.recognize(filepath)
-					const text = ret.data.text
-					await worker.terminate()
-					return text
-				})
+			const filterNull = (array: Array<string | null>) =>
+				array.filter((value) => value) as Array<string>
+
+			const attachments = filterNull(
+				await Promise.all(
+					imageFilepaths.map(async (filepath) => {
+						if (!filepath) {
+							return null
+						}
+						const worker = await createWorker('eng')
+						const ret = await worker.recognize(filepath)
+						const text = ret.data.text
+						await worker.terminate()
+						return text
+					})
+				)
 			)
 
-			const textLogs = await Promise.all(
-				textFilepaths.map(async (filepath) => {
-					try {
-						const response = await fetch(filepath)
-						if (!response.ok) {
-							throw new Error(`Failed to fetch file at ${filepath}`)
+			const textLogs = filterNull(
+				await Promise.all(
+					textFilepaths.map(async (filepath) => {
+						try {
+							const response = await fetch(filepath)
+							if (!response.ok) {
+								throw new Error(`Failed to fetch file at ${filepath}`)
+							}
+							return await response.text()
+						} catch (error) {
+							toast.error(`Error processing file: ${filepath}`)
+							if (config.errorLog) {
+								console.error('Error processing file contents:', error)
+							}
+							return null
 						}
-						return await response.text()
-					} catch (error) {
-						toast.error(`Error processing file: ${filepath}`)
-						if (config.errorLog) {
-							console.error('Error processing file contents:', error)
-						}
-						return '(error: file processing failed)'
-					}
-				})
+					})
+				)
 			)
 
 			const response = await fetch('/api/insight', {
@@ -215,7 +225,7 @@ export default function CreateNewChat({ selectedChatModel }: { selectedChatModel
 			) : (
 				<BatchFileUploader fileInputRef={fileInputRef} handleFinish={finishUploadingBatch}>
 					{({ uploadQueue, uploadProgress }) =>
-						uploadQueue.length > 0 ? (
+						uploadProgress === 100 || uploadQueue.length > 0 ? (
 							<div className="pointer-events-none select-none px-4">
 								<div className="relative w-full overflow-hidden bg-accent text-center">
 									<div

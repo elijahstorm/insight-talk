@@ -4,6 +4,8 @@ const config = {
 	},
 	search: {
 		dropdownFilter: false,
+		floatingAddNewButton: false,
+		addNewChatIcon: true,
 	},
 	insightChat: {
 		allowImages: false,
