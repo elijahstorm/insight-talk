@@ -62,6 +62,7 @@ ${
 		? `### Message Type:
 ${messageType.join(`
 - ALWAYS reply everything in user's selected language: ${language}.
+- We will show you the Required Data in typescript, but DO NOT output your response in JSON or typescript. We will also show you an Example string. ALWAYS REPLY in a similar format to the EXAMPLE so we can properly parse the message.
 `)}`
 		: ''
 }`

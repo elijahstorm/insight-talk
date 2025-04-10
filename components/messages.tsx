@@ -143,7 +143,11 @@ function PureMessages({
 				{children}
 			</div>
 		) : (
-			<div className="flex size-full flex-col justify-between pt-48">
+			<motion.div
+				className="flex size-full flex-col justify-between pt-48"
+				initial={{ y: 5, opacity: 0 }}
+				animate={{ y: 0, opacity: 1 }}
+			>
 				<div className="relative mx-auto w-full min-w-[300px] space-y-4 px-4 text-center">
 					<p className="absolute left-[calc(50%+70px)] top-[calc(50%-232px)] w-44 -translate-x-1/2 -translate-y-1/2 rounded-2xl rounded-bl-none bg-primary px-4 py-2 text-primary-foreground">
 						{dictionary.messages.analysis.upsale.lookingForClarity[currentLanguage.code]}
@@ -179,7 +183,7 @@ function PureMessages({
 						{dictionary.messages.analysis.upsale.addMoreDetail[currentLanguage.code]}
 					</Button>
 				</div>
-			</div>
+			</motion.div>
 		)
 	) : (
 		<div className="flex h-full flex-col gap-4 overflow-hidden pb-6">
