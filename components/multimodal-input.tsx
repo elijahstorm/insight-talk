@@ -183,19 +183,24 @@ function PureMultimodalInput({
 		ComponentProps<typeof SuggestedActions>['suggestedActions']
 	>([])
 	const fetchingRef = useRef(false)
+	const messagesRef = useRef(messages)
+	const attachmentsRef = useRef(attachments)
+
+	useEffect(() => {
+		messagesRef.current = messages
+		attachmentsRef.current = attachments
+	}, [messages, attachments])
 
 	useEffect(() => {
 		const testShould = () =>
 			!fetchingRef.current &&
 			suggestedActions?.length === 0 &&
 			status === 'ready' &&
-			messages[messages.length - 1]?.role !== 'user' &&
-			attachments.length === 0 &&
+			messagesRef.current[messagesRef.current.length - 1]?.role !== 'user' &&
+			attachmentsRef.current.length === 0 &&
 			uploadQueue.length === 0
 
-		const shouldSuggest = testShould()
-
-		if (!shouldSuggest) {
+		if (!testShould()) {
 			if (!suggestedActions || suggestedActions.length === 0) {
 				setSuggestedActions([])
 			}
@@ -203,19 +208,15 @@ function PureMultimodalInput({
 		}
 
 		const timeout = setTimeout(async () => {
-			const stillValid = testShould()
-
-			if (!stillValid) return
+			if (!testShould()) return
 
 			try {
 				fetchingRef.current = true
 				const res = await fetch('/api/question-suggestions', {
 					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-					},
+					headers: { 'Content-Type': 'application/json' },
 					body: JSON.stringify({
-						messages,
+						messages: messagesRef.current,
 						language: currentLanguage.code,
 					}),
 				})
@@ -223,26 +224,14 @@ function PureMultimodalInput({
 				const suggestions = await res.json()
 				setSuggestedActions(suggestions)
 			} catch (err) {
-				if (config.errorLog) {
-					console.error('Suggestion fetch error:', err)
-				}
+				if (config.errorLog) console.error('Suggestion fetch error:', err)
 			} finally {
 				fetchingRef.current = false
 			}
 		}, 10000)
 
 		return () => clearTimeout(timeout)
-	}, [
-		status,
-		messages,
-		messages.length,
-		attachments,
-		attachments.length,
-		uploadQueue,
-		uploadQueue.length,
-		suggestedActions,
-		suggestedActions?.length,
-	])
+	}, [status, uploadQueue, suggestedActions])
 
 	return (
 		<div className="relative flex w-full flex-col gap-4">

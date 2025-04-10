@@ -122,16 +122,15 @@ const InsightChat = ({
 				<div className="pb-8">
 					<div className="space-y-8">
 						{message.parts?.slice(0, visibleParts + 1).map((part, index) => (
-							<>
+							<div key={`insight-message-${chatId}-part-${index}`}>
 								{children(index)}
 								<InsightMessage
-									key={`insight-message-${chatId}-part-${index}`}
 									part={part}
 									index={index}
 									messageId={message.id}
 									isLoading={isLoading}
 								/>
-							</>
+							</div>
 						))}
 					</div>
 
