@@ -78,7 +78,7 @@ function PureMessages({
 	}, [messages, currentMessage])
 
 	useEffect(() => {
-		if (visibleMessageParts === 0) {
+		if (visibleMessageParts === 0 && messages[currentMessage]?.insight) {
 			if (messagesStartRef.current) {
 				messagesStartRef.current.scrollIntoView({ behavior: 'smooth' })
 			}
@@ -87,7 +87,22 @@ function PureMessages({
 				messagesEndRef.current.scrollIntoView({ behavior: 'smooth' })
 			}
 		}
-	}, [visibleMessageParts, currentMessage, messagesEndRef, messagesStartRef])
+	}, [
+		status,
+		messages.length,
+		visibleMessageParts,
+		currentMessage,
+		messagesEndRef,
+		messagesStartRef,
+	])
+
+	const isThinking = useCallback(
+		() =>
+			status === 'submitted' &&
+			messages.length > 0 &&
+			messages[messages.length - 1].role === 'user',
+		[status, messages.length]
+	)
 
 	const showNextPart = () => {
 		if (visibleMessageParts < (messages[currentMessage].parts?.length || 0) - 1) {
@@ -132,17 +147,8 @@ function PureMessages({
 		return legacyMessages
 	})()
 
-	return currentMessage >= messages.length ? (
-		userPaid ? (
-			<div className="flex h-full flex-col gap-4 overflow-hidden px-4 pb-6">
-				<div className="flex min-w-0 flex-1 flex-col gap-6 overflow-y-scroll">
-					<p className="px-16 pt-16 text-slate-600 dark:text-slate-400">
-						{dictionary.messages.analysis.followUp[currentLanguage.code]}
-					</p>
-				</div>
-				{children}
-			</div>
-		) : (
+	if (currentMessage >= messages.length && !userPaid) {
+		return (
 			<motion.div
 				className="flex size-full flex-col justify-between pt-48"
 				initial={{ y: 5, opacity: 0 }}
@@ -185,12 +191,23 @@ function PureMessages({
 				</div>
 			</motion.div>
 		)
+	}
+
+	return currentMessage >= messages.length ? (
+		<div className="flex h-full flex-col gap-4 overflow-hidden px-4 pb-6">
+			<div className="flex min-w-0 flex-1 flex-col gap-6 overflow-y-scroll">
+				<p className="px-16 pt-16 text-slate-600 dark:text-slate-400">
+					{dictionary.messages.analysis.followUp[currentLanguage.code]}
+				</p>
+			</div>
+			{children}
+		</div>
 	) : (
 		<div className="flex h-full flex-col gap-4 overflow-hidden pb-6">
-			<div ref={messagesContainerRef} className="min-w-0 flex-1 overflow-y-scroll">
-				<div ref={messagesStartRef} className="h-0 shrink-0" />
+			<div ref={messagesContainerRef} className="min-w-0 flex-1 overflow-y-auto">
+				<div ref={messagesStartRef} className="h-0" />
 
-				<div className="flex min-w-0 flex-1 flex-col gap-6 overflow-y-scroll">
+				<div className="flex min-w-0 flex-1 flex-col gap-6">
 					{showableMessages.map((message, index) => (
 						<PreviewMessage
 							key={`${chatId}-${index}`}
@@ -205,12 +222,14 @@ function PureMessages({
 						/>
 					))}
 
-					{status === 'submitted' &&
-						messages.length > 0 &&
-						messages[messages.length - 1].role === 'user' && <ThinkingMessage />}
+					{isThinking() && <ThinkingMessage />}
 				</div>
 
-				{visibleMessageParts !== 0 && <div ref={messagesEndRef} className="h-0 shrink-0" />}
+				{visibleMessageParts !== 0 || !messages[currentMessage]?.insight ? (
+					<div ref={messagesEndRef} className="h-0" />
+				) : (
+					<></>
+				)}
 			</div>
 
 			{messages[currentMessage].insight ? (

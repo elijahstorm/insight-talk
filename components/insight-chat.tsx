@@ -102,7 +102,13 @@ export function InsightChat({
 					isReadonly={isReadonly}
 					isArtifactVisible={isArtifactVisible}
 				>
-					<SuggestedActions append={append} chatId={id} />
+					{status === 'ready' &&
+					!isReadonly &&
+					updatedMessages[updatedMessages.length - 1].role !== 'user' ? (
+						<SuggestedActions append={append} chatId={id} />
+					) : (
+						<></>
+					)}
 
 					<form className="mx-auto flex w-full gap-2 bg-background md:max-w-3xl md:pb-6">
 						{!isReadonly && (

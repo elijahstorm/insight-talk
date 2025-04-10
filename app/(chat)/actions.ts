@@ -197,25 +197,20 @@ export async function generateInsight({
 		}
 	}
 
-	const now = new Date()
-	const orderIndexer = (index: number) => new Date(now.getTime() - (5 - index) * 5000)
 	const assistantMessages = [
 		{
 			content: '',
 			role: 'assistant',
-			createdAt: orderIndexer(0),
 			parts: [parseCommunicationPatternPart(communicationPatterns), parseInsightPart(insight)],
 		},
 		{
 			content: '',
 			role: 'assistant',
-			createdAt: orderIndexer(1),
 			parts: [parseTriggersPart(potentialTriggers)],
 		},
 		{
 			content: '',
 			role: 'assistant',
-			createdAt: orderIndexer(2),
 			parts: [parseRepliesPart(replies)],
 		},
 	]

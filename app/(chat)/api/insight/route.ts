@@ -7,6 +7,8 @@ import { generateInsight, generateTitleAndSummaryFromUserMessage } from '@/app/(
 export const maxDuration = 60
 
 export async function POST(request: Request) {
+	const startTime = new Date()
+
 	try {
 		const {
 			messages,
@@ -72,7 +74,6 @@ export async function POST(request: Request) {
 					role: 'user',
 					parts: message.parts,
 					attachments: message.experimental_attachments ?? [],
-					createdAt: new Date(),
 				},
 				...assistantMessages.map((assistantMessage) => ({
 					id: undefined as unknown as string,
@@ -80,9 +81,11 @@ export async function POST(request: Request) {
 					role: assistantMessage.role,
 					parts: assistantMessage.parts,
 					attachments: [],
-					createdAt: new Date(),
 				})),
-			],
+			].map((message, index) => ({
+				...message,
+				createdAt: new Date(startTime.getTime() - (assistantMessages.length - index) * 1000),
+			})),
 		})
 
 		return Response.json({ chatId: chat.id }, { status: 200 })
