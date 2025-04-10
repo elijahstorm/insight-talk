@@ -161,7 +161,8 @@ export function PureMessageActions({
 								})
 
 								toast.promise(downvote, {
-									loading: dictionary.messages.actions.toasts.upvote.loading[currentLanguage.code],
+									loading:
+										dictionary.messages.actions.toasts.downvote.loading[currentLanguage.code],
 									success: () => {
 										mutate<Array<Vote>>(
 											`/api/vote?chatId=${chatId}`,
@@ -184,9 +185,9 @@ export function PureMessageActions({
 											{ revalidate: false }
 										)
 
-										return dictionary.messages.actions.toasts.upvote.success[currentLanguage.code]
+										return dictionary.messages.actions.toasts.downvote.success[currentLanguage.code]
 									},
-									error: dictionary.messages.actions.toasts.upvote.error[currentLanguage.code],
+									error: dictionary.messages.actions.toasts.downvote.error[currentLanguage.code],
 								})
 							}}
 						>

@@ -12,6 +12,7 @@ import {
 	type SetStateAction,
 	type ChangeEvent,
 	memo,
+	ComponentProps,
 } from 'react'
 import { toast } from 'sonner'
 import { useLocalStorage, useWindowSize } from 'usehooks-ts'
@@ -178,11 +179,70 @@ function PureMultimodalInput({
 		[uploadFile, setAttachments]
 	)
 
+	const [suggestedActions, setSuggestedActions] = useState<
+		ComponentProps<typeof SuggestedActions>['suggestedActions']
+	>([])
+	const fetchingRef = useRef(false)
+
+	useEffect(() => {
+		const testShould = () =>
+			!fetchingRef.current &&
+			suggestedActions?.length === 0 &&
+			status === 'ready' &&
+			messages[messages.length - 1]?.role !== 'user' &&
+			attachments.length === 0 &&
+			uploadQueue.length === 0
+
+		const shouldSuggest = testShould()
+
+		if (!shouldSuggest) {
+			if (!suggestedActions || suggestedActions.length === 0) {
+				setSuggestedActions([])
+			}
+			return
+		}
+
+		const timeout = setTimeout(async () => {
+			const stillValid = testShould()
+
+			if (!stillValid) return
+
+			try {
+				fetchingRef.current = true
+				// const res = await fetch('/api/question-suggestions')
+				// if (!res.ok) throw new Error('Failed to fetch suggestions')
+				// const suggestions = await res.json()
+				// setSuggestedActions(suggestions)
+			} catch (err) {
+				if (config.errorLog) {
+					console.error('Suggestion fetch error:', err)
+				}
+			} finally {
+				fetchingRef.current = false
+			}
+		}, 10000)
+
+		return () => clearTimeout(timeout)
+	}, [
+		status,
+		messages,
+		messages.length,
+		attachments,
+		attachments.length,
+		uploadQueue,
+		uploadQueue.length,
+		suggestedActions,
+		suggestedActions?.length,
+	])
+
 	return (
 		<div className="relative flex w-full flex-col gap-4">
-			{messages.length === 0 && attachments.length === 0 && uploadQueue.length === 0 && (
-				<SuggestedActions append={append} chatId={chatId} />
-			)}
+			{status === 'ready' &&
+				messages[messages.length - 1].role !== 'user' &&
+				attachments.length === 0 &&
+				uploadQueue.length === 0 && (
+					<SuggestedActions suggestedActions={suggestedActions} append={append} chatId={chatId} />
+				)}
 
 			<input
 				type="file"

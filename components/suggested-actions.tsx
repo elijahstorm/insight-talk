@@ -9,11 +9,30 @@ import { dictionary } from '@/lib/language/dictionary'
 
 interface SuggestedActionsProps {
 	chatId: string
-	suggestedActions?: Array<{
-		title: string
-		label: string
-		action: string
-	}>
+	suggestedActions?:
+		| [
+				{
+					title: string
+					label: string
+					action: string
+				},
+				{
+					title: string
+					label: string
+					action: string
+				},
+				{
+					title: string
+					label: string
+					action: string
+				},
+				{
+					title: string
+					label: string
+					action: string
+				},
+		  ]
+		| []
 	append: (
 		message: Message | CreateMessage,
 		chatRequestOptions?: ChatRequestOptions
@@ -60,4 +79,8 @@ function PureSuggestedActions({ chatId, suggestedActions, append }: SuggestedAct
 	)
 }
 
-export const SuggestedActions = memo(PureSuggestedActions, () => true)
+export const SuggestedActions = memo(PureSuggestedActions, (prevProps, nextProps) => {
+	if (prevProps.suggestedActions?.length !== nextProps.suggestedActions?.length) return false
+
+	return true
+})

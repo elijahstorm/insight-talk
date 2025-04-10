@@ -3,7 +3,7 @@
 import type { Message, UIMessage } from 'ai'
 import cx from 'classnames'
 import { AnimatePresence, motion } from 'framer-motion'
-import { memo, useState } from 'react'
+import { memo, ReactNode, useState } from 'react'
 import type { Vote } from '@/lib/db/schema'
 import { DocumentToolCall, DocumentToolResult } from '@/components/document'
 import { PencilEditIcon } from '@/components/icons'
@@ -36,6 +36,7 @@ type MessageParams = {
 type InsightMessageParams = MessageParams & {
 	message: InsightMessageType
 	visibleParts: number
+	children: (partIndex: number) => ReactNode
 }
 
 type LegacyMessageParams = MessageParams & {
@@ -54,12 +55,14 @@ const PurePreviewMessage = ({
 	setMessages,
 	reload,
 	isReadonly,
+	children = () => null,
 }: MessageParams & {
 	message: UIMessage | InsightMessageType
 	visibleParts?: number
 	setMessages: UseChatHelpers['setMessages']
 	reload: UseChatHelpers['reload']
 	isReadonly: boolean
+	children?: (partIndex: number) => ReactNode
 }) => {
 	return (
 		<AnimatePresence>
@@ -78,7 +81,9 @@ const PurePreviewMessage = ({
 						visibleParts={visibleParts}
 						vote={vote}
 						isLoading={isLoading}
-					/>
+					>
+						{children}
+					</InsightChat>
 				) : (
 					<LegacyChat
 						chatId={chatId}
@@ -95,7 +100,14 @@ const PurePreviewMessage = ({
 	)
 }
 
-const InsightChat = ({ chatId, message, visibleParts, vote, isLoading }: InsightMessageParams) => {
+const InsightChat = ({
+	chatId,
+	message,
+	visibleParts,
+	vote,
+	isLoading,
+	children,
+}: InsightMessageParams) => {
 	return (
 		<div className="flex size-full gap-4 group-data-[role=user]/message:ml-auto group-data-[role=user]/message:max-w-2xl">
 			<div className="flex size-full flex-col gap-4">
@@ -109,9 +121,9 @@ const InsightChat = ({ chatId, message, visibleParts, vote, isLoading }: Insight
 
 				<div className="pb-8">
 					<div className="space-y-8">
-						{message.parts
-							?.slice(0, visibleParts + 1)
-							.map((part, index) => (
+						{message.parts?.slice(0, visibleParts + 1).map((part, index) => (
+							<>
+								{children(index)}
 								<InsightMessage
 									key={`insight-message-${chatId}-part-${index}`}
 									part={part}
@@ -119,7 +131,8 @@ const InsightChat = ({ chatId, message, visibleParts, vote, isLoading }: Insight
 									messageId={message.id}
 									isLoading={isLoading}
 								/>
-							))}
+							</>
+						))}
 					</div>
 
 					{visibleParts === (message.parts?.length || 0) - 1 && (

@@ -89,6 +89,7 @@ function PureMessages({
 		}
 	}, [
 		status,
+		messages,
 		messages.length,
 		visibleMessageParts,
 		currentMessage,
@@ -101,7 +102,7 @@ function PureMessages({
 			status === 'submitted' &&
 			messages.length > 0 &&
 			messages[messages.length - 1].role === 'user',
-		[status, messages.length]
+		[status, messages, messages.length]
 	)
 
 	const showNextPart = () => {
@@ -182,7 +183,7 @@ function PureMessages({
 
 				<div className="px-4 pb-6">
 					<Button
-						className="w-full py-6 shadow-lg shadow-slate-200 hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground dark:shadow-slate-800"
+						className="w-full py-6 shadow-lg shadow-slate-200 hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground dark:shadow-slate-900"
 						variant={'default'}
 						onClick={() => setUserPaid(true)}
 					>
@@ -196,7 +197,7 @@ function PureMessages({
 	return currentMessage >= messages.length ? (
 		<div className="flex h-full flex-col gap-4 overflow-hidden px-4 pb-6">
 			<div className="flex min-w-0 flex-1 flex-col gap-6 overflow-y-scroll">
-				<p className="px-16 pt-16 text-slate-600 dark:text-slate-400">
+				<p className="mx-auto max-w-3xl px-16 pt-16 text-slate-600 dark:text-slate-400">
 					{dictionary.messages.analysis.followUp[currentLanguage.code]}
 				</p>
 			</div>
@@ -219,17 +220,21 @@ function PureMessages({
 							setMessages={setMessages}
 							reload={reload}
 							isReadonly={isReadonly}
-						/>
+						>
+							{(partIndex) =>
+								messages[currentMessage]?.insight && partIndex === visibleMessageParts ? (
+									<div ref={messagesEndRef} className="h-0" />
+								) : (
+									<></>
+								)
+							}
+						</PreviewMessage>
 					))}
 
 					{isThinking() && <ThinkingMessage />}
 				</div>
 
-				{visibleMessageParts !== 0 || !messages[currentMessage]?.insight ? (
-					<div ref={messagesEndRef} className="h-0" />
-				) : (
-					<></>
-				)}
+				{!messages[currentMessage]?.insight ? <div ref={messagesEndRef} className="h-0" /> : <></>}
 			</div>
 
 			{messages[currentMessage].insight ? (
@@ -243,7 +248,7 @@ function PureMessages({
 							{currentMessage + showableMessages.length < messages.length ? (
 								showNextMessage && (
 									<Button
-										className="py-6 shadow-lg shadow-slate-200 dark:shadow-slate-800"
+										className="py-6 shadow-lg shadow-slate-200 dark:shadow-slate-900"
 										variant={'outline'}
 										onClick={showNextMessage(showableMessages.length)}
 									>
@@ -260,7 +265,7 @@ function PureMessages({
 								</Button>
 							)}
 							<Button
-								className="py-6 shadow-lg shadow-slate-200 hover:bg-primary focus:bg-primary dark:shadow-slate-800"
+								className="py-6 shadow-lg shadow-slate-200 hover:bg-primary focus:bg-primary dark:shadow-slate-900"
 								onClick={goToDeeperInsight}
 							>
 								{dictionary.messages.navigation.getDeeperInsight[currentLanguage.code]}
@@ -275,7 +280,7 @@ function PureMessages({
 							animate={{ y: 0, opacity: 1 }}
 						>
 							<Button
-								className="py-6 shadow-lg shadow-slate-200 hover:bg-primary focus:bg-primary dark:shadow-slate-800"
+								className="py-6 shadow-lg shadow-slate-200 hover:bg-primary focus:bg-primary dark:shadow-slate-900"
 								onClick={showNextPart}
 							>
 								{messages[currentMessage].parts[visibleMessageParts + 1]

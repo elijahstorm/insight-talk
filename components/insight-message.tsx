@@ -98,12 +98,14 @@ export default function InsightMessage({
 							key={`part-person-${personIndex}`}
 							className={`flex flex-col gap-2 ${personIndex > 0 ? 'pt-6' : ''}`}
 						>
-							<p className="font-light text-secondary-foreground">
+							<p className="font-light text-foreground">
 								<span className="font-semibold text-secondary">{person.name}&rsquo;s</span>
 								&nbsp;
 								{dictionary.messages.analysis.comPattern[currentLanguage.code]}
 							</p>
-							<h1 className="text-3xl font-bold capitalize text-primary">{person.style}</h1>
+							<h2 className="text-3xl font-bold capitalize text-primary dark:text-accent">
+								{person.style}
+							</h2>
 							<p className="font-light">{person.text}</p>
 							<div className="flex w-full py-4 text-lg font-semibold capitalize">
 								{person.ratios.map((ratio, index) => (
@@ -137,7 +139,7 @@ export default function InsightMessage({
 	if (type === 'insight') {
 		return (
 			<div key={key} data-testid="message-content" className="flex flex-col gap-2">
-				<h2 className="text-2xl font-semibold capitalize text-primary">
+				<h2 className="text-2xl font-semibold capitalize text-primary dark:text-accent">
 					{dictionary.messages.analysis.insightAndRec[currentLanguage.code]}
 				</h2>
 				<div className="space-y-4 font-light">
@@ -150,7 +152,7 @@ export default function InsightMessage({
 	if (type === 'triggers') {
 		return (
 			<div key={key} data-testid="message-content" className="flex flex-col gap-2">
-				<h2 className="text-2xl font-semibold capitalize text-primary">
+				<h2 className="text-2xl font-semibold capitalize text-primary dark:text-accent">
 					{dictionary.messages.analysis.potentialTriggers.title[currentLanguage.code]}
 				</h2>
 				<div className="space-y-4 font-light">
@@ -172,7 +174,7 @@ export default function InsightMessage({
 
 		return (
 			<div key={key} data-testid="message-content" className="flex flex-col gap-2 pb-4">
-				<h2 className="text-2xl font-semibold capitalize text-primary">
+				<h2 className="text-2xl font-semibold capitalize text-primary dark:text-accent">
 					{dictionary.messages.analysis.replyIdeas[currentLanguage.code]}
 				</h2>
 				<div className="space-y-4 font-light">
