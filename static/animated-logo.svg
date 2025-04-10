@@ -31,15 +31,15 @@
 }
 
 .talk-insight-face {
-	animation: talk-insight-animation 12s ease-in-out infinite;
+	animation: talk-insight-animation 8s ease-in-out infinite;
 }
 
 .blink {
-	animation: talk-insight-animation 12s ease-in-out infinite, blink-animation 12s linear infinite;
+	animation: talk-insight-animation 8s ease-in-out infinite, blink-animation 8s linear infinite;
 }
 
 .open-eyes {
-	animation: talk-insight-animation 12s ease-in-out infinite, open-eyes-animation 12s linear infinite;
+	animation: talk-insight-animation 8s ease-in-out infinite, open-eyes-animation 8s linear infinite;
 }
 </style>
 <g clip-path="url(#clip0_60_1331)">

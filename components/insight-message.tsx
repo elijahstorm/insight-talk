@@ -33,7 +33,8 @@ type InsightPart = {
 
 type PotentialConflictTriggersPart = {
 	type: 'triggers'
-	text: Array<string>
+	triggers: Array<string>
+	insight: string
 }
 
 type RepliesPart = {
@@ -140,9 +141,7 @@ export default function InsightMessage({
 					{dictionary.messages.analysis.insightAndRec[currentLanguage.code]}
 				</h2>
 				<div className="space-y-4 font-light">
-					{part.text.map((markdown, index) => (
-						<Markdown key={`part-${messageId}-markdown-${index}`}>{markdown}</Markdown>
-					))}
+					<Markdown className="[&>*]:mb-4 [&_*_li]:list-disc">{part.text.join('\n\n')}</Markdown>
 				</div>
 			</div>
 		)
@@ -152,12 +151,14 @@ export default function InsightMessage({
 		return (
 			<div key={key} data-testid="message-content" className="flex flex-col gap-2">
 				<h2 className="text-2xl font-semibold capitalize text-primary">
-					{dictionary.messages.analysis.potentialTriggers[currentLanguage.code]}
+					{dictionary.messages.analysis.potentialTriggers.title[currentLanguage.code]}
 				</h2>
 				<div className="space-y-4 font-light">
-					{part.text.map((markdown, index) => (
-						<Markdown key={`part-${messageId}-markdown-${index}`}>{markdown}</Markdown>
-					))}
+					<p>{dictionary.messages.analysis.potentialTriggers.information[currentLanguage.code]}</p>
+					<Markdown className="[&>*]:mb-4 [&_*_li]:list-disc">
+						{part.triggers.join('\n * ')}
+					</Markdown>
+					<Markdown>{part.insight}</Markdown>
 				</div>
 			</div>
 		)

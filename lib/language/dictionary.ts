@@ -39,11 +39,20 @@ export const dictionary = {
 				fr: 'Aperçu et recommandation',
 			},
 			potentialTriggers: {
-				en: 'Potential Conflict Triggers',
-				kor: '잠재적 갈등 요인',
-				ch0: '潜在冲突触发因素',
-				ch1: '潛在衝突觸發因素',
-				fr: 'Déclencheurs de conflits potentiels',
+				title: {
+					en: 'Potential Conflict Triggers',
+					kor: '잠재적 갈등 요인',
+					ch0: '潜在冲突触发因素',
+					ch1: '潛在衝突觸發因素',
+					fr: 'Déclencheurs de conflits potentiels',
+				},
+				information: {
+					en: 'Based on your recent conversation patterns, the following may lead to future miscommunication or emotional tension:',
+					kor: '최근 대화 패턴을 기반으로 다음 사항들이 향후 오해나 감정적 긴장을 유발할 수 있습니다:',
+					ch0: '根据您最近的对话模式，以下内容可能会导致未来的误解或情绪紧张：',
+					ch1: '根據您最近的對話模式，以下內容可能會導致未來的誤解或情緒緊張：',
+					fr: 'D’après vos récents échanges, les éléments suivants pourraient entraîner des malentendus ou des tensions émotionnelles :',
+				},
 			},
 			replyIdeas: {
 				en: 'Reply Ideas',

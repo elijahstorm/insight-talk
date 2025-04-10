@@ -118,30 +118,31 @@ Playfully||Lmaooo so you're just playing it cool now?|Damn, so all the emojis we
 	],
 
 	potentialTriggers: [
-		`In this message you will focus on providing general insights and actionable suggestions to improve communication. Each insight should address a specific issue and provide a clear recommendation.
+		`In this message you will focus on providing warning the user of potential conflict triggers with the other members. You may or may not explicitly see any triggers in action from the chat logs. But judging from the personality types gleened from the conversation, to the best of your ability, try to predict so you can carefully give advice.
 
 ### Formatting:`,
-		`- Separate each insight with double pipes (||).
-- Format each insight as a concise statement with either a specific example pulled from the chat logs or a suggestion.
-- Use a few bullet points (*) in the first insight for clarity. Use new line (\n) to seperate bullet points.
-- Expand on those ideas in the following insights.
+		`- Start with a list of potential triggers and advice. Separate each with a pipe (|).
+- Format each potential trigger as a concise statement with either a specific example pulled from the chat logs or a suggestion.
+- Give a final bit of general advice as an insight that will pertain to this specific conversation or person. The user will follow this insight advice when interacting with the other person in the future, so be actionable and lead to a positive future outcome.
+- Seperate the triggers list and the final insight with double pipes (||).
 - Wrap important ideas in double start (**) to make them bold.
 
 ### Required Data:
 {
-   text: Array<string>
+   triggers: Array<string>
+   insight: string
 }
 
 ### Example:
-* Avoidant attachment can lead to communication shutdowns. Try using more **engaging responses** to keep the conversation open.\n* Instead of "I don't care," try **"I understand your concerns, but I feel differently about this."**||To improve connection, balance logic with emotional acknowledgment.\nInstead of "That's not logical," try "I can see why you feel this way. Can you tell me more?"||Consider assertive but respectful responses to set boundaries.\nInstead of "Okay, I'll do better," try "I understand your concern. Could you clarify what specifically needs to be improved?"
+Overuse of logical reasoning in emotionally sensitive moments → may cause the other person to feel **unheard or invalidated**.|Lack of emotional mirroring (e.g., rarely using phrases like “That must’ve been hard”) → could lead to emotional distance.|Passive or non-assertive responses during conflict (e.g., “Okay…” or silence) → may escalate frustration in the other person.|Sudden topic switching or avoiding emotional topics altogether → might be perceived as **disinterest** or **emotional unavailability**.||💡 Try to pause, reflect, and gently validate the other person’s feelings before explaining your point.
 `,
 	],
 
 	generalInsight: [
-		`In this message you will focus on providing general insights and actionable suggestions to improve communication. Each insight should address a specific issue and provide a clear recommendation.
+		`In this message you will focus on providing general insights and actionable suggestions to improve communication. Each insight should address a specific issue and provide a clear ACTIONABLE recommendation.
 
 ### Formatting:`,
-		`- Separate each insight with double pipes (||).
+		`- Separate each insight with double a pipe (|).
 - Format each insight as a concise statement with either a specific example pulled from the chat logs or a suggestion.
 - Use a few bullet points (*) in the first insight for clarity. Use new line (\n) to seperate bullet points.
 - Expand on those ideas in the following insights.
@@ -153,7 +154,7 @@ Playfully||Lmaooo so you're just playing it cool now?|Damn, so all the emojis we
 }
 
 ### Example:
-* Avoidant attachment can lead to communication shutdowns. Try using more **engaging responses** to keep the conversation open.\n* Instead of "I don't care," try **"I understand your concerns, but I feel differently about this."**||To improve connection, balance logic with emotional acknowledgment.\nInstead of "That's not logical," try "I can see why you feel this way. Can you tell me more?"||Consider assertive but respectful responses to set boundaries.\nInstead of "Okay, I'll do better," try "I understand your concern. Could you clarify what specifically needs to be improved?"
+* **High emotional intensity and toxic language are evident in this conversation.** This can escalate conflicts and damage relationships. Here are some steps to de-escalate:\n  * Avoid using offensive language and personal attacks (e.g., \"you are horrible\" or \"fuck your work\").\n  * Respond to emotional statements with calm and understanding to prevent further escalation (e.g., \"I understand you're upset, let's discuss this when we both can speak calmly\").\n  * Focus on expressing your feelings without blaming or insulting the other person.|**Timing and setting are crucial for sensitive discussions.** Bringing up personal issues during work hours can lead to defensive responses and increased stress. **Actionable suggestion:**\n  * Schedule a specific time to talk about issues when both parties are not preoccupied with other responsibilities. This shows respect for each other's time and can lead to more productive conversations.|Threats and aggressive language can lead to a breakdown in communication and potential legal issues.** Statements like \"next time I see you I'm going to punch you\" are not only harmful but could have serious consequences. **Actionable suggestion:**\n  * Replace threats with statements that express your needs or feelings. For example, instead of threatening physical violence, you could say, \"I feel very hurt by our interactions, and I need some space right now.\" This approach communicates your feelings without escalating the conflict.
 `,
 	],
 }

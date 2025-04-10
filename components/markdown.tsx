@@ -90,9 +90,9 @@ const components: Partial<Components> = {
 
 const remarkPlugins = [remarkGfm]
 
-const NonMemoizedMarkdown = ({ children }: { children: string }) => {
+const NonMemoizedMarkdown = ({ className, children }: { className?: string; children: string }) => {
 	return (
-		<ReactMarkdown remarkPlugins={remarkPlugins} components={components}>
+		<ReactMarkdown className={className} remarkPlugins={remarkPlugins} components={components}>
 			{children}
 		</ReactMarkdown>
 	)

@@ -31,15 +31,15 @@
 }
 
 .talk-insight-face {
-	animation: talk-insight-animation 12s ease-in-out infinite;
+	animation: talk-insight-animation 8s ease-in-out infinite;
 }
 
 .blink {
-	animation: talk-insight-animation 12s ease-in-out infinite, blink-animation 12s linear infinite;
+	animation: talk-insight-animation 8s ease-in-out infinite, blink-animation 8s linear infinite;
 }
 
 .open-eyes {
-	animation: talk-insight-animation 12s ease-in-out infinite, open-eyes-animation 12s linear infinite;
+	animation: talk-insight-animation 8s ease-in-out infinite, open-eyes-animation 8s linear infinite;
 }
 </style>
 <path d="M107.605 155.086C90.174 155.086 76.0358 140.954 76.0358 123.517V97.4333C76.0358 80.0021 90.168 65.8638 107.605 65.8638H116.517L66 0V102.49L66.0302 102.478C66.0121 102.913 66 103.348 66 103.783V131.951C66 148.808 79.667 162.475 96.5242 162.475H162.521C172.363 162.475 181.112 157.811 186.695 150.579C181.946 153.437 176.381 155.086 170.436 155.086H107.605Z" fill="#93D4B5"/>

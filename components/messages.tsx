@@ -144,12 +144,12 @@ function PureMessages({
 			</div>
 		) : (
 			<div className="flex size-full flex-col justify-between pt-48">
-				<div className="relative mx-auto w-full max-w-[90%] space-y-4 px-4 text-center">
+				<div className="relative mx-auto w-full min-w-[300px] space-y-4 px-4 text-center">
 					<p className="absolute left-[calc(50%+70px)] top-[calc(50%-232px)] w-44 -translate-x-1/2 -translate-y-1/2 rounded-2xl rounded-bl-none bg-primary px-4 py-2 text-primary-foreground">
 						{dictionary.messages.analysis.upsale.lookingForClarity[currentLanguage.code]}
 					</p>
 
-					<p className="absolute right-[calc(50%+80px)] top-[calc(50%-180px)] w-48 -translate-y-1/2 translate-x-1/2 rounded-2xl rounded-br-none bg-secondary px-4 py-2 text-left text-secondary-foreground">
+					<p className="absolute right-[calc(50%+80px)] top-[calc(50%-190px)] w-48 -translate-y-1/2 translate-x-1/2 rounded-2xl rounded-br-none bg-secondary px-4 py-2 text-left text-secondary-foreground">
 						{dictionary.messages.analysis.upsale.wonderedWhy[currentLanguage.code]}
 					</p>
 
@@ -165,7 +165,7 @@ function PureMessages({
 						{dictionary.messages.analysis.upsale.wantToGoDeeper[currentLanguage.code]}
 					</h1>
 
-					<h3 className="font-normal">
+					<h3 className="mx-auto max-w-[300px] font-normal">
 						{dictionary.messages.analysis.upsale.letMeHelp[currentLanguage.code]}
 					</h3>
 				</div>

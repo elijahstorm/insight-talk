@@ -79,7 +79,7 @@ export async function generateInsight({
 		{ text: communicationPatterns },
 		{ text: replies },
 		{ text: insight },
-		// { text: potentialTriggers },
+		{ text: potentialTriggers },
 	] = await Promise.all([
 		generateText({
 			model: myProvider.languageModel('talk-insight'),
@@ -111,24 +111,26 @@ export async function generateInsight({
 			}),
 			prompt: preparePromtWithMessage({ message }),
 		}),
-		// generateText({
-		// 	model: myProvider.languageModel('talk-insight'),
-		// 	system: systemPrompt({
-		// 		messageType: InsightPrompts.potentialTriggers,
-		// 		relationshipTypes,
-		// 		language,
-		// 		userName,
-		// 	}),
-		// 	prompt: preparePromtWithMessage({ message }),
-		// }),
+		generateText({
+			model: myProvider.languageModel('talk-insight'),
+			system: systemPrompt({
+				messageType: InsightPrompts.potentialTriggers,
+				relationshipTypes,
+				language,
+				userName,
+			}),
+			prompt: preparePromtWithMessage({ message }),
+		}),
 	])
+
+	const specialTrim = (str: string) => str.trim().replace(/^\|+|\|+$/g, '')
 
 	const parseCommunicationPatternPart = (text: string) => {
 		const parsePerson = (person: string) => {
 			const parseData = (data: string): [string, string, string, string, string] => {
 				const [name, style, analysis, ratiosText, descriptionText] = data
 					.split('||')
-					.map((item) => item.trim().replace(/^\|+|\|+$/g, ''))
+					.map((item) => specialTrim(item))
 				return [name, style, analysis, ratiosText, descriptionText]
 			}
 
@@ -137,7 +139,7 @@ export async function generateInsight({
 					ratios
 						?.split('|')
 						.map((ratio) => {
-							const [type, ratioValue] = ratio.split(':').map((item) => item.trim())
+							const [type, ratioValue] = ratio.split(':').map((item) => specialTrim(item))
 							return { type, ratio: parseFloat(ratioValue) }
 						})
 						.sort((a, b) => b.ratio - a.ratio) ?? [{ type: 'ERROR', ratio: 0 }]
@@ -145,7 +147,7 @@ export async function generateInsight({
 			}
 
 			const parseDescription = (description?: string): Array<string> => {
-				return description?.split('|').map((item) => item.trim()) ?? ['ERROR: no desc']
+				return description?.split('|').map((item) => specialTrim(item)) ?? ['ERROR: no desc']
 			}
 
 			const [name, style, analysis, ratiosText, descriptionText] = parseData(person)
@@ -171,8 +173,8 @@ export async function generateInsight({
 		text: string
 	): { type: 'replies'; replies: Array<{ title: string; lines: string[] }> } => {
 		const replies = text.split('|||').map((reply) => {
-			const [title, linesText] = reply.split('||').map((item) => item.trim())
-			const lines = linesText?.split('|').map((line) => line.trim()) ?? ['ERROR: no lines']
+			const [title, linesText] = reply.split('||').map((item) => specialTrim(item))
+			const lines = linesText?.split('|').map((line) => specialTrim(line)) ?? ['ERROR: no lines']
 			return { title, lines }
 		})
 
@@ -180,20 +182,40 @@ export async function generateInsight({
 	}
 
 	const parseInsightPart = (text: string) => {
-		return { type: 'insight' as const, text: text.split('||').map((item) => item.trim()) }
+		return {
+			type: 'insight' as const,
+			text: text.split('|').map((item) => specialTrim(item)),
+		}
 	}
 
+	const parseTriggersPart = (text: string) => {
+		const [triggers, insight] = text.split('||')
+		return {
+			type: 'triggers' as const,
+			triggers: triggers.split('|').map((item) => specialTrim(item)),
+			insight: specialTrim(insight),
+		}
+	}
+
+	const now = new Date()
+	const orderIndexer = (index: number) => new Date(now.getTime() - (5 - index) * 5000)
 	const assistantMessages = [
 		{
 			content: '',
 			role: 'assistant',
-			createdAt: new Date(),
+			createdAt: orderIndexer(0),
 			parts: [parseCommunicationPatternPart(communicationPatterns), parseInsightPart(insight)],
 		},
 		{
 			content: '',
 			role: 'assistant',
-			createdAt: new Date(),
+			createdAt: orderIndexer(1),
+			parts: [parseTriggersPart(potentialTriggers)],
+		},
+		{
+			content: '',
+			role: 'assistant',
+			createdAt: orderIndexer(2),
 			parts: [parseRepliesPart(replies)],
 		},
 	]
