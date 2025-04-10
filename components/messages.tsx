@@ -165,7 +165,7 @@ function PureMessages({
 						{dictionary.messages.analysis.upsale.wantToGoDeeper[currentLanguage.code]}
 					</h1>
 
-					<h3 className="mx-auto max-w-[300px] font-normal">
+					<h3 className="mx-auto max-w-[220px] font-normal">
 						{dictionary.messages.analysis.upsale.letMeHelp[currentLanguage.code]}
 					</h3>
 				</div>
