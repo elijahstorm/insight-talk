@@ -2,13 +2,13 @@
 <style>
 @keyframes talk-insight-animation {
   0%   { transform: translateX(0); }
-  10%  { transform: translateX(-3px); }
+  10%  { transform: translateX(-5px); }
   20%  { transform: translateX(0); }
-  30%  { transform: translateX(2px); }
+  30%  { transform: translateX(3px); }
   40%  { transform: translateX(0); }
-  60%  { transform: translateX(-2px); }
+  60%  { transform: translateX(-3px); }
   70%  { transform: translateX(0); }
-  85%  { transform: translateX(3px); }
+  85%  { transform: translateX(5px); }
   100% { transform: translateX(0); }
 }
 
@@ -31,15 +31,15 @@
 }
 
 .talk-insight-face {
-	animation: talk-insight-animation 8s ease-in-out infinite;
+	animation: talk-insight-animation 12s ease-in-out infinite;
 }
 
 .blink {
-	animation: talk-insight-animation 8s ease-in-out infinite, blink-animation 8s linear infinite;
+	animation: talk-insight-animation 12s ease-in-out infinite, blink-animation 12s linear infinite;
 }
 
 .open-eyes {
-	animation: talk-insight-animation 8s ease-in-out infinite, open-eyes-animation 8s linear infinite;
+	animation: talk-insight-animation 12s ease-in-out infinite, open-eyes-animation 12s linear infinite;
 }
 </style>
 <g clip-path="url(#clip0_60_1331)">
