@@ -88,14 +88,18 @@ export default function AddNewButton() {
 						</div>
 
 						<div className="pointer-events-none fixed bottom-6 right-6 flex flex-col-reverse gap-8">
-							<HeadsUpButton
-								action={startConvo}
-								description={
-									dictionary.messages.analysis.newChat.buttons.newConversation[currentLanguage.code]
-								}
-								icon={PlusIcon}
-								hidden={menuClosed}
-							/>
+							{config.insightChat.allowLegacyCreation && (
+								<HeadsUpButton
+									action={startConvo}
+									description={
+										dictionary.messages.analysis.newChat.buttons.newConversation[
+											currentLanguage.code
+										]
+									}
+									icon={PlusIcon}
+									hidden={menuClosed}
+								/>
+							)}
 							<HeadsUpButton
 								action={attachFile}
 								description={

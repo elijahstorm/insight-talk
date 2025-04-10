@@ -7,6 +7,7 @@ const config = {
 	},
 	insightChat: {
 		allowImages: false,
+		allowLegacyCreation: false,
 		hideNewChatHeader: true,
 		allowChangeModel: false,
 		allowPrivate: false,
