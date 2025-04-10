@@ -1,3 +1,4 @@
+import { InsightParts } from '@/components/insight-message'
 import { Message } from 'ai'
 
 export const systemPrompt = ({
@@ -161,8 +162,19 @@ Overuse of logical reasoning in emotionally sensitive moments → may cause the 
 }
 
 export const preparePromtWithMessage = ({ message }: { message: Message }) => {
+	const logs = (message.parts as unknown as Array<InsightParts>)
+		?.map((part) => (part.type === 'chat-logs' ? part.logs : null))
+		.filter((part) => part)
+		.join('')
+		.replaceAll(`,"`, `,`)
+		.replaceAll(`",`, `,`)
+		.replaceAll(`Date,`, ``)
+		.replaceAll(/\"\n/g, `\n`)
+		.replaceAll(/\n\n---/g, `\n---`)
+		.replaceAll(/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},/g, ``)
+
 	return `The chat logs:
-${JSON.stringify(message)}`
+${logs}`
 }
 
 export const titleAndSummaryPrompt = ({

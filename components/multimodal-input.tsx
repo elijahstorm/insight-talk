@@ -231,7 +231,7 @@ function PureMultimodalInput({
 		}, 10000)
 
 		return () => clearTimeout(timeout)
-	}, [status, uploadQueue, suggestedActions])
+	}, [status, uploadQueue, suggestedActions, currentLanguage.code])
 
 	return (
 		<div className="relative flex w-full flex-col gap-4">

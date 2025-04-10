@@ -1,6 +1,6 @@
 'use server'
 
-import { generateText, Message } from 'ai'
+import { generateText, Message, UIMessage } from 'ai'
 import { cookies } from 'next/headers'
 
 import {
@@ -17,6 +17,7 @@ import {
 	systemPrompt,
 	titleAndSummaryPrompt,
 } from '@/lib/ai/system-prompts'
+import { InsightParts } from '@/components/insight-message'
 
 export async function saveChatModelAsCookie(model: string) {
 	const cookieStore = await cookies()
@@ -266,8 +267,11 @@ export async function updateChatVisibility({
 export async function messagesToPrompt(messages: Array<Message>) {
 	return messages
 		.map((message) => {
-			const partsText = message.parts
-				?.map((part) => {
+			const partsText = (
+				message.parts as unknown as Array<UIMessage['parts'][number] | InsightParts>
+			)
+				?.filter((part) => part.type !== 'chat-logs')
+				.map((part) => {
 					if (part.type === 'text') {
 						return part.text
 					}

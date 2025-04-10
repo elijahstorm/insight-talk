@@ -11,7 +11,7 @@ import { User } from 'next-auth'
 import config from '@/features/config'
 import { dictionary } from '@/lib/language/dictionary'
 import { useLanguage } from '@/hooks/use-language'
-import HistoryAddNewButton from './history-add-new-button'
+import HistoryAddNewButton from '@/components/history-add-new-button'
 
 type GroupedChats = {
 	today: Chat[]

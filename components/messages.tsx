@@ -102,7 +102,7 @@ function PureMessages({
 			status === 'submitted' &&
 			messages.length > 0 &&
 			messages[messages.length - 1].role === 'user',
-		[status, messages, messages.length]
+		[status, messages]
 	)
 
 	const showNextPart = () => {

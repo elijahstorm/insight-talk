@@ -22,12 +22,10 @@ export const myProvider = isTestEnvironment
 					model: fireworks('accounts/fireworks/models/deepseek-r1'),
 					middleware: extractReasoningMiddleware({ tagName: 'think' }),
 				}),
-				'talk-insight': openai('gpt-4-turbo'),
 				'title-model': openai('gpt-4-turbo'),
+				// 'talk-insight': openai('gpt-4-turbo'),
+				// 'talk-insight': openai('gpt-4o'),
+				'talk-insight': openai('gpt-4o-mini'),
 				'artifact-model': openai('gpt-4o-mini'),
-			},
-			imageModels: {
-				'small-model': openai.image('dall-e-2'),
-				'large-model': openai.image('dall-e-3'),
 			},
 		})
