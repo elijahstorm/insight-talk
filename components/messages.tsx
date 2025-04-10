@@ -172,7 +172,7 @@ function PureMessages({
 
 				<div className="px-4 pb-6">
 					<Button
-						className="w-full py-6 shadow-lg shadow-slate-200 hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground"
+						className="w-full py-6 shadow-lg shadow-slate-200 hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground dark:shadow-slate-800"
 						variant={'default'}
 						onClick={() => setUserPaid(true)}
 					>
@@ -220,7 +220,7 @@ function PureMessages({
 							{currentMessage + showableMessages.length < messages.length ? (
 								showNextMessage && (
 									<Button
-										className="py-6 shadow-lg shadow-slate-200"
+										className="py-6 shadow-lg shadow-slate-200 dark:shadow-slate-800"
 										variant={'outline'}
 										onClick={showNextMessage(showableMessages.length)}
 									>
@@ -237,7 +237,7 @@ function PureMessages({
 								</Button>
 							)}
 							<Button
-								className="py-6 shadow-lg shadow-slate-200 hover:bg-primary focus:bg-primary"
+								className="py-6 shadow-lg shadow-slate-200 hover:bg-primary focus:bg-primary dark:shadow-slate-800"
 								onClick={goToDeeperInsight}
 							>
 								{dictionary.messages.navigation.getDeeperInsight[currentLanguage.code]}
@@ -252,7 +252,7 @@ function PureMessages({
 							animate={{ y: 0, opacity: 1 }}
 						>
 							<Button
-								className="py-6 shadow-lg shadow-slate-200 hover:bg-primary focus:bg-primary"
+								className="py-6 shadow-lg shadow-slate-200 hover:bg-primary focus:bg-primary dark:shadow-slate-800"
 								onClick={showNextPart}
 							>
 								{messages[currentMessage].parts[visibleMessageParts + 1]
