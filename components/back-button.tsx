@@ -12,7 +12,9 @@ export function BackButton({ className }: ComponentProps<typeof SidebarTrigger>)
 
 	const smartBacknav = () => {
 		const prev = document.referrer
-		if (prev.includes('/new')) {
+		if (!prev || prev === window.location.href || prev === '') {
+			router.push('/')
+		} else if (prev.includes('/new')) {
 			router.push('/')
 		} else {
 			router.back()

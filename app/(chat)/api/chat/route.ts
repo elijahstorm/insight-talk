@@ -1,4 +1,5 @@
 import {
+	Message,
 	UIMessage,
 	appendResponseMessages,
 	createDataStreamResponse,
@@ -39,7 +40,7 @@ export async function POST(request: Request) {
 			selectedChatModel,
 		}: {
 			id: string
-			messages: Array<UIMessage>
+			messages: Array<Message>
 			selectedChatModel: string
 		} = await request.json()
 

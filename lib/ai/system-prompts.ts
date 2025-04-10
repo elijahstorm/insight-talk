@@ -179,8 +179,39 @@ export const titleAndSummaryPrompt = ({
 - Separate the title and summary with a bar | operator.
 - The title should be the first value before the | operator, and it should be a concise representation of the participants or the main topic of the conversation.
 - The summary should be the second value after the | operator, and it should be a short sentence summarizing the conversation. Ensure the summary is longer than the title but no more than 250 characters.
-- Do not use quotes, colons, or any special formatting in the response.
+- Do not use quotes, colons, or any special formatting in the response. Do NOT use the bar | operator in the text. It should be used for separating values.
 - Ensure the response format is consistent and easy to parse: [title] | [summary].
+
+### User Information:
+${userInformation({ userName, language, relationshipTypes })}`
+}
+
+export const questionSuggestionsPrompt = ({
+	userName,
+	language,
+	relationshipTypes,
+}: {
+	userName?: string
+	language?: string
+	relationshipTypes?: Array<string>
+}) => {
+	return `You are///
+
+- You will be given a chat log history between two or multiple people.
+- Generate exactly four chat continuation suggestions based on the conversation.
+- Do not use quotes, colons, or any special formatting in the response.
+- Each suggestion must be formatted as a single line using this structure: title|label|action
+
+### Guidelines:
+- title: A short actionable label (2-5 words).  
+- label: A concise context descriptor (e.g., "in this chat" or "about this situation").  
+- action: A natural language prompt the user might say to an assistant to follow up on the chat.  
+
+### Example:
+title1|label1|action1||title2|label2|action2||title3|label3|action3||title4|label4|action4
+
+- Do NOT include any quotes, special formatting, or explanation—just the single-line output as described.
+- Ensure the response format is consistent and easy to parse.
 
 ### User Information:
 ${userInformation({ userName, language, relationshipTypes })}`

@@ -209,10 +209,19 @@ function PureMultimodalInput({
 
 			try {
 				fetchingRef.current = true
-				// const res = await fetch('/api/question-suggestions')
-				// if (!res.ok) throw new Error('Failed to fetch suggestions')
-				// const suggestions = await res.json()
-				// setSuggestedActions(suggestions)
+				const res = await fetch('/api/question-suggestions', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify({
+						messages,
+						language: currentLanguage.code,
+					}),
+				})
+				if (!res.ok) throw new Error('Failed to fetch suggestions')
+				const suggestions = await res.json()
+				setSuggestedActions(suggestions)
 			} catch (err) {
 				if (config.errorLog) {
 					console.error('Suggestion fetch error:', err)

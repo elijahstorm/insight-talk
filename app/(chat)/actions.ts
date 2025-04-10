@@ -1,6 +1,6 @@
 'use server'
 
-import { CoreMessage, generateText, Message, UIMessage } from 'ai'
+import { generateText, Message } from 'ai'
 import { cookies } from 'next/headers'
 
 import {
@@ -13,6 +13,7 @@ import { myProvider } from '@/lib/ai/providers'
 import {
 	InsightPrompts,
 	preparePromtWithMessage,
+	questionSuggestionsPrompt,
 	systemPrompt,
 	titleAndSummaryPrompt,
 } from '@/lib/ai/system-prompts'
@@ -62,6 +63,31 @@ export async function generateTitleAndSummaryFromUserMessage({
 	const summary = text.substring(splitIndex + 1).trim()
 
 	return { title, summary }
+}
+
+export async function generateQuestionSuggestions({
+	messages,
+	language,
+}: {
+	messages: Array<Message>
+	language: string
+}) {
+	const { text } = await generateText({
+		model: myProvider.languageModel('title-model'),
+		system: questionSuggestionsPrompt({ language }),
+		prompt: await messagesToPrompt(messages),
+	})
+
+	const suggestions = text.split('||')
+
+	return suggestions.map((suggestion) => {
+		const [title, label, action] = suggestion.split('|')
+		return {
+			title,
+			label,
+			action,
+		}
+	})
 }
 
 export async function generateInsight({
@@ -237,11 +263,11 @@ export async function updateChatVisibility({
 	await updateChatVisiblityById({ chatId, visibility })
 }
 
-export async function messagesToPrompt(messages: Array<UIMessage>) {
+export async function messagesToPrompt(messages: Array<Message>) {
 	return messages
 		.map((message) => {
 			const partsText = message.parts
-				.map((part) => {
+				?.map((part) => {
 					if (part.type === 'text') {
 						return part.text
 					}
@@ -249,7 +275,7 @@ export async function messagesToPrompt(messages: Array<UIMessage>) {
 				})
 				.join('\n')
 
-			return `Message from ${message.role} at ${message.createdAt}:\n${partsText}`
+			return `Message from ${message.role} at ${message.createdAt}:\n${partsText ?? 'Error supplying messages...'}`
 		})
 		.join('\n\n')
 }

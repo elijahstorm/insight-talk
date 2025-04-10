@@ -158,7 +158,7 @@ export default function InsightMessage({
 				<div className="space-y-4 font-light">
 					<p>{dictionary.messages.analysis.potentialTriggers.information[currentLanguage.code]}</p>
 					<Markdown className="[&>*]:mb-4 [&_*_li]:list-disc">
-						{part.triggers.join('\n * ')}
+						{part.triggers?.join('\n * ')}
 					</Markdown>
 					<Markdown>{part.insight}</Markdown>
 				</div>

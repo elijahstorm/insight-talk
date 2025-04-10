@@ -88,7 +88,7 @@ type ResponseMessage = ResponseMessageWithoutId & { id: string }
 
 export function generateMockedResponse(props: {
 	id: string
-	userMessage: UIMessage
+	userMessage: Message
 	appendResponseMessages: typeof appendResponseMessages
 	saveMessages: typeof saveMessages
 }): void {
@@ -169,7 +169,7 @@ export function sanitizeResponseMessages({
 	return messagesBySanitizedContent.filter((message) => message.content.length > 0)
 }
 
-export function getMostRecentUserMessage(messages: Array<UIMessage>) {
+export function getMostRecentUserMessage(messages: Array<Message> | Array<UIMessage>) {
 	const userMessages = messages.filter((message) => message.role === 'user')
 	return userMessages.at(-1)
 }
