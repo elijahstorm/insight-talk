@@ -41,14 +41,14 @@ export async function generateTitleFromUserMessage({ message }: { message: Messa
 export async function generateNamesListFromMessages({ messages }: { messages: string }) {
 	const { text } = await generateText({
 		model: myProvider.languageModel('title-model'),
-		system: `- you will generate a short title based on the first message a user begins a conversation with
-- ensure it is not more than 80 characters long
-- the title should be a summary of the user's message
-- do not use quotes or colons`,
+		system: `- you will get a series of chat logs between multiple people
+- generate a list of the names of each person, seperated by a pipe (|). ALWAYS follow this rule so we can parse the names list successfully
+- if all names are impossible to determine, reply with the phrase "!impossible!"
+- do not use quotes or colons or pipes (|) inside the names. emojis are allowed if the names contain emojis`,
 		prompt: messages,
 	})
 
-	if (!text) {
+	if (!text || text === '!impossible!') {
 		return {}
 	}
 
@@ -265,9 +265,9 @@ export async function generateInsight({
 export async function reportHasErrors({
 	assistantMessages,
 }: {
-	assistantMessages: Awaited<ReturnType<typeof generateInsight>>
+	assistantMessages: Awaited<ReturnType<typeof generateInsight>>['assistantMessages']
 }) {
-	return true
+	return false
 }
 
 export async function deleteTrailingMessages({ id }: { id: string }) {

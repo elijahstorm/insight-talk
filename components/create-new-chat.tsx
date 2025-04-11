@@ -271,23 +271,32 @@ export default function CreateNewChat({ selectedChatModel }: { selectedChatModel
 			<div className="flex h-full flex-col gap-4 overflow-hidden px-4">
 				<div className="mx-auto flex h-full w-full flex-1 flex-col gap-4 overflow-auto pb-8 md:max-w-3xl">
 					<div className="flex max-w-xl flex-1 flex-col items-center justify-center gap-8 rounded-xl text-center font-light leading-relaxed">
-						<h1 className="text-2xl font-semibold">Pick Yourself</h1>
-						<p className="text-center">Help us know which person is you</p>
+						<h1 className="text-2xl font-semibold">
+							{dictionary.messages.analysis.newChat.pickYourself[currentLanguage.code]}
+						</h1>
+						<p className="text-center">
+							{dictionary.messages.analysis.newChat.pickYourselfInfo[currentLanguage.code]}
+						</p>
 					</div>
-					{/* loading state */}
 					<div className="flex w-full flex-col gap-2">
-						{chatMemberNames.map((member) => (
-							<Button
-								key={member}
-								variant="outline"
-								onClick={setMyself(member)}
-								className={cn({
-									'bg-accent text-accent-foreground hover:bg-secondary': member === userName,
-								})}
-							>
-								{member}
-							</Button>
-						))}
+						{!chatMemberNames || chatMemberNames.length === 0 ? (
+							<div className="w-full text-center">
+								{dictionary.messages.analysis.newChat.loading[currentLanguage.code]}
+							</div>
+						) : (
+							chatMemberNames.map((member) => (
+								<Button
+									key={member}
+									variant="outline"
+									onClick={setMyself(member)}
+									className={cn({
+										'bg-accent text-accent-foreground hover:bg-secondary': member === userName,
+									})}
+								>
+									{member}
+								</Button>
+							))
+						)}
 					</div>
 				</div>
 				<Button className="mb-6 w-full py-6 hover:bg-accent focus:bg-accent" onClick={makeNewChat}>
@@ -321,9 +330,9 @@ export default function CreateNewChat({ selectedChatModel }: { selectedChatModel
 				</div>
 			) : filesBatch ? (
 				<div className="pointer-events-none select-none px-4">
-					<div className="relative w-full overflow-hidden bg-primary text-center">
+					<div className="relative w-full cursor-not-allowed select-none overflow-hidden bg-primary text-center">
 						<p className="relative py-2 text-primary-foreground">
-							{dictionary.messages.analysis.newChat.uploading[currentLanguage.code]}
+							{dictionary.messages.analysis.newChat.loading[currentLanguage.code]}
 						</p>
 					</div>
 				</div>
@@ -363,6 +372,10 @@ export default function CreateNewChat({ selectedChatModel }: { selectedChatModel
 			)}
 
 			<div className="flex h-full flex-col gap-4 overflow-hidden px-4">
+				<p className="pb-4 text-xs opacity-40">
+					{dictionary.messages.analysis.newChat.filesNotStored[currentLanguage.code]}
+				</p>
+
 				<div className="mx-auto max-w-3xl flex-1 overflow-auto">
 					<MultiTypeSelector
 						prompt={dictionary.messages.analysis.newChat.partnerTypeQuestion[currentLanguage.code]}

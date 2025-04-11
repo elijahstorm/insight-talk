@@ -62,12 +62,40 @@ export const dictionary = {
 				fr: 'Idées de réponse',
 			},
 			newChat: {
+				filesNotStored: {
+					en: 'Your files are not stored or shared in any way :)',
+					kor: '파일은 저장되거나 공유되지 않아요 :)',
+					ch0: '您的文件不会被存储或共享 :)',
+					ch1: '您的檔案不會被儲存或分享 :)',
+					fr: 'Vos fichiers ne sont ni stockés ni partagés :)',
+				},
+				pickYourself: {
+					en: 'Pick Yourself',
+					kor: '본인을 선택하세요',
+					ch0: '请选择你自己',
+					ch1: '請選擇你自己',
+					fr: 'Choisissez-vous',
+				},
+				pickYourselfInfo: {
+					en: 'Help us know which person is you',
+					kor: '어떤 사람이 본인인지 알려주세요',
+					ch0: '帮我们确认你是哪一位',
+					ch1: '幫我們確認你是哪一位',
+					fr: 'Aidez-nous à savoir qui vous êtes',
+				},
 				uploadedFileHeader: {
 					en: 'Upload Your Converstation',
 					kor: '대화를 업로드하세요',
 					ch0: '上传您的对话',
 					ch1: '上傳您的對話',
 					fr: 'Téléchargez votre conversation',
+				},
+				loading: {
+					en: 'Loading...',
+					kor: '上传中...',
+					ch0: '上传中...',
+					ch1: '上傳中...',
+					fr: 'Téléchargement...',
 				},
 				uploading: {
 					en: 'Uploading...',

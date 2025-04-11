@@ -62,9 +62,9 @@ export async function POST(request: Request) {
 			throw new Error('No assistant message found')
 		}
 
-		// if (await reportHasErrors({ assistantMessages })) {
-		// 	throw new Error('Assistant message malformed')
-		// }
+		if (await reportHasErrors({ assistantMessages })) {
+			throw new Error('Assistant message malformed')
+		}
 
 		const chat = await newInsight({
 			userId: session.user.id,
