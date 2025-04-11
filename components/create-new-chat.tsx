@@ -30,7 +30,7 @@ export default function CreateNewChat({ selectedChatModel }: { selectedChatModel
 	const [parsed, setParsed] = useState<{ attachments: string[]; textLogs: string[] } | null>(null)
 	const hasFetchedFilepaths = useRef(false)
 	const fileInputRef = useRef<HTMLInputElement | null>(null)
-	const [userName, setUserName] = useState<string | null>(null)
+	const [userName, setUserName] = useState<string | null>()
 	const [chatMemberNames, setChatMemberNames] = useState([])
 
 	useEffect(() => {
@@ -48,7 +48,7 @@ export default function CreateNewChat({ selectedChatModel }: { selectedChatModel
 					}
 				} catch (error) {
 					if (config.errorLog) {
-						toast.error(dictionary.messages.analysis.newChat.uploadFailed[currentLanguage.code])
+						// toast.error(dictionary.messages.analysis.newChat.uploadFailed[currentLanguage.code])
 						console.error('An error occurred while fetching filepaths', error)
 					}
 					setFilesBatch(null)
@@ -87,8 +87,8 @@ export default function CreateNewChat({ selectedChatModel }: { selectedChatModel
 						if (!response.ok) throw new Error()
 						return await response.text()
 					} catch (error) {
-						toast.error(`Error processing file: ${filepath}`)
 						if (config.errorLog) {
+							// toast.error(`Error processing file: ${filepath}`)
 							console.error(error)
 						}
 						return null
@@ -144,6 +144,7 @@ export default function CreateNewChat({ selectedChatModel }: { selectedChatModel
 					selectedChatModel,
 					language: currentLanguage.name,
 					userName,
+					chatMemberNames: chatMemberNames && chatMemberNames.length > 1 ? chatMemberNames : null,
 					messages: [
 						{
 							role: 'user',
@@ -170,8 +171,8 @@ export default function CreateNewChat({ selectedChatModel }: { selectedChatModel
 			router.push(`/chat/${chatId}`)
 			router.refresh()
 		} catch (error) {
-			toast.error(dictionary.messages.analysis.newChat.toasts.error[currentLanguage.code])
 			if (config.errorLog) {
+				// toast.error(dictionary.messages.analysis.newChat.toasts.error[currentLanguage.code])
 				console.error('Error creating chat:', error)
 			}
 			setPromptState('error')
@@ -227,17 +228,11 @@ export default function CreateNewChat({ selectedChatModel }: { selectedChatModel
 				throw new Error('no names list found')
 			}
 
-			if (names.length === 1) {
-				setUserName(names[0])
-				makeNewChat()
-				return
-			}
-
 			setChatMemberNames(names)
 			setPromptState('who-are-you')
 		} catch (error) {
-			toast.error(dictionary.messages.analysis.newChat.toasts.error[currentLanguage.code])
 			if (config.errorLog) {
+				// toast.error(dictionary.messages.analysis.newChat.toasts.error[currentLanguage.code])
 				console.error('Error getting chat members names:', error)
 			}
 			setPromptState('error')
@@ -253,7 +248,7 @@ export default function CreateNewChat({ selectedChatModel }: { selectedChatModel
 	)
 
 	const setMyself = useCallback(
-		(me: string) => () => {
+		(me: string | null) => () => {
 			if (userName === me) {
 				setUserName(null)
 			} else {
@@ -270,7 +265,7 @@ export default function CreateNewChat({ selectedChatModel }: { selectedChatModel
 	}
 
 	return promptState === 'error' ? (
-		<div className="bg-red-500 text-background">ERROR</div>
+		<FullPageError />
 	) : promptState === 'who-are-you' ? (
 		<motion.div
 			className="mx-auto flex size-full max-w-3xl flex-col gap-4 overflow-hidden px-4"
@@ -280,29 +275,75 @@ export default function CreateNewChat({ selectedChatModel }: { selectedChatModel
 			exit={{ opacity: 0, scale: 0.98 }}
 			transition={{ delay: 0.5 }}
 		>
-			<div className="mx-auto flex size-full flex-1 flex-col gap-4 overflow-auto pb-8">
-				<div className="flex flex-1 flex-col items-center justify-center gap-8 rounded-xl text-center font-light leading-relaxed">
-					<h1 className="text-2xl font-semibold">
-						{dictionary.messages.analysis.newChat.pickYourself[currentLanguage.code]}
-					</h1>
-					<p className="text-center">
-						{dictionary.messages.analysis.newChat.pickYourselfInfo[currentLanguage.code]}
-					</p>
-				</div>
-				<div className="flex w-full flex-col gap-2">
-					{chatMemberNames.map((member) => (
-						<Button
-							key={member}
-							variant="outline"
-							onClick={setMyself(member)}
-							className={cn({
-								'bg-accent text-accent-foreground hover:bg-secondary': member === userName,
-							})}
-						>
-							{member}
-						</Button>
-					))}
-				</div>
+			<div className="mx-auto flex size-full flex-1 flex-col gap-4 overflow-auto pb-2">
+				{chatMemberNames.length === 1 ? (
+					<div className="flex flex-1 flex-col items-center justify-center gap-8 rounded-xl text-center font-light leading-relaxed">
+						<h1 className="text-2xl font-semibold">
+							{dictionary.messages.analysis.newChat.areYouThisPerson[currentLanguage.code](
+								chatMemberNames[0]
+							)}
+						</h1>
+						<div className="flex w-full flex-col gap-4">
+							<Button
+								variant="outline"
+								onClick={setMyself(chatMemberNames[0])}
+								className={cn({
+									'bg-accent text-accent-foreground hover:bg-secondary':
+										chatMemberNames[0] === userName,
+								})}
+							>
+								{dictionary.messages.analysis.newChat.yes[currentLanguage.code]}
+							</Button>
+							<Button
+								variant="outline"
+								onClick={setMyself(`not ${chatMemberNames[0]}`)}
+								className={cn({
+									'bg-accent text-accent-foreground hover:bg-secondary':
+										`not ${chatMemberNames[0]}` === userName,
+								})}
+							>
+								{dictionary.messages.analysis.newChat.no[currentLanguage.code]}
+							</Button>
+							<Button
+								variant="outline"
+								onClick={setMyself(null)}
+								className={cn({
+									'bg-accent text-accent-foreground hover:bg-secondary': userName === null,
+								})}
+							>
+								{dictionary.messages.analysis.newChat.preferNotToAnswer[currentLanguage.code]}
+							</Button>
+						</div>
+					</div>
+				) : (
+					<>
+						<div className="flex flex-1 flex-col items-center justify-center gap-8 rounded-xl text-center font-light leading-relaxed">
+							<h1 className="text-2xl font-semibold">
+								{dictionary.messages.analysis.newChat.pickYourself[currentLanguage.code]}
+							</h1>
+							<p className="text-center">
+								{dictionary.messages.analysis.newChat.pickYourselfInfo[currentLanguage.code]}
+							</p>
+						</div>
+						<div className="flex w-full flex-col gap-2">
+							{chatMemberNames.map((member) => (
+								<Button
+									key={member}
+									variant="outline"
+									onClick={setMyself(member)}
+									className={cn({
+										'bg-accent text-accent-foreground hover:bg-secondary': member === userName,
+									})}
+								>
+									{member}
+								</Button>
+							))}
+							<p className="pt-2 text-center text-xs opacity-40">
+								{dictionary.messages.analysis.newChat.nameSelectionOptional[currentLanguage.code]}
+							</p>
+						</div>
+					</>
+				)}
 			</div>
 			<Button className="mb-6 w-full py-6 hover:bg-accent focus:bg-accent" onClick={makeNewChat}>
 				{dictionary.messages.analysis.newChat.start[currentLanguage.code]}
@@ -449,6 +490,46 @@ const FullPageLoader = () => {
 
 			{/* for pushing the content slightly up */}
 			<div className="h-24"></div>
+		</div>
+	)
+}
+
+const FullPageError = () => {
+	const { currentLanguage } = useLanguage()
+	const [progress, setProgress] = useState(0)
+	const [isActive, setIsActive] = useState(false)
+
+	useEffect(() => {
+		const timer = setTimeout(() => {
+			setProgress(100)
+			setIsActive(true)
+		}, 0)
+
+		return () => clearTimeout(timer)
+	}, [])
+
+	return (
+		<div
+			className={`fade-in ${isActive ? 'opacity-100' : 'opacity-0'} flex size-full flex-col items-center justify-center gap-4`}
+		>
+			<Image
+				src="/static/animated-logo-dead.svg"
+				alt="Logo"
+				width={'96'}
+				height={'96'}
+				className="select-none pb-4"
+			/>
+
+			<h1 className="text-3xl">
+				{dictionary.messages.analysis.newChat.error[currentLanguage.code]}
+			</h1>
+
+			<p className="w-full max-w-[430px] px-8 text-center font-semibold">
+				{dictionary.messages.analysis.newChat.errorInfo[currentLanguage.code]}
+			</p>
+
+			{/* for pushing the content slightly up */}
+			<div className="h-32"></div>
 		</div>
 	)
 }

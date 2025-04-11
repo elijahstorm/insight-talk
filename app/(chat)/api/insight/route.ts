@@ -18,6 +18,7 @@ export async function POST(request: Request) {
 		const {
 			messages,
 			userName,
+			chatMemberNames,
 			language = languages[0].name,
 			type = undefined,
 			visibility = 'private',
@@ -25,6 +26,7 @@ export async function POST(request: Request) {
 			messages?: Array<UIMessage> | null
 			language?: string
 			userName?: string | null
+			chatMemberNames?: Array<string> | null
 			type?: Array<string>
 			visibility?: 'private' | 'public'
 		} = await request.json()
@@ -51,6 +53,7 @@ export async function POST(request: Request) {
 				relationshipTypes: type,
 				language,
 				userName,
+				chatMemberNames,
 			}),
 			generateInsight({ message, relationshipTypes: type, language, userName }),
 		])

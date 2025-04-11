@@ -60,15 +60,17 @@ export async function generateTitleAndSummaryFromUserMessage({
 	relationshipTypes,
 	language,
 	userName,
+	chatMemberNames,
 }: {
 	message: Message
 	relationshipTypes?: Array<string>
 	language: string
 	userName?: string | null
+	chatMemberNames?: Array<string> | null
 }) {
 	const { text } = await generateText({
 		model: myProvider.languageModel('title-model'),
-		system: titleAndSummaryPrompt({ relationshipTypes, language, userName }),
+		system: titleAndSummaryPrompt({ relationshipTypes, language, userName, chatMemberNames }),
 		prompt: preparePromtWithMessage({ message }),
 	})
 
@@ -113,11 +115,13 @@ export async function generateInsight({
 	relationshipTypes,
 	language,
 	userName,
+	chatMemberNames,
 }: {
 	message: Message
 	relationshipTypes?: Array<string>
 	language: string
 	userName?: string | null
+	chatMemberNames?: Array<string> | null
 }) {
 	const [
 		{ text: communicationPatterns },
@@ -132,6 +136,7 @@ export async function generateInsight({
 				relationshipTypes,
 				language,
 				userName,
+				chatMemberNames,
 			}),
 			prompt: preparePromtWithMessage({ message }),
 		}),
@@ -142,6 +147,7 @@ export async function generateInsight({
 				relationshipTypes,
 				language,
 				userName,
+				chatMemberNames,
 			}),
 			prompt: preparePromtWithMessage({ message }),
 		}),
@@ -152,6 +158,7 @@ export async function generateInsight({
 				relationshipTypes,
 				language,
 				userName,
+				chatMemberNames,
 			}),
 			prompt: preparePromtWithMessage({ message }),
 		}),
@@ -162,6 +169,7 @@ export async function generateInsight({
 				relationshipTypes,
 				language,
 				userName,
+				chatMemberNames,
 			}),
 			prompt: preparePromtWithMessage({ message }),
 		}),

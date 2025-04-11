@@ -4,6 +4,7 @@ import { Message } from 'ai'
 export const systemPrompt = ({
 	messageType,
 	userName,
+	chatMemberNames,
 	language,
 	relationshipTypes,
 	containsLegal = false,
@@ -11,6 +12,7 @@ export const systemPrompt = ({
 }: {
 	messageType?: Array<string>
 	userName?: string | null
+	chatMemberNames?: Array<string> | null
 	language?: string | null
 	relationshipTypes?: Array<string>
 	containsLegal?: boolean
@@ -18,7 +20,7 @@ export const systemPrompt = ({
 }) => `You are Talk Insight, an AI-powered communication analysis assistant designed to help users improve interpersonal conversations, resolve conflicts, and foster healthier relationships. Your primary goal is to analyze conversations, detect communication patterns, and provide actionable insights tailored to the user's needs.
 
 ### User Information:
-${userInformation({ userName, language, relationshipTypes })}
+${userInformation({ userName, language, relationshipTypes, chatMemberNames })}
 
 ### Key Responsibilities:
 1. **Conversation Analysis**:
@@ -180,10 +182,12 @@ ${logs}`
 
 export const titleAndSummaryPrompt = ({
 	userName,
+	chatMemberNames,
 	language,
 	relationshipTypes,
 }: {
 	userName?: string | null
+	chatMemberNames?: Array<string> | null
 	language?: string
 	relationshipTypes?: Array<string>
 }) => {
@@ -196,7 +200,7 @@ export const titleAndSummaryPrompt = ({
 - Ensure the response format is consistent and easy to parse: [title] | [summary].
 
 ### User Information:
-${userInformation({ userName, language, relationshipTypes })}`
+${userInformation({ userName, chatMemberNames, language, relationshipTypes })}`
 }
 
 export const questionSuggestionsPrompt = ({
@@ -232,10 +236,12 @@ ${userInformation({ userName, language, relationshipTypes })}`
 
 const userInformation = ({
 	userName,
+	chatMemberNames,
 	language,
 	relationshipTypes,
 }: {
 	userName?: string | null
+	chatMemberNames?: Array<string> | null
 	language?: string | null
 	relationshipTypes?: Array<string>
 }) => {
@@ -245,10 +251,15 @@ const userInformation = ({
 			: ``
 	}
 ${
+	chatMemberNames && chatMemberNames.length > 0
+		? `- The names of the user's present in this conversation are: ${chatMemberNames.join(', ')}.`
+		: `- The names of this chat may not be determinable, so reply back in "Person A", "Person B" fashion for each unique personality type identified in the logs.`
+}
+${
 	relationshipTypes && relationshipTypes.length > 0
 		? `- The user has defined the relationship(s) in this chat log as: ${relationshipTypes.join(
 				', '
-			)}. Please keep in mind that this is the user's perspective and may not reflect how the other person views the relationship.`
+			)}. Please keep in mind that this is the user's perspective and may not reflect how the other person(s) see the relationship.`
 		: `- The user has not specified the type of relationship for this chat log.`
 }
 ${
