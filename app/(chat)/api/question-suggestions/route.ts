@@ -14,6 +14,10 @@ export async function POST(request: Request) {
 			language: string
 		} = await request.json()
 
+		if (!messages || messages.length === 0) {
+			return Response.json([])
+		}
+
 		const session = await auth()
 
 		if (!session || !session.user || !session.user.id) {

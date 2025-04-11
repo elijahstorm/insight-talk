@@ -240,7 +240,7 @@ function PureMultimodalInput({
 	return (
 		<div className="relative flex w-full flex-col gap-4">
 			{status === 'ready' &&
-				messages[messages.length - 1].role !== 'user' &&
+				messages[messages.length - 1]?.role !== 'user' &&
 				attachments.length === 0 &&
 				uploadQueue.length === 0 && (
 					<SuggestedActions suggestedActions={suggestedActions} append={append} chatId={chatId} />

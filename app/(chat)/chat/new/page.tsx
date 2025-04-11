@@ -23,7 +23,7 @@ export default async function Page() {
 				isReadonly={false}
 			/>
 
-			<main>
+			<main className="h-full overflow-hidden">
 				<CreateNewChat selectedChatModel={modelIdFromCookie?.value ?? DEFAULT_CHAT_MODEL} />
 			</main>
 		</div>
