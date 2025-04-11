@@ -44,7 +44,7 @@ export default function Page() {
 	}
 
 	return (
-		<div className="flex h-dvh w-screen items-start justify-center bg-background pt-12 md:items-center md:pt-0">
+		<main className="flex h-dvh w-screen items-start justify-center bg-background pt-12 md:items-center md:pt-0">
 			<div className="flex w-full max-w-md flex-col gap-12 overflow-hidden rounded-2xl">
 				<div className="flex flex-col items-center justify-center gap-2 px-4 text-center sm:px-16">
 					<h3 className="text-xl font-semibold dark:text-zinc-50">Sign Up</h3>
@@ -66,6 +66,6 @@ export default function Page() {
 					</p>
 				</AuthForm>
 			</div>
-		</div>
+		</main>
 	)
 }

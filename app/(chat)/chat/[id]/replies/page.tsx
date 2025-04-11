@@ -50,7 +50,7 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
 	const chatModelFromCookie = cookieStore.get('chat-model')
 
 	return (
-		<>
+		<main>
 			<InsightChat
 				id={chat.id}
 				user={session?.user}
@@ -60,6 +60,6 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
 				isReadonly={session?.user?.id !== chat.userId}
 			/>
 			<DataStreamHandler id={id} />
-		</>
+		</main>
 	)
 }

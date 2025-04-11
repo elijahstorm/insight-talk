@@ -9,7 +9,9 @@ export default async function Page() {
 		<div className="mx-auto w-full">
 			<AppViewHeader header="About" user={session?.user} />
 
-			<AboutPage />
+			<main>
+				<AboutPage />
+			</main>
 		</div>
 	)
 }

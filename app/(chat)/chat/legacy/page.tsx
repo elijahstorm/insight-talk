@@ -12,7 +12,7 @@ export default async function Page() {
 	const modelIdFromCookie = cookieStore.get('chat-model')
 
 	return (
-		<>
+		<main>
 			<LegacyChat
 				key={id}
 				id={id}
@@ -22,6 +22,6 @@ export default async function Page() {
 				isReadonly={false}
 			/>
 			<DataStreamHandler id={id} />
-		</>
+		</main>
 	)
 }

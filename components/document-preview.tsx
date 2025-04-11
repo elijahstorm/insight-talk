@@ -162,6 +162,7 @@ const PureHitboxLayer = ({
 			onClick={handleClick}
 			role="presentation"
 			aria-hidden="true"
+			tabIndex={-1}
 		>
 			<div className="flex w-full items-center justify-end p-4">
 				<div className="absolute right-[9px] top-[13px] rounded-md p-2 hover:bg-zinc-100 hover:dark:bg-zinc-700">

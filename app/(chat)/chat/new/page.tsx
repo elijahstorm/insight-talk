@@ -23,7 +23,9 @@ export default async function Page() {
 				isReadonly={false}
 			/>
 
-			<CreateNewChat selectedChatModel={modelIdFromCookie?.value ?? DEFAULT_CHAT_MODEL} />
+			<main>
+				<CreateNewChat selectedChatModel={modelIdFromCookie?.value ?? DEFAULT_CHAT_MODEL} />
+			</main>
 		</div>
 	)
 }
