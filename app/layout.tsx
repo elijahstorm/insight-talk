@@ -4,6 +4,7 @@ import { Toaster } from 'sonner'
 import { ThemeProvider } from '@/components/theme-provider'
 
 import '@/app/globals.css'
+import Meta from '@/components/meta'
 
 export const metadata: Metadata = {
 	metadataBase: new URL('https://insight-talk.vercel.app/'),
@@ -57,6 +58,7 @@ export default async function RootLayout({
 						__html: THEME_COLOR_SCRIPT,
 					}}
 				/>
+				<Meta />
 			</head>
 			<body>
 				<ThemeProvider
