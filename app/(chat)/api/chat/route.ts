@@ -126,7 +126,7 @@ export async function POST(request: Request) {
 								})
 
 								if (!assistantId) {
-									throw new Error('No assistant message found!')
+									throw new Error('No assistant message found')
 								}
 
 								const [, assistantMessage] = appendResponseMessages({
@@ -164,11 +164,11 @@ export async function POST(request: Request) {
 				})
 			},
 			onError: (e) => {
-				return 'Oops, an error occured!' + (e ?? ' none')
+				return 'Oops, an error occured' + (e ?? ' none')
 			},
 		})
 	} catch (error) {
-		return new Response('An error occurred while processing your request!', {
+		return new Response('An error occurred while processing your request', {
 			status: 404,
 		})
 	}
@@ -199,7 +199,7 @@ export async function DELETE(request: Request) {
 
 		return new Response('Chat deleted', { status: 200 })
 	} catch (error) {
-		return new Response('An error occurred while processing your request!', {
+		return new Response('An error occurred while processing your request', {
 			status: 500,
 		})
 	}

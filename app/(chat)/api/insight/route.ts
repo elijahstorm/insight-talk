@@ -2,7 +2,12 @@ import { UIMessage } from 'ai'
 import { auth } from '@/app/(auth)/auth'
 import { newInsight, saveMessages } from '@/lib/db/queries'
 import { getMostRecentUserMessage } from '@/lib/utils'
-import { generateInsight, generateTitleAndSummaryFromUserMessage } from '@/app/(chat)/actions'
+import {
+	generateInsight,
+	generateTitleAndSummaryFromUserMessage,
+	reportHasErrors,
+} from '@/app/(chat)/actions'
+import { languages } from '@/lib/language/dictionary'
 
 export const maxDuration = 60
 
@@ -12,17 +17,21 @@ export async function POST(request: Request) {
 	try {
 		const {
 			messages,
-			language,
 			userName,
+			language = languages[0].name,
 			type = undefined,
 			visibility = 'private',
 		}: {
-			messages: Array<UIMessage>
-			language: string
-			userName?: string
+			messages?: Array<UIMessage> | null
+			language?: string
+			userName?: string | null
 			type?: Array<string>
 			visibility?: 'private' | 'public'
 		} = await request.json()
+
+		if (!messages || !messages.length) {
+			return new Response('No message details', { status: 402 })
+		}
 
 		const session = await auth()
 
@@ -50,8 +59,12 @@ export async function POST(request: Request) {
 			assistantMessages.length === 0 ||
 			!assistantMessages.some((message) => message.parts.length > 0)
 		) {
-			throw new Error('No assistant message found!')
+			throw new Error('No assistant message found')
 		}
+
+		// if (await reportHasErrors({ assistantMessages })) {
+		// 	throw new Error('Assistant message malformed')
+		// }
 
 		const chat = await newInsight({
 			userId: session.user.id,
@@ -63,7 +76,7 @@ export async function POST(request: Request) {
 		})
 
 		if (!chat) {
-			return new Response('Chat room could not be created!', { status: 400 })
+			return new Response('Chat room could not be created', { status: 400 })
 		}
 
 		await saveMessages({
@@ -91,7 +104,7 @@ export async function POST(request: Request) {
 		return Response.json({ chatId: chat.id }, { status: 200 })
 	} catch (error) {
 		console.error('error info - ', error)
-		return new Response('An error occurred while processing your request!', {
+		return new Response('An error occurred while processing your request', {
 			status: 404,
 		})
 	}

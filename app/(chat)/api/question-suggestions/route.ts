@@ -28,7 +28,7 @@ export async function POST(request: Request) {
 
 		return Response.json(suggestions)
 	} catch (error) {
-		return new Response('An error occurred while processing your request!', {
+		return new Response('An error occurred while processing your request', {
 			status: 500,
 		})
 	}

@@ -15,44 +15,94 @@ import { dictionary } from '@/lib/language/dictionary'
 import { seperateFiles } from '@/lib/ai/system-prompts'
 import BatchFileUploader from '@/components/BatchFileUploader'
 import { PaperclipIcon } from '@/components/icons'
+import { cn } from '@/lib/utils'
 
 export default function CreateNewChat({ selectedChatModel }: { selectedChatModel: string }) {
-	const [showLoader, setShowLoader] = useState<boolean>(false)
+	const [promptState, setPromptState] = useState<'upload' | 'who-are-you' | 'loading' | 'error'>(
+		'upload'
+	)
 	const [selectedValues, setSelectedValues] = useState<string[]>([])
 	const { currentLanguage } = useLanguage()
 	const router = useRouter()
 	const searchParams = useSearchParams()
 	const [filesBatch, setFilesBatch] = useState(searchParams.get('u'))
 	const [filepaths, setFilepaths] = useState<Array<string>>([])
+	const [parsed, setParsed] = useState<{ attachments: string[]; textLogs: string[] } | null>(null)
 	const hasFetchedFilepaths = useRef(false)
 	const fileInputRef = useRef<HTMLInputElement | null>(null)
-
-	const userName = '' // todo
+	const [userName, setUserName] = useState<string | null>(null)
+	const [chatMemberNames, setChatMemberNames] = useState([])
 
 	useEffect(() => {
-		if (filesBatch && !hasFetchedFilepaths.current) {
-			hasFetchedFilepaths.current = true
-			;(async () => {
+		;(async () => {
+			if (filesBatch && !hasFetchedFilepaths.current) {
+				hasFetchedFilepaths.current = true
+
 				try {
 					const response = await fetch(`/api/files/batch?uuid=${filesBatch}`)
 					if (response.ok) {
 						const data = await response.json()
 						setFilepaths(data.filepaths)
 					} else {
-						toast.error(dictionary.messages.analysis.newChat.uploadFailed[currentLanguage.code])
-						if (config.errorLog) {
-							console.error('Failed to fetch filepaths')
-						}
+						throw new Error('Failed to fetch filepaths')
 					}
 				} catch (error) {
-					toast.error(dictionary.messages.analysis.newChat.uploadFailed[currentLanguage.code])
 					if (config.errorLog) {
+						toast.error(dictionary.messages.analysis.newChat.uploadFailed[currentLanguage.code])
 						console.error('An error occurred while fetching filepaths', error)
 					}
+					setFilesBatch(null)
+					hasFetchedFilepaths.current = false
 				}
-			})()
-		}
+			}
+		})()
 	}, [filesBatch, currentLanguage])
+
+	const parseFiles = useCallback(async () => {
+		if (parsed) return parsed
+
+		setPromptState('who-are-you')
+
+		const imageFilepaths = filepaths.filter((filepath) => /\.(jpg|jpeg|png)$/i.test(filepath))
+		const textFilepaths = filepaths.filter((filepath) => !/\.(jpg|jpeg|png)$/i.test(filepath))
+
+		const filterNull = (array: Array<string | null>) =>
+			array.filter((value) => value) as Array<string>
+
+		const attachments = filterNull(
+			await Promise.all(
+				imageFilepaths.map(async (filepath) => {
+					if (!filepath) return null
+					const worker = await createWorker('eng')
+					const ret = await worker.recognize(filepath)
+					await worker.terminate()
+					return ret.data.text
+				})
+			)
+		)
+
+		const textLogs = filterNull(
+			await Promise.all(
+				textFilepaths.map(async (filepath) => {
+					try {
+						const response = await fetch(filepath)
+						if (!response.ok) throw new Error()
+						return await response.text()
+					} catch (error) {
+						toast.error(`Error processing file: ${filepath}`)
+						if (config.errorLog) {
+							console.error(error)
+						}
+						return null
+					}
+				})
+			)
+		)
+
+		const result = { attachments, textLogs }
+		setParsed(result)
+		return result
+	}, [filepaths, parsed, setPromptState, config.errorLog])
 
 	const deleteFiles = useCallback(async () => {
 		if (!filesBatch) return
@@ -69,57 +119,65 @@ export default function CreateNewChat({ selectedChatModel }: { selectedChatModel
 			if (config.errorLog) {
 				console.error('Error deleting files batch:', error)
 			}
+		} finally {
+			setFilepaths([])
+			setFilesBatch(null)
+			setParsed(null)
 		}
-	}, [filesBatch])
+	}, [filepaths, filesBatch, setFilepaths, setFilesBatch, setParsed])
 
-	const makeNewChat = useCallback(async () => {
-		setShowLoader && setShowLoader(true)
+	const askWhoAreYou = useCallback(async () => {
+		if (!filepaths || filepaths.length === 0) {
+			setPromptState('upload')
+			return
+		}
+
+		setPromptState('who-are-you')
 
 		try {
-			const imageFilepaths = filepaths.filter((filepath) =>
-				/\.(jpg|jpeg|png|gif|bmp|tiff|webp)$/i.test(filepath)
-			)
-			const textFilepaths = filepaths.filter(
-				(filepath) => !/\.(jpg|jpeg|png|gif|bmp|tiff|webp)$/i.test(filepath)
-			)
+			const { attachments, textLogs } = await parseFiles()
 
-			const filterNull = (array: Array<string | null>) =>
-				array.filter((value) => value) as Array<string>
+			const response = await fetch('/api/list-names', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({
+					messages: [...textLogs, ...attachments].join(seperateFiles),
+				}),
+			})
 
-			const attachments = filterNull(
-				await Promise.all(
-					imageFilepaths.map(async (filepath) => {
-						if (!filepath) {
-							return null
-						}
-						const worker = await createWorker('eng')
-						const ret = await worker.recognize(filepath)
-						const text = ret.data.text
-						await worker.terminate()
-						return text
-					})
-				)
-			)
+			if (!response.ok) {
+				throw new Error('Failed to get names list from chat')
+			}
 
-			const textLogs = filterNull(
-				await Promise.all(
-					textFilepaths.map(async (filepath) => {
-						try {
-							const response = await fetch(filepath)
-							if (!response.ok) {
-								throw new Error(`Failed to fetch file at ${filepath}`)
-							}
-							return await response.text()
-						} catch (error) {
-							toast.error(`Error processing file: ${filepath}`)
-							if (config.errorLog) {
-								console.error('Error processing file contents:', error)
-							}
-							return null
-						}
-					})
-				)
-			)
+			const { names } = await response.json()
+
+			if (!names || !names.length) {
+				throw new Error('no names list found')
+			}
+
+			setChatMemberNames(names)
+		} catch (error) {
+			toast.error(dictionary.messages.analysis.newChat.toasts.error[currentLanguage.code])
+			if (config.errorLog) {
+				console.error('Error getting chat members names:', error)
+			}
+			setPromptState('error')
+			deleteFiles()
+		}
+	}, [filepaths, setPromptState])
+
+	const makeNewChat = useCallback(async () => {
+		if (!filepaths || filepaths.length === 0) {
+			setPromptState('upload')
+			return
+		}
+
+		setPromptState('loading')
+
+		try {
+			const { attachments, textLogs } = await parseFiles()
 
 			const response = await fetch('/api/insight', {
 				method: 'POST',
@@ -134,15 +192,12 @@ export default function CreateNewChat({ selectedChatModel }: { selectedChatModel
 						{
 							role: 'user',
 							experimental_attachments: [], // attachments.map((attachment) => ({ url: attachment })),
-							parts:
-								[...textLogs, ...attachments].length > 0
-									? [
-											{
-												type: chatLogsType,
-												logs: [...textLogs, ...attachments].join(seperateFiles),
-											},
-										]
-									: [],
+							parts: [
+								{
+									type: chatLogsType,
+									logs: [...textLogs, ...attachments].join(seperateFiles),
+								},
+							],
 						},
 					],
 					type: selectedValues,
@@ -163,6 +218,7 @@ export default function CreateNewChat({ selectedChatModel }: { selectedChatModel
 			if (config.errorLog) {
 				console.error('Error creating chat:', error)
 			}
+			setPromptState('error')
 		} finally {
 			deleteFiles()
 		}
@@ -174,7 +230,7 @@ export default function CreateNewChat({ selectedChatModel }: { selectedChatModel
 		currentLanguage.code,
 		filepaths,
 		selectedValues,
-		setShowLoader,
+		setPromptState,
 	])
 
 	const finishUploadingBatch = useCallback(
@@ -184,13 +240,62 @@ export default function CreateNewChat({ selectedChatModel }: { selectedChatModel
 		[setFilesBatch]
 	)
 
+	const setMyself = useCallback(
+		(me: string) => () => {
+			if (userName === me) {
+				setUserName(null)
+			} else {
+				setUserName(me)
+			}
+		},
+		[userName, setUserName]
+	)
+
 	const attachFile = () => {
 		if (fileInputRef.current) {
 			fileInputRef.current.click()
 		}
 	}
 
-	return showLoader ? (
+	return promptState === 'error' ? (
+		<div className="bg-red-500 text-background">ERROR</div>
+	) : promptState === 'who-are-you' ? (
+		<motion.div
+			className="flex h-full flex-col gap-4 overflow-hidden"
+			key="overview"
+			initial={{ opacity: 0, scale: 0.98 }}
+			animate={{ opacity: 1, scale: 1 }}
+			exit={{ opacity: 0, scale: 0.98 }}
+			transition={{ delay: 0.5 }}
+		>
+			<div className="flex h-full flex-col gap-4 overflow-hidden px-4">
+				<div className="mx-auto flex h-full w-full flex-1 flex-col gap-4 overflow-auto pb-8 md:max-w-3xl">
+					<div className="flex max-w-xl flex-1 flex-col items-center justify-center gap-8 rounded-xl text-center font-light leading-relaxed">
+						<h1 className="text-2xl font-semibold">Pick Yourself</h1>
+						<p className="text-center">Help us know which person is you</p>
+					</div>
+					{/* loading state */}
+					<div className="flex w-full flex-col gap-2">
+						{chatMemberNames.map((member) => (
+							<Button
+								key={member}
+								variant="outline"
+								onClick={setMyself(member)}
+								className={cn({
+									'bg-accent text-accent-foreground hover:bg-secondary': member === userName,
+								})}
+							>
+								{member}
+							</Button>
+						))}
+					</div>
+				</div>
+				<Button className="mb-6 w-full py-6 hover:bg-accent focus:bg-accent" onClick={makeNewChat}>
+					{dictionary.messages.analysis.newChat.start[currentLanguage.code]}
+				</Button>
+			</div>
+		</motion.div>
+	) : promptState === 'loading' ? (
 		<FullPageLoader />
 	) : (
 		<motion.div
@@ -217,7 +322,7 @@ export default function CreateNewChat({ selectedChatModel }: { selectedChatModel
 			) : filesBatch ? (
 				<div className="pointer-events-none select-none px-4">
 					<div className="relative w-full overflow-hidden bg-primary text-center">
-						<p className="relative py-2">
+						<p className="relative py-2 text-primary-foreground">
 							{dictionary.messages.analysis.newChat.uploading[currentLanguage.code]}
 						</p>
 					</div>
@@ -235,7 +340,7 @@ export default function CreateNewChat({ selectedChatModel }: { selectedChatModel
 											transition: 'width 1s ease-out',
 										}}
 									></div>
-									<p className="relative py-2">
+									<p className="relative py-2 text-primary-foreground">
 										{dictionary.messages.analysis.newChat.uploading[currentLanguage.code]}
 									</p>
 								</div>
@@ -247,7 +352,7 @@ export default function CreateNewChat({ selectedChatModel }: { selectedChatModel
 									onClick={attachFile}
 								>
 									<PaperclipIcon size={20} />
-									<span className="hidden sm:block">
+									<span>
 										{dictionary.messages.analysis.newChat.buttons.attachAFile[currentLanguage.code]}
 									</span>
 								</Button>
@@ -258,28 +363,20 @@ export default function CreateNewChat({ selectedChatModel }: { selectedChatModel
 			)}
 
 			<div className="flex h-full flex-col gap-4 overflow-hidden px-4">
-				<div className="flex-1 overflow-auto">
-					<div className="hidden">
-						<div className="flex max-w-xl flex-col gap-8 rounded-xl pb-2 text-left font-light leading-relaxed">
-							{/* todo */}
-							Who are you in this Conversation?
-						</div>
-						<div className="flex flex-col gap-6">me, not me</div>
-					</div>
-
-					<div className="mx-auto max-w-3xl">
-						<MultiTypeSelector
-							prompt={
-								dictionary.messages.analysis.newChat.partnerTypeQuestion[currentLanguage.code]
-							}
-							types={dictionary.relationshipTypes[currentLanguage.code]}
-							selectedValues={selectedValues}
-							onSelectionChange={setSelectedValues}
-							selectOne={true}
-						/>
-					</div>
+				<div className="mx-auto max-w-3xl flex-1 overflow-auto">
+					<MultiTypeSelector
+						prompt={dictionary.messages.analysis.newChat.partnerTypeQuestion[currentLanguage.code]}
+						types={dictionary.relationshipTypes[currentLanguage.code]}
+						selectedValues={selectedValues}
+						onSelectionChange={setSelectedValues}
+						selectOne={true}
+					/>
 				</div>
-				<Button className="mb-6 w-full py-6 hover:bg-accent focus:bg-accent" onClick={makeNewChat}>
+				<Button
+					className="mb-6 w-full py-6 hover:bg-accent focus:bg-accent"
+					onClick={askWhoAreYou}
+					disabled={!filepaths || filepaths.length === 0}
+				>
 					{dictionary.messages.analysis.newChat.start[currentLanguage.code]}
 				</Button>
 			</div>

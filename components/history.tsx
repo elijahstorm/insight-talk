@@ -148,7 +148,7 @@ const ShowHistory = ({
 					<p className="ml-auto">{groupedChats[timeGroup].length}</p>
 				</div>
 
-				<div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+				<div className="xs:grid-cols-2 grid grid-cols-1 gap-4">
 					{groupedChats[timeGroup].map((chat) =>
 						chat.id === 'history-add-new-button' ? (
 							<HistoryAddNewButton key={chat.id} />

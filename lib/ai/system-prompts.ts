@@ -182,7 +182,7 @@ export const titleAndSummaryPrompt = ({
 	language,
 	relationshipTypes,
 }: {
-	userName?: string
+	userName?: string | null
 	language?: string
 	relationshipTypes?: Array<string>
 }) => {

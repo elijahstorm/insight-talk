@@ -38,6 +38,23 @@ export async function generateTitleFromUserMessage({ message }: { message: Messa
 	return title
 }
 
+export async function generateNamesListFromMessages({ messages }: { messages: string }) {
+	const { text } = await generateText({
+		model: myProvider.languageModel('title-model'),
+		system: `- you will generate a short title based on the first message a user begins a conversation with
+- ensure it is not more than 80 characters long
+- the title should be a summary of the user's message
+- do not use quotes or colons`,
+		prompt: messages,
+	})
+
+	if (!text) {
+		return {}
+	}
+
+	return { names: text.split('|') }
+}
+
 export async function generateTitleAndSummaryFromUserMessage({
 	message,
 	relationshipTypes,
@@ -47,7 +64,7 @@ export async function generateTitleAndSummaryFromUserMessage({
 	message: Message
 	relationshipTypes?: Array<string>
 	language: string
-	userName?: string
+	userName?: string | null
 }) {
 	const { text } = await generateText({
 		model: myProvider.languageModel('title-model'),
@@ -100,7 +117,7 @@ export async function generateInsight({
 	message: Message
 	relationshipTypes?: Array<string>
 	language: string
-	userName?: string
+	userName?: string | null
 }) {
 	const [
 		{ text: communicationPatterns },
@@ -243,6 +260,14 @@ export async function generateInsight({
 	]
 
 	return { assistantMessages }
+}
+
+export async function reportHasErrors({
+	assistantMessages,
+}: {
+	assistantMessages: Awaited<ReturnType<typeof generateInsight>>
+}) {
+	return true
 }
 
 export async function deleteTrailingMessages({ id }: { id: string }) {

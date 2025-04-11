@@ -70,7 +70,7 @@ export async function newInsight({
 	title: string
 	summary: string
 	visibility?: 'private' | 'public'
-	userName?: string
+	userName?: string | null
 	type?: Array<string>
 }) {
 	try {

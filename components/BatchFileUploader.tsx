@@ -110,7 +110,7 @@ export default function BatchFileUploader({
 				onChange={handleFileChange}
 				accept={
 					config.insightChat.allowImages
-						? '.txt,.csv,.log,.json,.xml,.png,.jpg,.jpeg,.webp'
+						? '.txt,.csv,.log,.json,.xml,.png,.jpg,.jpeg'
 						: '.txt,.csv,.log,.json,.xml'
 				}
 			/>
