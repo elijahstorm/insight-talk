@@ -48,7 +48,7 @@ export async function generateNamesListFromMessages({ messages }: { messages: st
 		prompt: messages,
 	})
 
-	if (!text || text === '!impossible!') {
+	if (!text || text.includes('!impossible!')) {
 		return { impossible: true }
 	}
 
@@ -267,7 +267,48 @@ export async function reportHasErrors({
 }: {
 	assistantMessages: Awaited<ReturnType<typeof generateInsight>>['assistantMessages']
 }) {
-	return false
+	return assistantMessages.some((message) => {
+		message.parts.some((part) => {
+			if (part.type === 'com-pattern') {
+				return (
+					!part.people ||
+					part.people.length === 0 ||
+					part.people.some((person) => {
+						if (
+							!person.name ||
+							!person.style ||
+							!person.text ||
+							!person.description ||
+							person.description.length === 0
+						) {
+							return true
+						}
+
+						return (
+							!person.ratios ||
+							person.ratios.some((ratio) => {
+								return !ratio.ratio || !ratio.type
+							})
+						)
+					})
+				)
+			}
+
+			if (part.type === 'insight') {
+				return !part.text || part.text.length === 0
+			}
+
+			if (part.type === 'replies') {
+				return !part.replies || part.replies.length === 0
+			}
+
+			if (part.type === 'triggers') {
+				return !part.triggers || part.triggers.length === 0 || !part.insight
+			}
+
+			return false
+		})
+	})
 }
 
 export async function deleteTrailingMessages({ id }: { id: string }) {

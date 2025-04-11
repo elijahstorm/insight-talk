@@ -29,6 +29,8 @@ export async function POST(request: Request) {
 			visibility?: 'private' | 'public'
 		} = await request.json()
 
+		console.log({ userName }, userName)
+
 		if (!messages || !messages.length) {
 			return new Response('No message details', { status: 402 })
 		}

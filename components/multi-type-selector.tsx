@@ -25,7 +25,7 @@ export const MultiTypeSelector = ({
 
 	return (
 		<>
-			<div className="flex max-w-xl flex-col gap-8 rounded-xl pb-2 text-left font-light leading-relaxed">
+			<div className="flex flex-col gap-8 rounded-xl pb-2 text-left font-light leading-relaxed">
 				{prompt}
 			</div>
 			<div className="flex flex-col gap-6">

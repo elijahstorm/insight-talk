@@ -261,3 +261,7 @@ ${
 export const seperateFiles = `
 ---
 `
+export const warnLogsFromScreenshot = (
+	screenshot: string
+) => `SYS MSG -> The following is text parsed from a screenshot and may contain inaccurate text
+${screenshot}`

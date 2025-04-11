@@ -12,7 +12,7 @@ import { useLanguage } from '@/hooks/use-language'
 import { chatLogsType } from '@/components/insight-message'
 import { createWorker } from 'tesseract.js'
 import { dictionary } from '@/lib/language/dictionary'
-import { seperateFiles } from '@/lib/ai/system-prompts'
+import { seperateFiles, warnLogsFromScreenshot } from '@/lib/ai/system-prompts'
 import BatchFileUploader from '@/components/BatchFileUploader'
 import { PaperclipIcon } from '@/components/icons'
 import { cn } from '@/lib/utils'
@@ -61,8 +61,6 @@ export default function CreateNewChat({ selectedChatModel }: { selectedChatModel
 	const parseFiles = useCallback(async () => {
 		if (parsed) return parsed
 
-		setPromptState('who-are-you')
-
 		const imageFilepaths = filepaths.filter((filepath) => /\.(jpg|jpeg|png)$/i.test(filepath))
 		const textFilepaths = filepaths.filter((filepath) => !/\.(jpg|jpeg|png)$/i.test(filepath))
 
@@ -79,12 +77,7 @@ export default function CreateNewChat({ selectedChatModel }: { selectedChatModel
 					return ret.data.text
 				})
 			)
-		).map(
-			(
-				screenshot
-			) => `-> The following is text parsed from a screenshot and may contain inaccurate text
-${screenshot}`
-		)
+		).map(warnLogsFromScreenshot)
 
 		const textLogs = filterNull(
 			await Promise.all(
@@ -107,8 +100,7 @@ ${screenshot}`
 		const result = { attachments, textLogs }
 		setParsed(result)
 		return result
-		// return {attachments: [], textLogs:}
-	}, [filepaths, parsed, setPromptState, config.errorLog])
+	}, [filepaths, parsed])
 
 	const deleteFiles = useCallback(async () => {
 		if (!filesBatch) return
@@ -130,7 +122,7 @@ ${screenshot}`
 			setFilesBatch(null)
 			setParsed(null)
 		}
-	}, [filepaths, filesBatch, setFilepaths, setFilesBatch, setParsed])
+	}, [filesBatch, setFilepaths, setFilesBatch, setParsed])
 
 	const makeNewChat = useCallback(async () => {
 		if (!filepaths || filepaths.length === 0) {
@@ -189,6 +181,8 @@ ${screenshot}`
 	}, [
 		deleteFiles,
 		router,
+		parseFiles,
+		userName,
 		selectedChatModel,
 		currentLanguage.name,
 		currentLanguage.code,
@@ -203,7 +197,7 @@ ${screenshot}`
 			return
 		}
 
-		setPromptState('who-are-you')
+		setPromptState('loading')
 
 		try {
 			const { attachments, textLogs } = await parseFiles()
@@ -233,7 +227,14 @@ ${screenshot}`
 				throw new Error('no names list found')
 			}
 
+			if (names.length === 1) {
+				setUserName(names[0])
+				makeNewChat()
+				return
+			}
+
 			setChatMemberNames(names)
+			setPromptState('who-are-you')
 		} catch (error) {
 			toast.error(dictionary.messages.analysis.newChat.toasts.error[currentLanguage.code])
 			if (config.errorLog) {
@@ -242,7 +243,7 @@ ${screenshot}`
 			setPromptState('error')
 			deleteFiles()
 		}
-	}, [filepaths, setPromptState, makeNewChat])
+	}, [filepaths, currentLanguage.code, setPromptState, makeNewChat])
 
 	const finishUploadingBatch = useCallback(
 		(uuid: string) => {
@@ -272,54 +273,46 @@ ${screenshot}`
 		<div className="bg-red-500 text-background">ERROR</div>
 	) : promptState === 'who-are-you' ? (
 		<motion.div
-			className="flex h-full flex-col gap-4 overflow-hidden"
+			className="mx-auto flex size-full max-w-3xl flex-col gap-4 overflow-hidden px-4"
 			key="overview"
 			initial={{ opacity: 0, scale: 0.98 }}
 			animate={{ opacity: 1, scale: 1 }}
 			exit={{ opacity: 0, scale: 0.98 }}
 			transition={{ delay: 0.5 }}
 		>
-			<div className="flex h-full flex-col gap-4 overflow-hidden px-4">
-				<div className="mx-auto flex h-full w-full flex-1 flex-col gap-4 overflow-auto pb-8 md:max-w-3xl">
-					<div className="flex max-w-xl flex-1 flex-col items-center justify-center gap-8 rounded-xl text-center font-light leading-relaxed">
-						<h1 className="text-2xl font-semibold">
-							{dictionary.messages.analysis.newChat.pickYourself[currentLanguage.code]}
-						</h1>
-						<p className="text-center">
-							{dictionary.messages.analysis.newChat.pickYourselfInfo[currentLanguage.code]}
-						</p>
-					</div>
-					<div className="flex w-full flex-col gap-2">
-						{!chatMemberNames || chatMemberNames.length === 0 ? (
-							<div className="w-full text-center">
-								{dictionary.messages.analysis.newChat.loading[currentLanguage.code]}
-							</div>
-						) : (
-							chatMemberNames.map((member) => (
-								<Button
-									key={member}
-									variant="outline"
-									onClick={setMyself(member)}
-									className={cn({
-										'bg-accent text-accent-foreground hover:bg-secondary': member === userName,
-									})}
-								>
-									{member}
-								</Button>
-							))
-						)}
-					</div>
+			<div className="mx-auto flex size-full flex-1 flex-col gap-4 overflow-auto pb-8">
+				<div className="flex flex-1 flex-col items-center justify-center gap-8 rounded-xl text-center font-light leading-relaxed">
+					<h1 className="text-2xl font-semibold">
+						{dictionary.messages.analysis.newChat.pickYourself[currentLanguage.code]}
+					</h1>
+					<p className="text-center">
+						{dictionary.messages.analysis.newChat.pickYourselfInfo[currentLanguage.code]}
+					</p>
 				</div>
-				<Button className="mb-6 w-full py-6 hover:bg-accent focus:bg-accent" onClick={makeNewChat}>
-					{dictionary.messages.analysis.newChat.start[currentLanguage.code]}
-				</Button>
+				<div className="flex w-full flex-col gap-2">
+					{chatMemberNames.map((member) => (
+						<Button
+							key={member}
+							variant="outline"
+							onClick={setMyself(member)}
+							className={cn({
+								'bg-accent text-accent-foreground hover:bg-secondary': member === userName,
+							})}
+						>
+							{member}
+						</Button>
+					))}
+				</div>
 			</div>
+			<Button className="mb-6 w-full py-6 hover:bg-accent focus:bg-accent" onClick={makeNewChat}>
+				{dictionary.messages.analysis.newChat.start[currentLanguage.code]}
+			</Button>
 		</motion.div>
 	) : promptState === 'loading' ? (
 		<FullPageLoader />
-	) : (
+	) : promptState === 'upload' ? (
 		<motion.div
-			className="flex h-full flex-col gap-4 overflow-hidden"
+			className="flex h-full max-w-3xl flex-col gap-4 overflow-hidden"
 			key="overview"
 			initial={{ opacity: 0, scale: 0.98 }}
 			animate={{ opacity: 1, scale: 1 }}
@@ -387,7 +380,7 @@ ${screenshot}`
 					{dictionary.messages.analysis.newChat.filesNotStored[currentLanguage.code]}
 				</p>
 
-				<div className="mx-auto max-w-3xl flex-1 overflow-auto">
+				<div className="flex-1 overflow-auto">
 					<MultiTypeSelector
 						prompt={dictionary.messages.analysis.newChat.partnerTypeQuestion[currentLanguage.code]}
 						types={dictionary.relationshipTypes[currentLanguage.code]}
@@ -405,6 +398,8 @@ ${screenshot}`
 				</Button>
 			</div>
 		</motion.div>
+	) : (
+		<></>
 	)
 }
 
