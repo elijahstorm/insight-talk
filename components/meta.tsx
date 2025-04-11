@@ -10,17 +10,16 @@ export default function Meta() {
 			<link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32" />
 			<link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16" />
 
-			{/* Apple touch icon */}
-			<link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
-
 			{/* Android/PWA icons */}
 			<link rel="manifest" href="/site.webmanifest" />
 			<link rel="icon" type="image/png" href="/android-chrome-192x192.png" sizes="192x192" />
 			<link rel="icon" type="image/png" href="/android-chrome-512x512.png" sizes="512x512" />
 
-			{/* Optional for iOS theme */}
+			{/* iOS theme */}
 			<meta name="apple-mobile-web-app-capable" content="yes" />
 			<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+			<meta name="apple-mobile-web-app-title" content="Talk Insight" />
+			<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 		</Head>
 	)
 }
