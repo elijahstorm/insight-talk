@@ -233,6 +233,10 @@ function PureMultimodalInput({
 		return () => clearTimeout(timeout)
 	}, [status, uploadQueue, suggestedActions, currentLanguage.code])
 
+	useEffect(() => {
+		setSuggestedActions([])
+	}, [messages])
+
 	return (
 		<div className="relative flex w-full flex-col gap-4">
 			{status === 'ready' &&
