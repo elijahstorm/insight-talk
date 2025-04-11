@@ -243,7 +243,7 @@ export default function CreateNewChat({ selectedChatModel }: { selectedChatModel
 			setPromptState('error')
 			deleteFiles()
 		}
-	}, [filepaths, currentLanguage.code, setPromptState, makeNewChat])
+	}, [filepaths, currentLanguage.code, deleteFiles, parseFiles, setPromptState, makeNewChat])
 
 	const finishUploadingBatch = useCallback(
 		(uuid: string) => {

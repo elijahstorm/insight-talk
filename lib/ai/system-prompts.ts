@@ -103,7 +103,8 @@ Elena||Avoidant Style||Elena's attachment style in this exchange appears to be a
 		`In this message you will be focusing on generating possible replies that help the user achieve their goals, within the context of each party's communication patterns. Come up with multiple emotional directions, and multiple possible reply ideas for each emotional group.
 
 ### Formatting:`,
-		`- Separate emotional groups with triple pipes (|||).
+		`- Pay attention to the user's name, if provided. Replies should be from their perspective.
+- Separate emotional groups with triple pipes (|||).
 - For each group, provide a title followed by double pipes (||) and a list of reply ideas separated by single pipes (|).
 - Ensure each reply idea is concise and relevant to the emotional group.
 - Do not use any markdown formatting.
