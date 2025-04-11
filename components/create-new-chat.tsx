@@ -48,7 +48,7 @@ export default function CreateNewChat({ selectedChatModel }: { selectedChatModel
 					}
 				} catch (error) {
 					if (config.errorLog) {
-						// toast.error(dictionary.messages.analysis.newChat.uploadFailed[currentLanguage.code])
+						toast.error(dictionary.messages.analysis.newChat.uploadFailed[currentLanguage.code])
 						console.error('An error occurred while fetching filepaths', error)
 					}
 					setFilesBatch(null)
@@ -88,7 +88,7 @@ export default function CreateNewChat({ selectedChatModel }: { selectedChatModel
 						return await response.text()
 					} catch (error) {
 						if (config.errorLog) {
-							// toast.error(`Error processing file: ${filepath}`)
+							toast.error(`Error processing file: ${filepath}`)
 							console.error(error)
 						}
 						return null
@@ -172,7 +172,7 @@ export default function CreateNewChat({ selectedChatModel }: { selectedChatModel
 			router.refresh()
 		} catch (error) {
 			if (config.errorLog) {
-				// toast.error(dictionary.messages.analysis.newChat.toasts.error[currentLanguage.code])
+				toast.error(dictionary.messages.analysis.newChat.toasts.error[currentLanguage.code])
 				console.error('Error creating chat:', error)
 			}
 			setPromptState('error')
@@ -181,9 +181,10 @@ export default function CreateNewChat({ selectedChatModel }: { selectedChatModel
 		}
 	}, [
 		deleteFiles,
-		router,
 		parseFiles,
+		router,
 		userName,
+		chatMemberNames,
 		selectedChatModel,
 		currentLanguage.name,
 		currentLanguage.code,
@@ -232,7 +233,7 @@ export default function CreateNewChat({ selectedChatModel }: { selectedChatModel
 			setPromptState('who-are-you')
 		} catch (error) {
 			if (config.errorLog) {
-				// toast.error(dictionary.messages.analysis.newChat.toasts.error[currentLanguage.code])
+				toast.error(dictionary.messages.analysis.newChat.toasts.error[currentLanguage.code])
 				console.error('Error getting chat members names:', error)
 			}
 			setPromptState('error')
