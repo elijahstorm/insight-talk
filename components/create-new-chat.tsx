@@ -79,6 +79,11 @@ export default function CreateNewChat({ selectedChatModel }: { selectedChatModel
 					return ret.data.text
 				})
 			)
+		).map(
+			(
+				screenshot
+			) => `-> The following is text parsed from a screenshot and may contain inaccurate text
+${screenshot}`
 		)
 
 		const textLogs = filterNull(
@@ -102,6 +107,7 @@ export default function CreateNewChat({ selectedChatModel }: { selectedChatModel
 		const result = { attachments, textLogs }
 		setParsed(result)
 		return result
+		// return {attachments: [], textLogs:}
 	}, [filepaths, parsed, setPromptState, config.errorLog])
 
 	const deleteFiles = useCallback(async () => {
@@ -125,48 +131,6 @@ export default function CreateNewChat({ selectedChatModel }: { selectedChatModel
 			setParsed(null)
 		}
 	}, [filepaths, filesBatch, setFilepaths, setFilesBatch, setParsed])
-
-	const askWhoAreYou = useCallback(async () => {
-		if (!filepaths || filepaths.length === 0) {
-			setPromptState('upload')
-			return
-		}
-
-		setPromptState('who-are-you')
-
-		try {
-			const { attachments, textLogs } = await parseFiles()
-
-			const response = await fetch('/api/list-names', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify({
-					messages: [...textLogs, ...attachments].join(seperateFiles),
-				}),
-			})
-
-			if (!response.ok) {
-				throw new Error('Failed to get names list from chat')
-			}
-
-			const { names } = await response.json()
-
-			if (!names || !names.length) {
-				throw new Error('no names list found')
-			}
-
-			setChatMemberNames(names)
-		} catch (error) {
-			toast.error(dictionary.messages.analysis.newChat.toasts.error[currentLanguage.code])
-			if (config.errorLog) {
-				console.error('Error getting chat members names:', error)
-			}
-			setPromptState('error')
-			deleteFiles()
-		}
-	}, [filepaths, setPromptState])
 
 	const makeNewChat = useCallback(async () => {
 		if (!filepaths || filepaths.length === 0) {
@@ -232,6 +196,53 @@ export default function CreateNewChat({ selectedChatModel }: { selectedChatModel
 		selectedValues,
 		setPromptState,
 	])
+
+	const askWhoAreYou = useCallback(async () => {
+		if (!filepaths || filepaths.length === 0) {
+			setPromptState('upload')
+			return
+		}
+
+		setPromptState('who-are-you')
+
+		try {
+			const { attachments, textLogs } = await parseFiles()
+
+			const response = await fetch('/api/list-names', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({
+					messages: [...textLogs, ...attachments].join(seperateFiles),
+				}),
+			})
+
+			if (!response.ok) {
+				throw new Error('Failed to get names list from chat')
+			}
+
+			const { names, impossible } = await response.json()
+
+			if (impossible) {
+				makeNewChat()
+				return
+			}
+
+			if (!names || !names.length) {
+				throw new Error('no names list found')
+			}
+
+			setChatMemberNames(names)
+		} catch (error) {
+			toast.error(dictionary.messages.analysis.newChat.toasts.error[currentLanguage.code])
+			if (config.errorLog) {
+				console.error('Error getting chat members names:', error)
+			}
+			setPromptState('error')
+			deleteFiles()
+		}
+	}, [filepaths, setPromptState, makeNewChat])
 
 	const finishUploadingBatch = useCallback(
 		(uuid: string) => {

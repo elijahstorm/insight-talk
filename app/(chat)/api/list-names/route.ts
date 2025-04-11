@@ -21,9 +21,13 @@ export async function POST(request: Request) {
 			return new Response('Unauthorized', { status: 401 })
 		}
 
-		const { names } = await generateNamesListFromMessages({
+		const { names, impossible } = await generateNamesListFromMessages({
 			messages,
 		})
+
+		if (impossible) {
+			return Response.json({ impossible }, { status: 200 })
+		}
 
 		if (!names || names.length === 0) {
 			throw new Error('No names found')

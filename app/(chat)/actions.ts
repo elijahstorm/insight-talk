@@ -49,7 +49,7 @@ export async function generateNamesListFromMessages({ messages }: { messages: st
 	})
 
 	if (!text || text === '!impossible!') {
-		return {}
+		return { impossible: true }
 	}
 
 	return { names: text.split('|') }
